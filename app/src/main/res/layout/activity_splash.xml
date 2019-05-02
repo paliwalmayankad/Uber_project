@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+        android:background="@color/background_splash"
     tools:context="aaronsoftech.in.uber.Splash">
 <ImageView
     android:layout_width="match_parent"
-    android:background="@drawable/nber_logo"
-    android:layout_height="wrap_content" />
+    android:background="@drawable/splash_screen"
+    android:layout_height="match_parent" />
 </RelativeLayout>

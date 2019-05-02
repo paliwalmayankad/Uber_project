@@ -24,5 +24,5 @@
     <color name="button_focused">#ff8a00</color>
     <color name="button_default">#1c76bb</color>
     <color name="transperent_one">#00ffffff</color>
-
+    <color name="background_splash">#FFB300</color>
 </resources>
