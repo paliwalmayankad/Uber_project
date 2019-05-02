@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">#d12828</color>
+    <color name="colorPrimaryDark">#d12828</color>
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="windowBackground">#ffffff</color>
+    <color name="navigationBarColor">#000000</color>
+    <color name="colorAccent">#d12828</color>
+    <color name="layoutbaundry">#bfbebe</color>
+    <color name="layoutbg">#7fffffff</color>
+    <color name="navigationheader">#d12828</color>
+    <color name="menutextcolor">#635f5f</color>
+    <color name="layoutback">#ffffff</color>
+    <color name="ratingprogress">#f2a229</color>
+    <color name="light_green">#cbecb4</color>
+    <color name="red">#ea3838</color>
+    <color name="green">#47be1e</color>
+    <color name="light_gray">#ece8e8</color>
+    <color name="layout_back">#f4ffffff</color>
+    <color name="light_cream">#e7d8b8</color>
+    <color name="liht_gray">#cdcdcd</color>
+    <color name="button_pressed">#ff8a00</color>
+    <color name="button_focused">#ff8a00</color>
+    <color name="button_default">#1c76bb</color>
+    <color name="transperent_one">#00ffffff</color>
+
+</resources>
