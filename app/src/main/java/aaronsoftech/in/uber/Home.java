@@ -133,7 +133,7 @@ public class Home extends AppCompatActivity
         } else if (id == R.id.nav_free_trips) {
 
         } else if (id == R.id.nav_setting) {
-
+            startActivity(new Intent(Home.this,Acc_setting.class));
         } else if (id == R.id.nav_your_trips) {
             startActivity(new Intent(Home.this,Trip.class));
         }
