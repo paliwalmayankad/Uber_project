@@ -19,7 +19,7 @@
         <item name="windowActionBarOverlay">true</item>
     </style>
     <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
+        <item name="windowActionBar">true</item>
         <item name="windowNoTitle">true</item>
     </style>
 

@@ -19,7 +19,7 @@ public class Splash extends AppCompatActivity {
                 startActivity(new Intent(Splash.this,Home.class));
             }
         };
-        handler.postDelayed(runnable,3000);
+        handler.postDelayed(runnable,1000);
 
     }
 }

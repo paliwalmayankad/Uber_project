@@ -7,7 +7,30 @@
     android:orientation="vertical"
     tools:context="aaronsoftech.in.uber.Acc_setting">
 
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/background_splash"
+        android:orientation="horizontal">
 
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="22dp"
+            android:src="@drawable/back_arrow" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="22dp"
+            android:gravity="center"
+            android:text="Account settings"
+            android:textColor="@android:color/white"
+            android:textSize="22dp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -17,30 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
-            <LinearLayout
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:background="@color/background_splash"
-                android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/btn_back"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:paddingLeft="22dp"
-                    android:src="@drawable/back_arrow" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="22dp"
-                    android:gravity="center"
-                    android:text="Account settings"
-                    android:textColor="@android:color/white"
-                    android:textSize="22dp"
-                    android:textStyle="bold" />
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

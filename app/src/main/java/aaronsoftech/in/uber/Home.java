@@ -21,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -91,11 +92,19 @@ public class Home extends AppCompatActivity
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        mMap.setMyLocationEnabled(true);
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng sydney = new LatLng(24.571270, 73.691544);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Udaipur"));
+    //    mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+// Construct a CameraPosition focusing on Mountain View and animate the camera to that position.
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(sydney)      // Sets the center of the map to Mountain View
+                .zoom(17)                   // Sets the zoom
+                .bearing(90)                // Sets the orientation of the camera to east
+                .tilt(30)                   // Sets the tilt of the camera to 30 degrees
+                .build();                   // Creates a CameraPosition from the builder
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
     }
 
     @Override
@@ -127,11 +136,11 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_payment) {
-            // Handle the camera action
+            startActivity(new Intent(Home.this,Payment_add.class));
         } else if (id == R.id.nav_help) {
-
+            startActivity(new Intent(Home.this,Trip_free.class));
         } else if (id == R.id.nav_free_trips) {
-
+            startActivity(new Intent(Home.this,Acc_edit.class));
         } else if (id == R.id.nav_setting) {
             startActivity(new Intent(Home.this,Acc_setting.class));
         } else if (id == R.id.nav_your_trips) {

@@ -1,9 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="aaronsoftech.in.uber.Payment_add">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:id="@+id/toolbar"
+        android:background="@color/background_splash"
+        android:layout_height="56dp">
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Payment"
+            android:textSize="22dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:text="Payment methods"
+        android:layout_margin="22dp"
+        android:textSize="22dp"
+        android:textStyle="bold"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="22dp"
+        android:gravity="center_vertical"
+        android:layout_height="56dp">
+        <ImageView
+            android:layout_width="40dp"
+            android:src="@drawable/ic_notes"
+            android:layout_height="40dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Cash"
+            android:layout_marginLeft="22dp"
+            android:textSize="22dp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="22dp"
+        android:layout_marginBottom="22dp"
+        android:gravity="center_vertical"
+        android:layout_height="56dp">
+        <ImageView
+            android:layout_width="40dp"
+            android:src="@drawable/ic_paytm"
+            android:layout_height="40dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Paytm"
+            android:layout_marginLeft="22dp"
+            android:textSize="22dp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:text="Add payment method"
+        android:layout_marginLeft="22dp"
+        android:textSize="22dp"
+        android:layout_marginBottom="22dp"
+        android:gravity="center_vertical"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_blue_dark"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/light_gray"></View>
+    <TextView
+        android:layout_width="match_parent"
+        android:text="Promotions"
+        android:layout_margin="22dp"
+        android:textSize="22dp"
+        android:textStyle="bold"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:text="Add promo/gift code"
+        android:layout_marginLeft="22dp"
+        android:textSize="22dp"
+        android:id="@+id/add_code"
+        android:layout_marginBottom="22dp"
+        android:gravity="center_vertical"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_blue_dark"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>
