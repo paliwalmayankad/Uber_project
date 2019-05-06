@@ -1,6 +1,7 @@
 package aaronsoftech.in.uber;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -134,7 +135,7 @@ public class Home extends AppCompatActivity
         } else if (id == R.id.nav_setting) {
 
         } else if (id == R.id.nav_your_trips) {
-
+            startActivity(new Intent(Home.this,Trip.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

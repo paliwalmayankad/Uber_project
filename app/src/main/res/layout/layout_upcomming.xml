@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:padding="22dp"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:text="Yesterday at 1:48 pm"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="20dp"
+                android:layout_height="match_parent" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="@string/msg"
+                android:gravity="right"
+                android:textSize="20dp"
+                android:textColor="@android:color/black"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:text="Nber AUTO"
+                android:layout_weight="1"
+                android:textSize="17dp"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Cash"
+                    android:textSize="17dp"
+                    android:textColor="@color/background_splash"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="   Success"
+                    android:textSize="17dp"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="@color/layoutbaundry"></View>
+    
+</LinearLayout>
