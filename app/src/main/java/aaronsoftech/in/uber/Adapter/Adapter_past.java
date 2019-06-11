@@ -1,4 +1,4 @@
-package aaronsoftech.in.uber.Adapter;
+package aaronsoftech.in.nber.Adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import aaronsoftech.in.uber.R;
+import aaronsoftech.in.nber.R;
 
 /**
  * Created by Chouhan on 05/06/2019.

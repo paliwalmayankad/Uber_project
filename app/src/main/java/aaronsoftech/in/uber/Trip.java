@@ -1,4 +1,4 @@
-package aaronsoftech.in.uber;
+package aaronsoftech.in.nber;
 
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
-import aaronsoftech.in.uber.Adapter.PagerAdapter;
+import aaronsoftech.in.nber.Adapter.PagerAdapter;
 
 
 public class Trip extends AppCompatActivity {

@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import aaronsoftech.in.uber.R;
+import aaronsoftech.in.nber.R;
 
 /**
  * A simple {@link Fragment} subclass.

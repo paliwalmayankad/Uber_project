@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="aaronsoftech.in.uber.Payment_code">
+    tools:context="aaronsoftech.in.nber.Payment_code">
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="horizontal"

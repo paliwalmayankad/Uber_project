@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
         android:background="@color/background_splash"
-    tools:context="aaronsoftech.in.uber.Splash">
+    tools:context="aaronsoftech.in.nber.Splash">
 <ImageView
     android:layout_width="match_parent"
     android:background="@drawable/splash_screen"

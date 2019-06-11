@@ -1,4 +1,4 @@
-package aaronsoftech.in.uber;
+package aaronsoftech.in.nber;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("aaronsoftech.in.uber", appContext.getPackageName());
+        assertEquals("aaronsoftech.in.nber", appContext.getPackageName());
     }
 }

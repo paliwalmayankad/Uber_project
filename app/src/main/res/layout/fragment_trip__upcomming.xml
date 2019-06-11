@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="aaronsoftech.in.uber.Fragment.Trip_Upcomming">
+    tools:context="aaronsoftech.in.nber.Fragment.Trip_Upcomming">
 
     <LinearLayout
         android:layout_width="match_parent"

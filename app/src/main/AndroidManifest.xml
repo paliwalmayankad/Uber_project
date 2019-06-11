@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="aaronsoftech.in.uber">
+    package="aaronsoftech.in.nber">
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -32,14 +33,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".MainActivity" />
         <activity android:name=".login_mobile" />
         <activity android:name=".login_email" />
         <activity android:name=".Acc_setting" />
         <activity android:name=".Acc_edit" />
-        <activity android:name=".Trip"
-            />
+        <activity android:name=".Trip" />
         <activity android:name=".Select_payment" />
         <activity android:name=".Payment_add" />
         <activity android:name=".Payment_code" />
@@ -68,7 +67,8 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps" />
+        <activity android:name=".Activity.Social_Login"></activity>
     </application>
 
 </manifest>

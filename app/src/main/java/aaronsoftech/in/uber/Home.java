@@ -1,4 +1,4 @@
-package aaronsoftech.in.uber;
+package aaronsoftech.in.nber;
 
 import android.Manifest;
 import android.content.Intent;
@@ -87,16 +87,17 @@ public class Home extends AppCompatActivity
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
             //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
+            //      int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        mMap.setMyLocationEnabled(true);
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(24.571270, 73.691544);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Udaipur"));
-    //    mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-// Construct a CameraPosition focusing on Mountain View and animate the camera to that position.
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+       // Construct a CameraPosition focusing on Mountain View and animate the camera to that position.
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(sydney)      // Sets the center of the map to Mountain View
                 .zoom(17)                   // Sets the zoom
