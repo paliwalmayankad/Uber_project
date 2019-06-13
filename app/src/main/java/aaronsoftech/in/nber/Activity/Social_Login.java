@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,7 @@ import org.json.JSONObject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import aaronsoftech.in.nber.Home;
 import aaronsoftech.in.nber.R;
 
 public class Social_Login extends AppCompatActivity implements
@@ -62,7 +64,54 @@ public class Social_Login extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_social__login2);
+
+        ImageView btn_back1=findViewById(R.id.btn_back);
+        ImageView btn_back2=findViewById(R.id.btn_back2);
+        btn_back1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        btn_back2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        FAceBook_Login();
+
+        Google_login();
+
+    }
+
+    private void Google_login() {
+        // [START configure_signin]
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        // [END configure_signin]
+
+        // [START build_client]
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        // [END build_client]
+
+        // [START customize_button]
+        // Set the dimensions of the sign-in button.
+        SignInButton signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setTooltipText("Google");
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
+    }
+
+    private void FAceBook_Login() {
         fb_login_button = (LoginButton) findViewById(R.id.login_button);
+        fb_login_button.setLoginText("FaceBook");
         mcallbackManager = CallbackManager.Factory.create();
         fb_login_button.setReadPermissions("public_profile","email","user_friends");
         mStatusTextView = findViewById(R.id.status);
@@ -72,13 +121,6 @@ public class Social_Login extends AppCompatActivity implements
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.disconnect_button).setOnClickListener(this);
 
-        // [START configure_signin]
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        // [END configure_signin]
         try {
             PackageInfo info = getPackageManager().getPackageInfo("aaronsoftech.in.nber", PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
@@ -137,17 +179,6 @@ public class Social_Login extends AppCompatActivity implements
 
             }
         });
-        // [START build_client]
-        // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        // [END build_client]
-
-        // [START customize_button]
-        // Set the dimensions of the sign-in button.
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
-        signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
-        // [END customize_button]
     }
 
     @Override
@@ -235,6 +266,7 @@ public class Social_Login extends AppCompatActivity implements
             Toast.makeText(this, "tokenid "+tokenid, Toast.LENGTH_SHORT).show();
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
+            startActivity(new Intent(Social_Login.this, Home.class));
         } else {
             mStatusTextView.setText(R.string.signed_out);
 
