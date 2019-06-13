@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -17,10 +18,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
-
-
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+    private GoogleMap mMap;
+    String[] locationPermissionsl = {"android.permission.ACCESS_COARSE_LOCATION","android.permission.ACCESS_FINE_LOCATION"};
+    private static int REQUEST_CODE_LOCATIONl = 102;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,9 +57,27 @@ public class Home extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-    //    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-     //           .findFragmentById(R.id.map);
-     //   mapFragment.getMapAsync(this);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        Give_Permission();
+    }
+
+    private void Give_Permission() {
+        Handler handler  = new Handler();
+        Runnable runnable = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+
+                if (ActivityCompat.checkSelfPermission(Home.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Home.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                       )                    {
+                    ActivityCompat.requestPermissions(Home.this, locationPermissionsl, REQUEST_CODE_LOCATIONl);
+                }
+            }
+        };
+        handler.postDelayed(runnable, 2000);
     }
 
     @Override
@@ -71,7 +99,7 @@ public class Home extends AppCompatActivity
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    /*@Override
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -84,7 +112,7 @@ public class Home extends AppCompatActivity
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        mMap.setMyLocationEnabled(true);
+
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(24.571270, 73.691544);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Udaipur"));
@@ -98,7 +126,7 @@ public class Home extends AppCompatActivity
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-    }*/
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
