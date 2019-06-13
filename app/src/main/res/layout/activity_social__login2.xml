@@ -7,6 +7,13 @@
     android:layout_height="match_parent"
     tools:context="aaronsoftech.in.nber.Activity.Social_Login">
 
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp" />
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -49,6 +56,11 @@
                 android:text="@string/disconnect"
                  />
         </LinearLayout>
-
+        <TextView
+            android:layout_width="match_parent"
+            android:id="@+id/status"
+            android:textSize="22dp"
+            android:textColor="@color/textColorPrimary"
+            android:layout_height="wrap_content" />
     </RelativeLayout>
 </LinearLayout>

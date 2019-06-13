@@ -1,15 +1,29 @@
 package aaronsoftech.in.nber.Activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -19,6 +33,12 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import aaronsoftech.in.nber.R;
 
 public class Social_Login extends AppCompatActivity implements
@@ -27,14 +47,24 @@ public class Social_Login extends AppCompatActivity implements
     private TextView mDetailTextView;
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
-
+    AccessToken accessToken;
+    String refreshedToken;
+    String socialId;
+    String photourl;
+    private CallbackManager mcallbackManager;
+    LoginButton fb_login_button;
+    ProgressDialog progressDialog;
+    String  fb_email="",fb_name="",fblastname="",fbemailid="";
     private TextView mStatusTextView;
     private GoogleSignInClient mGoogleSignInClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_social__login2);
-        // Views
+        fb_login_button = (LoginButton) findViewById(R.id.login_button);
+        mcallbackManager = CallbackManager.Factory.create();
+        fb_login_button.setReadPermissions("public_profile","email","user_friends");
         mStatusTextView = findViewById(R.id.status);
 
         // Button listeners
@@ -49,7 +79,64 @@ public class Social_Login extends AppCompatActivity implements
                 .requestEmail()
                 .build();
         // [END configure_signin]
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("aaronsoftech.in.nber", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String sign = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+                Log.e("MY KEY HASH:", sign);
+                //        Toast.makeText(getApplicationContext(), sign, Toast.LENGTH_LONG).show();
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+        } catch (NoSuchAlgorithmException e) {
+        }
+        fb_login_button.registerCallback(mcallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Toast.makeText(Social_Login.this, "facebook successfully", Toast.LENGTH_LONG).show();
+                accessToken = loginResult.getAccessToken();
+                socialId=accessToken.getUserId();
 
+                GraphRequest req=GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        //    Toast.makeText(getApplicationContext(),"graph request completed",Toast.LENGTH_SHORT).show();
+                        try{try{
+                            fb_email =  object.getString("email");
+                        }catch (Exception e){e.printStackTrace();}
+                            try{
+                                fb_name = object.getString("name");
+                            }catch (Exception e){e.printStackTrace();}
+                            try{ socialId = object.getString("id");}catch (Exception e){e.printStackTrace();}
+
+                            photourl =object.getJSONObject("picture").getJSONObject("data").getString("url");
+                            Log.i(TAG,"Social login fb_email"+fb_email);
+                            Log.i(TAG,"Social login fb_name"+fb_name);
+                            Log.i(TAG,"Social login socialId"+socialId);
+                            Log.i(TAG,"Social login photourl"+photourl);
+                        }catch (JSONException e)
+                        {
+                            Toast.makeText(getApplicationContext(),"graph request error : "+e.getMessage(),Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,email,picture.type(large)");
+                req.setParameters(parameters);
+                req.executeAsync();
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
         // [START build_client]
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
