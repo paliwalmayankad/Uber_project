@@ -1,6 +1,7 @@
 package aaronsoftech.in.nber.Activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -41,10 +42,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
+import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.POJO.Response_Login;
 import aaronsoftech.in.nber.POJO.Response_register;
 import aaronsoftech.in.nber.R;
 import aaronsoftech.in.nber.Service.APIClient;
+import aaronsoftech.in.nber.Utils.SP_Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -139,20 +142,49 @@ public class Social_Login extends AppCompatActivity implements
                     if (size_list!=0)
                     {
 
+                        App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                        App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+response.body().getData().get(0).getName());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+response.body().getData().get(0).getGender());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_IS_SUPERADMIN,""+response.body().getData().get(0).getCms_privileges_is_superadmin());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_THEME_COLOR,""+response.body().getData().get(0).getCms_privileges_theme_color());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,""+response.body().getData().get(0).getStatus());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+response.body().getData().get(0).getAddress());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+response.body().getData().get(0).getCity());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+response.body().getData().get(0).getState());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+response.body().getData().get(0).getCountry());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+response.body().getData().get(0).getZip_code());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_MAC_ID,""+response.body().getData().get(0).getMac_id());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_SOCIAL_TYPE,""+response.body().getData().get(0).getSocial_type());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_TOKEN_ID,""+response.body().getData().get(0).getToken_id());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSCODE,""+response.body().getData().get(0).getPasscode());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());
+
+                        App_Conteroller. editor.commit();
+                        Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
                         startActivity(new Intent(Social_Login.this, Home.class));
+                        finish();
 
                     }
+                }else{
+                    Toast.makeText(Social_Login.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
                 }
-
-
-              //  startActivity(new Intent(Social_Login.this, Home.class));
-
 
             }
 
             @Override
             public void onFailure(Call<Response_Login> call, Throwable t) {
-
+                Toast.makeText(Social_Login.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -265,7 +297,7 @@ public class Social_Login extends AppCompatActivity implements
 
             @Override
             public void onError(FacebookException error) {
-
+                Toast.makeText(Social_Login.this, "error  "+error.toString(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -395,25 +427,48 @@ public class Social_Login extends AppCompatActivity implements
                     {
                         Call_Register_Api(register_map);
                     }else{
+
+                        App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                        App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+response.body().getData().get(0).getName());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+response.body().getData().get(0).getGender());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_IS_SUPERADMIN,""+response.body().getData().get(0).getCms_privileges_is_superadmin());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_THEME_COLOR,""+response.body().getData().get(0).getCms_privileges_theme_color());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,""+response.body().getData().get(0).getStatus());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+response.body().getData().get(0).getAddress());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+response.body().getData().get(0).getCity());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+response.body().getData().get(0).getState());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+response.body().getData().get(0).getCountry());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+response.body().getData().get(0).getZip_code());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_MAC_ID,""+response.body().getData().get(0).getMac_id());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_SOCIAL_TYPE,""+response.body().getData().get(0).getSocial_type());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_TOKEN_ID,""+response.body().getData().get(0).getToken_id());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSCODE,""+response.body().getData().get(0).getPasscode());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());
+
+                        App_Conteroller. editor.commit();
+                        Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
                         startActivity(new Intent(Social_Login.this, Home.class));
+                        finish();
                     }
                 }else{
                     Toast.makeText(Social_Login.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                 }
-
-
-
-
-
-
-
-
-
             }
 
             @Override
             public void onFailure(Call<Response_Login> call, Throwable t) {
-
+                Toast.makeText(Social_Login.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
