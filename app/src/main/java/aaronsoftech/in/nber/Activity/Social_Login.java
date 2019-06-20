@@ -146,20 +146,52 @@ public class Social_Login extends AppCompatActivity implements
                         App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
 
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+response.body().getData().get(0).getName());
+                        if (response.body().getData().get(0).getName()==null)
+                        {       App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,"");
+                        }else{  App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+response.body().getData().get(0).getName());
+                        }
+
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+response.body().getData().get(0).getGender());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());
+
+                        if (response.body().getData().get(0).getEmail()==null)
+                        {       App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,"");          }
+                        else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());                    }
+
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_IS_SUPERADMIN,""+response.body().getData().get(0).getCms_privileges_is_superadmin());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_THEME_COLOR,""+response.body().getData().get(0).getCms_privileges_theme_color());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,""+response.body().getData().get(0).getStatus());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+response.body().getData().get(0).getAddress());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+response.body().getData().get(0).getCity());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+response.body().getData().get(0).getState());
+
+                        if (response.body().getData().get(0).getContact_number()==null)
+                        {
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,"");
+                        }else{
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());
+                        }
+
+
+                        if (response.body().getData().get(0).getAddress()==null){
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,"");
+                        }else{
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+response.body().getData().get(0).getAddress());
+                        }
+
+                        if (response.body().getData().get(0).getCity()==null){
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,"");
+                        }else{
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+response.body().getData().get(0).getCity());
+                        }
+
+                        if(response.body().getData().get(0).getState()==null){
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,"");
+                        }else{
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+response.body().getData().get(0).getState());
+                        }
+
+
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+response.body().getData().get(0).getCountry());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
@@ -432,20 +464,52 @@ public class Social_Login extends AppCompatActivity implements
                         App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
 
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+response.body().getData().get(0).getName());
+                        if (response.body().getData().get(0).getName()==null)
+                        {       App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,"");
+                        }else{  App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+response.body().getData().get(0).getName());
+                        }
+
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+response.body().getData().get(0).getGender());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());
+
+                        if (response.body().getData().get(0).getEmail()==null)
+                        {       App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,"");          }
+                        else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());                    }
+
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_IS_SUPERADMIN,""+response.body().getData().get(0).getCms_privileges_is_superadmin());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_THEME_COLOR,""+response.body().getData().get(0).getCms_privileges_theme_color());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,""+response.body().getData().get(0).getStatus());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+response.body().getData().get(0).getAddress());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+response.body().getData().get(0).getCity());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+response.body().getData().get(0).getState());
+
+                        if (response.body().getData().get(0).getContact_number()==null)
+                        {
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,"");
+                        }else{
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());
+                        }
+
+
+                        if (response.body().getData().get(0).getAddress()==null){
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,"");
+                        }else{
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+response.body().getData().get(0).getAddress());
+                        }
+
+                        if (response.body().getData().get(0).getCity()==null){
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,"");
+                        }else{
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+response.body().getData().get(0).getCity());
+                        }
+
+                        if(response.body().getData().get(0).getState()==null){
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,"");
+                        }else{
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+response.body().getData().get(0).getState());
+                        }
+
+
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+response.body().getData().get(0).getCountry());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
@@ -471,7 +535,6 @@ public class Social_Login extends AppCompatActivity implements
                 Toast.makeText(Social_Login.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     @Override

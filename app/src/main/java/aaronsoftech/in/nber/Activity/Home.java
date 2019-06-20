@@ -17,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,9 +45,6 @@ public class Home extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        String name= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,"");
-        Toast.makeText(this, "name "+name, Toast.LENGTH_SHORT).show();
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,6 +61,11 @@ public class Home extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        ImageView image_header = (ImageView) headerView.findViewById(R.id.imageView);
+        TextView header_name = (TextView) headerView.findViewById(R.id.textView_name);
+        String name= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,"");
+        header_name.setText(name);
         navigationView.setNavigationItemSelectedListener(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.

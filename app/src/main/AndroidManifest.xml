@@ -33,26 +33,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.MainActivity" />
-        <activity android:name=".Activity.login_mobile" />
-        <activity android:name=".Activity.login_email" />
-        <activity android:name=".Activity.Acc_setting" />
-        <activity android:name=".Activity.Acc_edit" />
-        <activity android:name=".Activity.Trip" />
-        <activity android:name=".Activity.Select_payment" />
-        <activity android:name=".Activity.Payment_add" />
-        <activity android:name=".Activity.Payment_code" />
-        <activity android:name=".Activity.Trip_free" />
-        <activity android:name=".Activity.Password" />
-        <activity android:name=".Activity.Privacy_setting" />
-        <activity android:name=".Activity.Contacts" />
-        <activity android:name=".Activity.Notification" />
-        <activity android:name=".Activity.Help" />
-        <activity android:name=".Activity.Register_mobile" />
-        <activity
-            android:name=".Activity.Home"
-            android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activity.MainActivity"     android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.login_mobile"     android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.login_email"      android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Acc_setting"      android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Acc_edit"         android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Trip"             android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Select_payment"   android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Payment_add"      android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Payment_code"     android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Trip_free"        android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Password"         android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Privacy_setting"  android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Contacts"         android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Notification"     android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Help"             android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Register_mobile"  android:theme="@style/AppTheme_one"/>
+        <activity android:name=".Activity.Home" android:label="@string/title_activity_home"
+            android:theme="@style/AppTheme_one"/>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -87,7 +85,7 @@
              android:name="com.google.android.geo.API_KEY"
              android:value="@string/google_maps_key" />
         -->
-        <activity android:name=".Activity.Social_Login"/>
+        <activity android:name=".Activity.Social_Login"   android:theme="@style/AppTheme_one"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

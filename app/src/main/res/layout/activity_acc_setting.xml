@@ -181,6 +181,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="Sign out"
+                android:id="@+id/btn_signout"
                 android:layout_margin="22dp"
                 android:gravity="center_vertical"
                 android:textColor="@android:color/black"

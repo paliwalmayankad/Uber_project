@@ -62,7 +62,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Soniya sharma"
+                        android:id="@+id/txt_name"
+                        android:hint="Name"
                         android:textColor="@android:color/black"
                         android:textSize="17dp" />
 
@@ -70,7 +71,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="+91 98000000000"
+                        android:hint="Mobile no"
+                        android:id="@+id/txt_mobile"
                         android:textColor="@android:color/black"
                         android:textSize="17dp" />
 
@@ -78,7 +80,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Soniya@gmail.com"
+                        android:hint="Email-id"
+                        android:id="@+id/txt_emailid"
                         android:textColor="@android:color/black"
                         android:textSize="17dp" />
                 </LinearLayout>
@@ -103,7 +106,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="First name"
+                        android:text="Name"
                         android:gravity="center_vertical"
                         android:textColor="@android:color/black"
                         android:textSize="17dp" />
@@ -111,7 +114,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="Soniya"
+                        android:hint="Name"
+                        android:id="@+id/e_name"
                         android:focusableInTouchMode="true"
                         android:gravity="center_vertical"
                         android:textColor="@android:color/black"
@@ -126,19 +130,26 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="Surname"
+                        android:text="Gender"
                         android:gravity="center_vertical"
                         android:textColor="@android:color/black"
                         android:textSize="17dp" />
-                    <EditText
+                    <RadioGroup
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:hint="Sharma"
-                        android:focusableInTouchMode="true"
-                        android:gravity="center_vertical"
-                        android:textColor="@android:color/black"
-                        android:textSize="17dp" />
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+                        <RadioButton
+                            android:layout_width="match_parent"
+                            android:text="Male"
+                            android:checked="true"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content" />
+                        <RadioButton
+                            android:layout_width="match_parent"
+                            android:text="Fe-Male"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content" />
+                    </RadioGroup>
                 </LinearLayout>
 
             </LinearLayout>
