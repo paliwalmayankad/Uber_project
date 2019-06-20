@@ -39,9 +39,17 @@ import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 import aaronsoftech.in.nber.Home;
+import aaronsoftech.in.nber.POJO.Response_Login;
+import aaronsoftech.in.nber.POJO.Response_register;
 import aaronsoftech.in.nber.R;
+import aaronsoftech.in.nber.Service.APIClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Social_Login extends AppCompatActivity implements
         View.OnClickListener {
@@ -85,6 +93,71 @@ public class Social_Login extends AppCompatActivity implements
 
         Google_login();
 
+
+
+    }
+
+    private void Call_Register_Api(Map map){
+
+        Call<Response_register> call= APIClient.getWebServiceMethod().getRegister(map);
+        call.enqueue(new Callback<Response_register>() {
+            @Override
+            public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+
+                String status=response.body().getApi_status();
+                String msg=response.body().getApi_message();
+                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                {
+                    String id=response.body().getId();
+                    Toast.makeText(Social_Login.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+                    get_login_with_Id(id);
+                }else{
+                    Toast.makeText(Social_Login.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response_register> call, Throwable t) {
+
+            }
+        });
+
+
+    }
+
+    private void get_login_with_Id(String id) {
+        HashMap<String,String>map=new HashMap<>();
+        map.put("id", id);
+        Call<Response_Login> call= APIClient.getWebServiceMethod().getLogin_with_id(map);
+        call.enqueue(new Callback<Response_Login>() {
+            @Override
+            public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
+
+                String status=response.body().getApi_status();
+                String msg=response.body().getApi_message();
+                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                {
+                    int size_list=response.body().getData().size();
+                    if (size_list!=0)
+                    {
+
+                        startActivity(new Intent(Social_Login.this, Home.class));
+
+                    }
+                }
+
+
+              //  startActivity(new Intent(Social_Login.this, Home.class));
+
+
+            }
+
+            @Override
+            public void onFailure(Call<Response_Login> call, Throwable t) {
+
+            }
+        });
+
     }
 
     private void Google_login() {
@@ -103,10 +176,10 @@ public class Social_Login extends AppCompatActivity implements
 
         // [START customize_button]
         // Set the dimensions of the sign-in button.
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setTooltipText("Google");
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
-        signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
+    //    SignInButton signInButton = findViewById(R.id.sign_in_button);
+  //      signInButton.setTooltipText("Google");
+   //     signInButton.setSize(SignInButton.SIZE_STANDARD);
+   //     signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
     }
 
     private void FAceBook_Login() {
@@ -262,17 +335,75 @@ public class Social_Login extends AppCompatActivity implements
     private void updateUI(@Nullable GoogleSignInAccount account) {
         if (account != null) {
             mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName()));
-            String tokenid=account.getId();
+
+            HashMap<String,String>login_map=new HashMap<>();
+            String tokenid=account.getId().toString().trim();
+            String name=account.getDisplayName().toString().trim();
+            String email=account.getEmail().toString().trim();
+            login_map.put("token_id",""+tokenid);
+
+            HashMap<String,String>register_map=new HashMap<>();
+            register_map.put("id_cms_privileges","4");
+            register_map.put("contact_number","");
+            register_map.put("lat","0.0");
+            register_map.put("lng","0.0");
+            register_map.put("mac_id","0");
+            register_map.put("social_type","google");
+            register_map.put("token_id",""+tokenid);
+            register_map.put("name",""+name);
+            register_map.put("email",""+email);
+
+            Api_Social_login(login_map,register_map);
+
+
+
+
             Toast.makeText(this, "tokenid "+tokenid, Toast.LENGTH_SHORT).show();
-            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
-            startActivity(new Intent(Social_Login.this, Home.class));
         } else {
             mStatusTextView.setText(R.string.signed_out);
 
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
+    }
+
+    private void Api_Social_login(HashMap<String, String> login_map, final HashMap<String, String> register_map) {
+        Call<Response_Login> call= APIClient.getWebServiceMethod().getSocial_Login(login_map);
+        call.enqueue(new Callback<Response_Login>() {
+            @Override
+            public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
+
+                String status=response.body().getApi_status();
+                String msg=response.body().getApi_message();
+                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                {
+                    int size_list=response.body().getData().size();
+                    if (size_list==0)
+                    {
+                        Call_Register_Api(register_map);
+                    }else{
+                        startActivity(new Intent(Social_Login.this, Home.class));
+                    }
+                }else{
+                    Toast.makeText(Social_Login.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                }
+
+
+
+
+
+
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<Response_Login> call, Throwable t) {
+
+            }
+        });
+
     }
 
     @Override
