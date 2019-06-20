@@ -228,6 +228,24 @@ public class Social_Login extends AppCompatActivity implements
                             Log.i(TAG,"Social login fb_name"+fb_name);
                             Log.i(TAG,"Social login socialId"+socialId);
                             Log.i(TAG,"Social login photourl"+photourl);
+
+                            HashMap<String,String>login_map=new HashMap<>();
+
+                            login_map.put("token_id",""+socialId);
+
+                            HashMap<String,String>register_map=new HashMap<>();
+                            register_map.put("id_cms_privileges","4");
+                            register_map.put("contact_number","");
+                            register_map.put("lat","0.0");
+                            register_map.put("lng","0.0");
+                            register_map.put("mac_id","0");
+                            register_map.put("social_type","facebook");
+                            register_map.put("token_id",""+socialId);
+                            register_map.put("name",""+fb_name);
+                            register_map.put("email",""+fb_email);
+
+                            Api_Social_login(login_map,register_map);
+
                         }catch (JSONException e)
                         {
                             Toast.makeText(getApplicationContext(),"graph request error : "+e.getMessage(),Toast.LENGTH_SHORT).show();
@@ -352,9 +370,6 @@ public class Social_Login extends AppCompatActivity implements
             register_map.put("email",""+email);
 
             Api_Social_login(login_map,register_map);
-
-
-
 
             Toast.makeText(this, "tokenid "+tokenid, Toast.LENGTH_SHORT).show();
         } else {
