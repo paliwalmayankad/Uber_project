@@ -1,11 +1,11 @@
-package aaronsoftech.in.nber;
+package aaronsoftech.in.nber.Activity;
 
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import aaronsoftech.in.nber.Activity.Social_Login;
+import aaronsoftech.in.nber.R;
 
 public class Splash extends AppCompatActivity {
 

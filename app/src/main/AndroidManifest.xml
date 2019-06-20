@@ -26,31 +26,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".Splash">
+        <activity android:name=".Activity.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".login_mobile" />
-        <activity android:name=".login_email" />
-        <activity android:name=".Acc_setting" />
-        <activity android:name=".Acc_edit" />
-        <activity android:name=".Trip" />
-        <activity android:name=".Select_payment" />
-        <activity android:name=".Payment_add" />
-        <activity android:name=".Payment_code" />
-        <activity android:name=".Trip_free" />
-        <activity android:name=".Password" />
-        <activity android:name=".Privacy_setting" />
-        <activity android:name=".Contacts" />
-        <activity android:name=".Notification" />
-        <activity android:name=".Help" />
-        <activity android:name=".Register_mobile" />
+        <activity android:name=".Activity.MainActivity" />
+        <activity android:name=".Activity.login_mobile" />
+        <activity android:name=".Activity.login_email" />
+        <activity android:name=".Activity.Acc_setting" />
+        <activity android:name=".Activity.Acc_edit" />
+        <activity android:name=".Activity.Trip" />
+        <activity android:name=".Activity.Select_payment" />
+        <activity android:name=".Activity.Payment_add" />
+        <activity android:name=".Activity.Payment_code" />
+        <activity android:name=".Activity.Trip_free" />
+        <activity android:name=".Activity.Password" />
+        <activity android:name=".Activity.Privacy_setting" />
+        <activity android:name=".Activity.Contacts" />
+        <activity android:name=".Activity.Notification" />
+        <activity android:name=".Activity.Help" />
+        <activity android:name=".Activity.Register_mobile" />
         <activity
-            android:name=".Home"
+            android:name=".Activity.Home"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme.NoActionBar" />
 

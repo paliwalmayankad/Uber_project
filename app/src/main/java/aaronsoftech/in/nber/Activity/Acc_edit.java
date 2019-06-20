@@ -1,13 +1,18 @@
-package aaronsoftech.in.nber;
+package aaronsoftech.in.nber.Activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class Privacy_setting extends AppCompatActivity {
+import aaronsoftech.in.nber.R;
+
+public class Acc_edit extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_privacy_setting);
+        setContentView(R.layout.activity_acc_edit);
+
+
+
     }
 }

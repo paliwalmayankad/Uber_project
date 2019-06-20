@@ -1,4 +1,4 @@
-package aaronsoftech.in.nber;
+package aaronsoftech.in.nber.Activity;
 
 import android.Manifest;
 import android.content.Intent;
@@ -25,6 +25,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import aaronsoftech.in.nber.R;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
