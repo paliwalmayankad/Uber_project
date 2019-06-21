@@ -33,10 +33,12 @@
 
     <ScrollView
         android:layout_width="match_parent"
+        android:layout_weight="1"
         android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:paddingBottom="22dp"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
@@ -50,6 +52,7 @@
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="80dp"
                     android:layout_height="80dp"
+                    android:id="@+id/profile_image"
                     android:src="@drawable/ic_user" />
 
                 <LinearLayout
@@ -114,6 +117,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:inputType="textPersonName"
                         android:hint="Name"
                         android:id="@+id/e_name"
                         android:focusableInTouchMode="true"
@@ -141,17 +145,144 @@
                         <RadioButton
                             android:layout_width="match_parent"
                             android:text="Male"
-                            android:checked="true"
+                            android:id="@+id/rb_male"
                             android:layout_weight="1"
                             android:layout_height="wrap_content" />
                         <RadioButton
                             android:layout_width="match_parent"
                             android:text="Fe-Male"
+                            android:id="@+id/rb_female"
                             android:layout_weight="1"
                             android:layout_height="wrap_content" />
                     </RadioGroup>
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="15dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Address"
+                        android:gravity="center_vertical"
+                        android:textColor="@android:color/black"
+                        android:textSize="17dp" />
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="Address"
+                        android:inputType="textPersonName"
+                        android:id="@+id/e_address"
+                        android:focusableInTouchMode="true"
+                        android:gravity="center_vertical"
+                        android:textColor="@android:color/black"
+                        android:textSize="17dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="15dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="City"
+                        android:gravity="center_vertical"
+                        android:textColor="@android:color/black"
+                        android:textSize="17dp" />
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="City"
+                        android:inputType="textPersonName"
+                        android:id="@+id/e_city"
+                        android:focusableInTouchMode="true"
+                        android:gravity="center_vertical"
+                        android:textColor="@android:color/black"
+                        android:textSize="17dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="15dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="State"
+                        android:gravity="center_vertical"
+                        android:textColor="@android:color/black"
+                        android:textSize="17dp" />
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="State"
+                        android:inputType="textPersonName"
+                        android:id="@+id/e_state"
+                        android:focusableInTouchMode="true"
+                        android:gravity="center_vertical"
+                        android:textColor="@android:color/black"
+                        android:textSize="17dp" />
+                </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="15dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Country"
+                        android:gravity="center_vertical"
+                        android:textColor="@android:color/black"
+                        android:textSize="17dp" />
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="Country"
+                        android:inputType="textPersonName"
+                        android:id="@+id/e_country"
+                        android:focusableInTouchMode="true"
+                        android:gravity="center_vertical"
+                        android:textColor="@android:color/black"
+                        android:textSize="17dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="15dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Zipcode"
+                        android:gravity="center_vertical"
+                        android:textColor="@android:color/black"
+                        android:textSize="17dp" />
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="Zipcode"
+                        android:inputType="number|none"
+                        android:id="@+id/e_zipcode"
+                        android:maxLength="8"
+                        android:focusableInTouchMode="true"
+                        android:gravity="center_vertical"
+                        android:textColor="@android:color/black"
+                        android:textSize="17dp" />
+                </LinearLayout>
             </LinearLayout>
             <View
                 android:layout_width="match_parent"
@@ -180,7 +311,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="+91 885546363"
+                    android:hint="Mobileno"
+                    android:id="@+id/t_mobile"
                     android:gravity="center_vertical"
                     android:textColor="@android:color/black"
                     android:textSize="18dp" />
@@ -234,4 +366,16 @@
                 android:textSize="18dp" />
         </LinearLayout>
     </ScrollView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:text="SAVE AND UPDATE"
+        android:textSize="20dp"
+        android:id="@+id/btn_save"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        android:layout_height="44dp" />
+
 </LinearLayout>
