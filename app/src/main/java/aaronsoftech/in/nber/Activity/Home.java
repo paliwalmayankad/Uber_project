@@ -28,6 +28,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Picasso;
 
 import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.R;
@@ -36,6 +37,8 @@ import aaronsoftech.in.nber.Utils.SP_Utils;
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
     private GoogleMap mMap;
+    ImageView image_header;
+    TextView header_name;
     String[] locationPermissionsl = {"android.permission.ACCESS_COARSE_LOCATION","android.permission.ACCESS_FINE_LOCATION"};
     private static int REQUEST_CODE_LOCATIONl = 102;
     @Override
@@ -62,10 +65,11 @@ public class Home extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
-        ImageView image_header = (ImageView) headerView.findViewById(R.id.imageView);
-        TextView header_name = (TextView) headerView.findViewById(R.id.textView_name);
-        String name= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,"");
-        header_name.setText(name);
+
+        image_header = (ImageView) headerView.findViewById(R.id.imageView);
+        header_name = (TextView) headerView.findViewById(R.id.textView_name);
+        set_Header_value();
+
         navigationView.setNavigationItemSelectedListener(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -73,6 +77,25 @@ public class Home extends AppCompatActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         Give_Permission();
+    }
+
+    private void set_Header_value() {
+        try{
+            String name= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,"");
+            String photo= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,"");
+            header_name.setText(name);
+            Picasso.with(Home.this).load(photo).fit().centerCrop()
+                    .placeholder(R.drawable.ic_user)
+                    .error(R.drawable.ic_user)
+                    .into(image_header);
+        }catch (Exception e){e.printStackTrace();}
+
+    }
+
+    @Override
+    protected void onResume() {
+        set_Header_value();
+        super.onResume();
     }
 
     private void Give_Permission() {

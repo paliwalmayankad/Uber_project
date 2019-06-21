@@ -90,6 +90,7 @@
                 android:layout_width="match_parent"
                 android:id="@+id/status"
                 android:textSize="22dp"
+                android:visibility="gone"
                 android:textColor="@color/textColorPrimary"
                 android:layout_height="wrap_content" />
 
@@ -107,7 +108,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/sign_out_and_disconnect"
             android:gravity="right"
             android:padding="4dp">
 

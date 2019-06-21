@@ -63,7 +63,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Soniya sharma"
+                        android:hint="Name"
+                        android:id="@+id/txt_name"
                         android:textColor="@android:color/black"
                         android:textSize="17dp" />
 
@@ -71,7 +72,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="+91 98000000000"
+                        android:id="@+id/txt_mobile"
+                        android:hint="Mobile no."
                         android:textColor="@android:color/black"
                         android:textSize="17dp" />
 
@@ -79,7 +81,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Soniya@gmail.com"
+                        android:hint="Email_id"
+                        android:id="@+id/txt_emailid"
                         android:textColor="@android:color/black"
                         android:textSize="17dp" />
                 </LinearLayout>

@@ -17,15 +17,19 @@ import com.google.android.gms.tasks.Task;
 
 import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.R;
+import aaronsoftech.in.nber.Utils.SP_Utils;
 
 public class Acc_setting extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
+    TextView t_name,t_mobile,t_email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_acc_setting);
 
         TextView logout_btn=findViewById(R.id.btn_signout);
+
+        Init();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -53,5 +57,15 @@ public class Acc_setting extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void Init() {
+        t_name=findViewById(R.id.txt_name);
+        t_mobile=findViewById(R.id.txt_mobile);
+        t_email=findViewById(R.id.txt_emailid);
+        t_mobile.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
+        t_name.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+        t_email.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
+
     }
 }
