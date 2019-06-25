@@ -28,6 +28,7 @@
         android:layout_height="wrap_content" />
     <ImageView
         android:layout_width="match_parent"
+        android:id="@+id/image"
         android:src="@drawable/ic_driving_license"
         android:layout_height="wrap_content" />
     <TextView
