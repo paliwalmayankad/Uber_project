@@ -21,6 +21,7 @@
         android:orientation="horizontal"
         android:layout_marginTop="88dp"
         android:layout_marginRight="22dp"
+        android:id="@+id/location_layout"
         android:layout_marginLeft="22dp"
         android:background="@drawable/button"
         android:gravity="center_vertical"

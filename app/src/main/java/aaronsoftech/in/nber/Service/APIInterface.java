@@ -30,7 +30,6 @@ public interface APIInterface {
     @POST("login")
     public Call<Response_Login> getContect_Login(@FieldMap Map<String, String> map);
 
-
     @FormUrlEncoded
     @POST("login_with_id")
     public Call<Response_Login> getLogin_with_id(@FieldMap Map<String, String> map);

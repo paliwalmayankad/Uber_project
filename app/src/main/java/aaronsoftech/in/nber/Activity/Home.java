@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +58,15 @@ public class Home extends AppCompatActivity
             }
         });
 
+
+        LinearLayout get_loaction=findViewById(R.id.location_layout);
+        get_loaction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Home.this,From_Location.class));
+            }
+        });
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -66,10 +76,23 @@ public class Home extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
 
+        TextView btn_driver_login=headerView.findViewById(R.id.textView_driver);
+        btn_driver_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Home.this,Driver_document.class));
+            }
+        });
+
         image_header = (ImageView) headerView.findViewById(R.id.imageView);
         header_name = (TextView) headerView.findViewById(R.id.textView_name);
         set_Header_value();
-
+        image_header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Home.this,Acc_edit.class));
+            }
+        });
         navigationView.setNavigationItemSelectedListener(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.

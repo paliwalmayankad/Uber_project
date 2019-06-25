@@ -137,7 +137,11 @@
         <activity
             android:name=".Activity.MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".Activity.Verification"></activity>
+        <activity android:name=".Activity.Verification" />
+        <activity android:name=".Activity.From_Location" />
+        <activity android:name=".Activity.Driver_document" />
+        <activity android:name=".Activity.Driver_photo" />
+        <activity android:name=".Activity.Driver_doc_Image"></activity>
     </application>
 
 </manifest>

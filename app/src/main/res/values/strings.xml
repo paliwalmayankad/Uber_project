@@ -30,6 +30,24 @@
     <string name="auth_code_fmt">Auth Code: %s</string>
     <string name="id_token_fmt">ID Token: %s</string>
 
+    <string name="txt_message_license">Please upload the document by taking a picture</string>
+    <string name="txt_title_license">Take a photo of your \n <b>Driver\'s Licence</b></string>
+
+    <string name="txt_message_pancard">Please upload the document by taking a picture</string>
+    <string name="txt_title_pancard">Take a photo of your \n <b>PAN Card</b></string>
+
+    <string name="txt_message_permit_a">Please upload the document by taking a picture</string>
+    <string name="txt_title_permit_a">Take a photo of your \n <b>Permit Part A</b></string>
+
+    <string name="txt_message_permit_b">Please upload the document by taking a picture</string>
+    <string name="txt_title_permit_b">Take a photo of your \n <b>Permit Part B</b></string>
+
+    <string name="txt_message_register_cert">Ensure all information is readable and is not blurry.\n Make sure that all corners of the document are visible.\n Your document may not be accepted if it cannot be read properly or all four corner are not visible.</string>
+    <string name="txt_title_register_cert">Take a photo of your \n <b>Registration Certificate</b></string>
+
+    <string name="txt_message_insurense">Ensure all information is readable and is not blurry. \n Make sure that all corners of the document are visible. \n Your document may not be accepted if it cannot be read properly or all four corner are not visible.</string>
+    <string name="txt_title_insurense">Take a photo of your \n <b>Insurance</b></string>
+
     <!-- Google Play Services error for Toast -->
     <string name="play_services_error_fmt">Google Play Services Error: %i</string>
 
