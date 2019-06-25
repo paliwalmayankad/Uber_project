@@ -1,47 +1,14 @@
 package aaronsoftech.in.nber.Activity;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,79 +18,49 @@ import aaronsoftech.in.nber.POJO.Response_register;
 import aaronsoftech.in.nber.R;
 import aaronsoftech.in.nber.Service.APIClient;
 import aaronsoftech.in.nber.Utils.SP_Utils;
-import github.nisrulz.easydeviceinfo.base.EasyLocationMod;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Social_Login extends AppCompatActivity implements
-        View.OnClickListener {
-    String[] locationPermissionsl = {"android.permission.ACCESS_FINE_LOCATION","android.permission.ACCESS_COARSE_LOCATION"};
-    private static int REQUEST_CODE_LOCATIONl = 102;
+public class Verification extends AppCompatActivity {
     public static String Lat="0.0";
     public static String Longt="0.0";
-    private TextView mDetailTextView;
-    private static final String TAG = "SignInActivity";
-    private static final int RC_SIGN_IN = 9001;
-    AccessToken accessToken;
-    String refreshedToken;
-    String socialId;
-    String photourl;
-    private CallbackManager mcallbackManager;
-    LoginButton fb_login_button;
+    String mobileno;
     ProgressDialog progressDialog;
-    String  fb_email="",fb_name="",fblastname="",fbemailid="";
-    private TextView mStatusTextView;
-    Context con;
-    private GoogleSignInClient mGoogleSignInClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        setContentView(R.layout.activity_social__login2);
+        setContentView(R.layout.activity_verification);
+        ImageView btn_next=findViewById(R.id.next_button);
+        mobileno=getIntent().getExtras().getString("mobile");
 
-        ImageView btn_back1=findViewById(R.id.btn_back);
-        ImageView btn_back2=findViewById(R.id.btn_back2);
-
-
-        btn_back1.setOnClickListener(new View.OnClickListener() {
+        btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+
+                Call_Api_contact(mobileno);
             }
         });
 
-        btn_back2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
-        FAceBook_Login();
-
-        Google_login();
-
-        Give_Permission();
-
-        get_LOCATION();
     }
 
-    private void Give_Permission() {
-        Handler handler  = new Handler();
-        Runnable runnable = new Runnable()
-        {
-            @Override
-            public void run()
-            {
+    private void Call_Api_contact(String mobileno) {
+        HashMap<String,String> login_map=new HashMap<>();
+        login_map.put("contact_number",""+mobileno);
 
-                if (ActivityCompat.checkSelfPermission(getApplication(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplication(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        )                    {
-                    ActivityCompat.requestPermissions(Social_Login.this, locationPermissionsl, REQUEST_CODE_LOCATIONl);
-                }
-            }
-        };
-        handler.postDelayed(runnable, 1000);
+        HashMap<String,String>register_map=new HashMap<>();
+        register_map.put("id_cms_privileges","4");
+        register_map.put("contact_number",""+mobileno);
+        register_map.put("lat",""+Lat);
+        register_map.put("lng",""+Longt);
+        register_map.put("mac_id","0");
+        register_map.put("social_type","contact");
+        register_map.put("token_id","");
+        register_map.put("name","");
+        register_map.put("email","");
+
+        Api_Social_login(login_map,register_map);
+
     }
 
     private void Call_Register_Api(Map map){
@@ -138,18 +75,18 @@ public class Social_Login extends AppCompatActivity implements
                 if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                 {
                     String id=response.body().getId();
-                    Toast.makeText(Social_Login.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Verification.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
                     get_login_with_Id(id);
                 }else{
                     progressDialog.dismiss();
-                    Toast.makeText(Social_Login.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Verification.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Response_register> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(Social_Login.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Verification.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -249,258 +186,21 @@ public class Social_Login extends AppCompatActivity implements
 
                         App_Conteroller. editor.commit();
                         Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(Social_Login.this, Home.class));
+                        startActivity(new Intent(Verification.this, Home.class));
                         finish();
                     }
                 }else{
-                    Toast.makeText(Social_Login.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Verification.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
                 }
 
             }
 
             @Override
             public void onFailure(Call<Response_Login> call, Throwable t) {
-                Toast.makeText(Social_Login.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Verification.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
-    }
-
-    private void Google_login() {
-        // [START configure_signin]
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        // [END configure_signin]
-
-        // [START build_client]
-        // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        // [END build_client]
-
-        // [START customize_button]
-        // Set the dimensions of the sign-in button.
-   //    SignInButton signInButton = findViewById(R.id.sign_in_button);
-  //      signInButton.setTooltipText("Google");
-   //     signInButton.setSize(SignInButton.SIZE_STANDARD);
-   //     signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
-    }
-
-    private void FAceBook_Login() {
-        fb_login_button = (LoginButton) findViewById(R.id.login_button);
-        fb_login_button.setLoginText("FaceBook");
-        mcallbackManager = CallbackManager.Factory.create();
-        fb_login_button.setReadPermissions("public_profile","email","user_friends");
-        mStatusTextView = findViewById(R.id.status);
-
-        // Button listeners
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
-        findViewById(R.id.disconnect_button).setOnClickListener(this);
-
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo("aaronsoftech.in.nber", PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                String sign = Base64.encodeToString(md.digest(), Base64.DEFAULT);
-                Log.e("MY KEY HASH:", sign);
-                //        Toast.makeText(getApplicationContext(), sign, Toast.LENGTH_LONG).show();
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-        } catch (NoSuchAlgorithmException e) {
-        }
-        fb_login_button.registerCallback(mcallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                get_LOCATION();
-                Toast.makeText(Social_Login.this, "facebook successfully", Toast.LENGTH_LONG).show();
-                accessToken = loginResult.getAccessToken();
-                socialId=accessToken.getUserId();
-
-                GraphRequest req=GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject object, GraphResponse response) {
-                        //    Toast.makeText(getApplicationContext(),"graph request completed",Toast.LENGTH_SHORT).show();
-                        try{try{
-                            fb_email =  object.getString("email");
-                        }catch (Exception e){e.printStackTrace();}
-                            try{
-                                fb_name = object.getString("name");
-                            }catch (Exception e){e.printStackTrace();}
-                            try{ socialId = object.getString("id");}catch (Exception e){e.printStackTrace();}
-
-
-
-                            photourl =object.getJSONObject("picture").getJSONObject("data").getString("url");
-                            Log.i(TAG,"Social login fb_email"+fb_email);
-                            Log.i(TAG,"Social login fb_name"+fb_name);
-                            Log.i(TAG,"Social login socialId"+socialId);
-                            Log.i(TAG,"Social login photourl"+photourl);
-
-                            HashMap<String,String>login_map=new HashMap<>();
-
-                            login_map.put("token_id",""+socialId);
-
-                            HashMap<String,String>register_map=new HashMap<>();
-                            register_map.put("id_cms_privileges","4");
-                            register_map.put("contact_number","");
-                            register_map.put("lat",""+Lat);
-                            register_map.put("lng",""+Longt);
-                            register_map.put("mac_id","0");
-                            register_map.put("social_type","facebook");
-                            register_map.put("token_id",""+socialId);
-                            register_map.put("name",""+fb_name);
-                            register_map.put("email",""+fb_email);
-
-                            Api_Social_login(login_map,register_map);
-
-                        }catch (JSONException e)
-                        {
-                            Toast.makeText(getApplicationContext(),"graph request error : "+e.getMessage(),Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,email,picture.type(large)");
-                req.setParameters(parameters);
-                req.executeAsync();
-            }
-
-            @Override
-            public void onCancel() {
-
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Toast.makeText(Social_Login.this, "error  "+error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void get_LOCATION() {
-        try {
-            EasyLocationMod easyLocationMod = new EasyLocationMod(Social_Login.this);
-            if (ActivityCompat.checkSelfPermission(Social_Login.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Social_Login.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            double[] l = easyLocationMod.getLatLong();
-            Lat = String.valueOf(l[0]);
-            Longt = String.valueOf(l[1]);
-        }catch (Exception e){e.printStackTrace();}
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // [START on_start_sign_in]
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        updateUI(account);
-        // [END on_start_sign_in]
-    }
-
-    // [START onActivityResult]
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-        }
-    }
-    // [END onActivityResult]
-
-    // [START handleSignInResult]
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
-            // Signed in successfully, show authenticated UI.
-            updateUI(account);
-        } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            updateUI(null);
-        }
-    }
-    // [END handleSignInResult]
-
-    // [START signIn]
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-    // [END signIn]
-
-    // [START signOut]
-    private void signOut() {
-        mGoogleSignInClient.signOut()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // [START_EXCLUDE]
-                        updateUI(null);
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
-    // [END signOut]
-
-    // [START revokeAccess]
-    private void revokeAccess() {
-        mGoogleSignInClient.revokeAccess()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // [START_EXCLUDE]
-                        updateUI(null);
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
-    // [END revokeAccess]
-
-    private void updateUI(@Nullable GoogleSignInAccount account) {
-        if (account != null) {
-            mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName()));
-            get_LOCATION();
-            HashMap<String,String>login_map=new HashMap<>();
-            String tokenid=account.getId().toString().trim();
-            String name=account.getDisplayName().toString().trim();
-            String email=account.getEmail().toString().trim();
-            login_map.put("token_id",""+tokenid);
-
-            HashMap<String,String>register_map=new HashMap<>();
-            register_map.put("id_cms_privileges","4");
-            register_map.put("contact_number","");
-            register_map.put("lat",""+Lat);
-            register_map.put("lng",""+Longt);
-            register_map.put("mac_id","0");
-            register_map.put("social_type","google");
-            register_map.put("token_id",""+tokenid);
-            register_map.put("name",""+name);
-            register_map.put("email",""+email);
-
-            Api_Social_login(login_map,register_map);
-
-            Toast.makeText(this, "tokenid "+tokenid, Toast.LENGTH_SHORT).show();
-        } else {
-      //      mStatusTextView.setText(R.string.signed_out);
-
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
-        }
     }
 
     private void Api_Social_login(HashMap<String, String> login_map, final HashMap<String, String> register_map) {
@@ -509,7 +209,7 @@ public class Social_Login extends AppCompatActivity implements
         progressDialog.setMessage("Loading...");
         progressDialog.show();
 
-        Call<Response_Login> call= APIClient.getWebServiceMethod().getSocial_Login(login_map);
+        Call<Response_Login> call= APIClient.getWebServiceMethod().getContect_Login(login_map);
         call.enqueue(new Callback<Response_Login>() {
             @Override
             public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
@@ -589,7 +289,6 @@ public class Social_Login extends AppCompatActivity implements
                         }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+response.body().getData().get(0).getZip_code());            }
 
 
-
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_MAC_ID,""+response.body().getData().get(0).getMac_id());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_SOCIAL_TYPE,""+response.body().getData().get(0).getSocial_type());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_TOKEN_ID,""+response.body().getData().get(0).getToken_id());
@@ -602,37 +301,21 @@ public class Social_Login extends AppCompatActivity implements
 
                         App_Conteroller. editor.commit();
                         Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(Social_Login.this, Home.class));
+                        startActivity(new Intent(Verification.this, Home.class));
                         finish();
                     }
                 }else{
                     progressDialog.dismiss();
-                    Toast.makeText(Social_Login.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Verification.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Response_Login> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(Social_Login.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Verification.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.sign_in_button:
-                signIn();
-                break;
-            case R.id.sign_out_button:
-                signOut();
-                break;
-            case R.id.disconnect_button:
-                revokeAccess();
-                break;
-        }
-    }
-
 
 }

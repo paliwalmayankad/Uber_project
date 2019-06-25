@@ -14,14 +14,20 @@ public class Splash extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+
+    }
+
+    @Override
+    protected void onResume() {
         Handler handler=new Handler();
         Runnable runnable=new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(Splash.this,Social_Login.class));
+                startActivity(new Intent(Splash.this,login_mobile.class));
             }
         };
         handler.postDelayed(runnable,1000);
 
+        super.onResume();
     }
 }

@@ -37,7 +37,7 @@ dependencies {
     compile('org.apache.httpcomponents:httpmime:4.3') {
         exclude module: "httpclient"
     }
-    compile ('com.squareup.retrofit2:retrofit:2.1.0') {
+    compile('com.squareup.retrofit2:retrofit:2.1.0') {
         // exclude Retrofit’s OkHttp dependency module and define your own module import
         exclude module: 'okhttp'
     }
