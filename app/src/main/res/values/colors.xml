@@ -26,7 +26,8 @@
     <color name="transperent_one">#00ffffff</color>
     <color name="background_splash">#FFB300</color>
 
-
+    <color name="colorPrimaryTransparent">#FFD966</color>
+    <color name="colorPrimaryTransparent1">#1f178FC7</color>
 
 
     <color name="colorPrimaryLight">#4267b2</color>

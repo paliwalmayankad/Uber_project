@@ -13,5 +13,14 @@ public class App_Conteroller extends Application{
     public static final String MyPREFERENCES = "MyPrefs" ;
     public static SharedPreferences sharedpreferences;
 
+    public static String mAddress="";
+    public static String postCode="";
+    public static String subLocality="";
+    public static String city="";
+    public static String state="";
+    public static String country="";
+    public static String full_address="";
+    public static double latitute=0.0;
+    public static double longitude=0.0;
 
 }

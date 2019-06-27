@@ -48,6 +48,10 @@
     <string name="txt_message_insurense">Ensure all information is readable and is not blurry. \n Make sure that all corners of the document are visible. \n Your document may not be accepted if it cannot be read properly or all four corner are not visible.</string>
     <string name="txt_title_insurense">Take a photo of your \n <b>Insurance</b></string>
 
+    <string name="txt_title_profile">Take a photo of your \n <b>Profile Photo </b></string>
+    <string name="txt_message_profile">Customers will use this photo to identify you.Looking friendly makes a great impression.</string>
+
+
     <!-- Google Play Services error for Toast -->
     <string name="play_services_error_fmt">Google Play Services Error: %i</string>
 
