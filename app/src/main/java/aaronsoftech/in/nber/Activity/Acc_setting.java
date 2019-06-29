@@ -44,7 +44,7 @@ public class Acc_setting extends AppCompatActivity {
                 App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
                 App_Conteroller.editor.clear();
                 App_Conteroller.editor.commit();
-                startActivity(new Intent(Acc_setting.this,Social_Login.class).
+                startActivity(new Intent(Acc_setting.this,Register_mobile.class).
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 finish();
             }

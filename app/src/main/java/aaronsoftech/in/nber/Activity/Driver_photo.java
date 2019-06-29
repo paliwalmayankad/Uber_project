@@ -35,7 +35,6 @@ import static aaronsoftech.in.nber.Activity.Driver_document.path_licence;
 import static aaronsoftech.in.nber.Activity.Driver_document.path_pancard;
 import static aaronsoftech.in.nber.Activity.Driver_document.path_permit_a;
 import static aaronsoftech.in.nber.Activity.Driver_document.path_permit_b;
-import static aaronsoftech.in.nber.Activity.Driver_document.path_profile;
 import static aaronsoftech.in.nber.Activity.Driver_document.path_registration;
 
 public class Driver_photo extends AppCompatActivity {
@@ -173,7 +172,7 @@ public class Driver_photo extends AppCompatActivity {
 
     private void Set_image_path(String picturePath) {
 
-        path_profile=picturePath;
+        //path_profile=picturePath;
     }
 
 

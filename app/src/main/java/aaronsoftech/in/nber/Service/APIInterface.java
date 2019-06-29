@@ -42,20 +42,26 @@ public interface APIInterface {
     @POST("user_profile")
     public Call<Response_Login> getUpdate_Profile(@FieldMap Map<String, String> map);
 
-    /*@Multipart
-    @POST("backend/public/api/add_product")
-    Call<DonnetMOdel> postdonnet(
-            @Part("product_status") RequestBody product_status,
-            @Part("category_id1") RequestBody catid,
-            @Part("title") RequestBody title,
-            @Part("subtitle") RequestBody subtitle,
-            @Part("status") RequestBody status,
+    @Multipart
+    @POST("driver_reg")
+    Call<Response_register> driver_register(
             @Part("user_id") RequestBody user_id,
-            @Part("real_price") RequestBody real_price,
-            @Part("offer_price") RequestBody offer_price,
-            @Part("author_name") RequestBody author_name,
-            @Part("description") RequestBody description,
-            @Part MultipartBody.Part featured_image
-    );*/
+            @Part("verified_status") RequestBody verified_status,
+            @Part("dl_number") RequestBody dl_number,
+            @Part("aadhar_number") RequestBody aadhar_number,
+            @Part("pan_number") RequestBody pan_number,
+            @Part("police_verification_status") RequestBody police_verification_status,
+            @Part("driver_insured_status") RequestBody driver_insured_status,
+            @Part("status") RequestBody status,
+            @Part MultipartBody.Part dl_file,
+            @Part MultipartBody.Part pan_file,
+            @Part MultipartBody.Part driver_insured_file,
+            @Part MultipartBody.Part aadhar_file
+            /*@Part MultipartBody.Part police_verification_file,
+            @Part MultipartBody.Part file_permit_a,
+            @Part MultipartBody.Part file_permit_b,
+            @Part MultipartBody.Part file_registration*/
+
+    );
 
 }

@@ -51,6 +51,12 @@
     <string name="txt_title_profile">Take a photo of your \n <b>Profile Photo </b></string>
     <string name="txt_message_profile">Customers will use this photo to identify you.Looking friendly makes a great impression.</string>
 
+    <string name="txt_message_aadhar">Please upload the document by taking a picture</string>
+    <string name="txt_title_aadhar">Take a photo of your \n <b>Aadhar card</b></string>
+
+    <string name="txt_message_verify">Please upload the document by taking a picture</string>
+    <string name="txt_title_verify">Take a photo of your \n <b>Police verification file</b></string>
+
 
     <!-- Google Play Services error for Toast -->
     <string name="play_services_error_fmt">Google Play Services Error: %i</string>

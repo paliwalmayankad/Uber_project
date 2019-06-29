@@ -59,7 +59,7 @@ public class From_Location extends AppCompatActivity{
     private static final int REQUEST_CODE_AUTOCOMPLETE = 103;
     private static final int RESULT_CODE_MAPLOCATION = 104;
     TextView et_location,et_location2,btn_done;
-    TextView txt_done;
+
     Dialog dialog;
     String isFrom="";
     String focus_type="TO";
@@ -84,8 +84,7 @@ public class From_Location extends AppCompatActivity{
 
             Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
             TextView toolBarTitle = (TextView) toolBar.findViewById(R.id.toolbar_title);
-            txt_done = (TextView) toolBar.findViewById(R.id.txt_done);
-            toolBarTitle.setText(getResources().getString(R.string.app_name));
+            toolBarTitle.setText("Book your ride");
             toolBarTitle.setTextColor(Color.BLACK);
             setSupportActionBar(toolBar);
             btn_done =(TextView)findViewById(R.id.txt_done);
@@ -167,7 +166,8 @@ public class From_Location extends AppCompatActivity{
     {
         if (FROM_LAT!="" && FROM_LNG!="" && TO_LAT!="" && TO_LNG!="")
         {
-            distance(Double.valueOf(FROM_LAT),Double.valueOf(FROM_LNG),Double.valueOf(TO_LAT),Double.valueOf(TO_LNG));
+
+
 
             GoogleDirection.withServerKey(getResources().getString(R.string.google_maps_key))
                     .from(FROM_latLng)
@@ -208,6 +208,9 @@ public class From_Location extends AppCompatActivity{
                     Snackbar.make(coordinatorLayout, t.getMessage(), Snackbar.LENGTH_SHORT).show();
                 }
             });
+            btn_done.setText("Distance in km: "+String.valueOf(distance(Double.valueOf(FROM_LAT),Double.valueOf(FROM_LNG),Double.valueOf(TO_LAT),Double.valueOf(TO_LNG))));
+
+
         }
         else {
             Toast.makeText(this, "Please select Start point and end point", Toast.LENGTH_SHORT).show();
@@ -218,7 +221,7 @@ public class From_Location extends AppCompatActivity{
     private double distance(double lat1, double lng1, double lat2, double lng2)
     {
 
-      //  double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
+        // double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
         double earthRadius = 6371; // in km, change to 3958.75 for miles output
         double dLat = Math.toRadians(lat2 - lat1);
         double dLng = Math.toRadians(lng2 - lng1);
@@ -232,7 +235,9 @@ public class From_Location extends AppCompatActivity{
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         double dist = earthRadius * c;// output distance, in Km
-        Toast.makeText(this, "Distance in km: "+dist, Toast.LENGTH_SHORT).show();
+
+        Log.i(TAG,"Distance in km: "+dist);
+
         return dist; // output distance, in Km
     }
 
