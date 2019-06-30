@@ -97,16 +97,13 @@
                             android:textSize="22dp"
                             android:textColor="@android:color/black"
                             android:textStyle="bold" />
-                        <TextView
+                        <EditText
                             android:id="@+id/et_location"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:cursorVisible="true"
-                            android:drawableRight="@drawable/ic_mapplace"
-                            android:editable="false"
-                            android:focusableInTouchMode="false"
                             android:hint="From address here..."
                             android:inputType="text|textNoSuggestions"
                             android:padding="5dp"
@@ -115,7 +112,12 @@
                             android:textColor="@android:color/black"
                             android:textColorHint="@android:color/darker_gray"
                             android:windowSoftInputMode="stateHidden"
-                            android:drawableEnd="@drawable/ic_mapplace" />
+                            />
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:src="@drawable/ic_mapplace"
+                            android:id="@+id/find_location"
+                            android:layout_height="30dp" />
                     </LinearLayout>
                 </FrameLayout>
 
@@ -167,16 +169,14 @@
                             android:textSize="22dp"
                             android:textColor="@android:color/black"
                             android:textStyle="bold" />
-                        <TextView
+                        <EditText
                             android:id="@+id/et_location2"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:focusableInTouchMode="false"
                             android:background="@drawable/login_et_rectangle1"
                             android:cursorVisible="true"
-                            android:drawableRight="@drawable/ic_mapplace"
                             android:hint="To address here..."
                             android:inputType="text|textNoSuggestions"
                             android:padding="5dp"
@@ -185,7 +185,12 @@
                             android:textColor="@android:color/black"
                             android:textColorHint="@android:color/darker_gray"
                             android:windowSoftInputMode="stateHidden"
-                            android:drawableEnd="@drawable/ic_mapplace" />
+                             />
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:src="@drawable/ic_mapplace"
+                            android:id="@+id/find_location2"
+                            android:layout_height="30dp" />
                     </LinearLayout>
                 </FrameLayout>
 

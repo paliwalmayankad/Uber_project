@@ -61,7 +61,6 @@ public interface APIInterface {
             @Part MultipartBody.Part file_permit_a,
             @Part MultipartBody.Part file_permit_b,
             @Part MultipartBody.Part file_registration*/
-
     );
 
 }

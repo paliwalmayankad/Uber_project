@@ -1,5 +1,6 @@
 package aaronsoftech.in.nber.Activity;
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,9 +37,10 @@ public class Driver_document extends AppCompatActivity {
     ImageView btn_back;
     String TAG="Driver_document";
     ImageView img;
+    public static String txt_aadharcard_no="",txt_pancard_no="",txt_licence_no="";
     public static String path_licence="",path_pancard="",path_permit_a="",
             path_permit_b="",path_registration="",path_insurense="",path_aadhar="",path_police_verification_file="";
-
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,43 +133,12 @@ public class Driver_document extends AppCompatActivity {
         });
     }
 
-    public static void loadProfileImage2(Context conn, String imageURL, ImageView imageView)
-    {
-        try
-        {
-            if(imageURL.equals("")  &&  imageURL.isEmpty())
-            {
-                Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +"://" + conn.getResources().getDrawable(R.drawable.ic_user));
-                //     if(AppUtills.showLogs) Log.e("AppUtils","loadImage in if imageUri..."+imageUri);
-                Glide.with(conn)
-                        .load(imageUri)
-                        .placeholder(R.drawable.ic_user)
-                        .error(R.drawable.ic_user)
-                        .fallback(R.drawable.ic_user)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .thumbnail(0.1f)
-                        .into(imageView);
-            }
-            else
-            {
-                Glide.with(conn)
-                        .load(imageURL)
-                        .placeholder(R.drawable.ic_user)
-                        .error(R.drawable.ic_user)
-                        .fallback(R.drawable.ic_user)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .thumbnail(0.1f)
-                        .into(imageView);
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
 
     private void Call_Document_submit_Api() {
-
+        progressDialog=new ProgressDialog(Driver_document.this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         File file_licence = new File(path_licence);
         File file_pancard = new File(path_pancard);
         File file_permit_a = new File(path_permit_a);
@@ -194,16 +165,16 @@ public class Driver_document extends AppCompatActivity {
        MultipartBody.Part body_request_file_pancard = MultipartBody.Part.createFormData("pan_file", file_pancard.getName(), request_file_pancard);
      //   MultipartBody.Part body_request_file_permit_a = MultipartBody.Part.createFormData("dl_file", file_licence.getName(), request_file_permit_a);
      //   MultipartBody.Part body_request_file_permit_b = MultipartBody.Part.createFormData("dl_file", file_licence.getName(), request_file_permit_b);
-      //  MultipartBody.Part body_request_file_registration = MultipartBody.Part.createFormData("file_registration", file_licence.getName(), request_file_registration);
+     //  MultipartBody.Part body_request_file_registration = MultipartBody.Part.createFormData("file_registration", file_licence.getName(), request_file_registration);
      //   MultipartBody.Part body_request_file_insurense = MultipartBody.Part.createFormData("driver_insured_file", file_insurense.getName(), request_file_insurense);
 
         String userId= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
         RequestBody body_user_id =RequestBody.create(okhttp3.MultipartBody.FORM, userId);
         RequestBody body_status =RequestBody.create(okhttp3.MultipartBody.FORM, "true");
         RequestBody body_verified_status =RequestBody.create(okhttp3.MultipartBody.FORM, "true");
-        RequestBody body_dl_number =RequestBody.create(okhttp3.MultipartBody.FORM, "licenceno-4868735345");
-        RequestBody body_aadhar_number =RequestBody.create(okhttp3.MultipartBody.FORM, "aadhar1122345678987654");
-        RequestBody body_pan_number =RequestBody.create(okhttp3.MultipartBody.FORM, "pan-2433YSV");
+        RequestBody body_dl_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+txt_licence_no);
+        RequestBody body_aadhar_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+txt_aadharcard_no);
+        RequestBody body_pan_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+txt_pancard_no);
         RequestBody body_police_verification_status =RequestBody.create(okhttp3.MultipartBody.FORM, "verify");
         RequestBody body_driver_insured_status =RequestBody.create(okhttp3.MultipartBody.FORM, "true");
         RequestBody body_timestamp =RequestBody.create(okhttp3.MultipartBody.FORM, "28.6.19");
@@ -218,6 +189,7 @@ public class Driver_document extends AppCompatActivity {
         call.enqueue(new Callback<Response_register>() {
             @Override
             public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+                progressDialog.dismiss();
                 Toast.makeText(Driver_document.this, "success", Toast.LENGTH_SHORT).show();
                 try{Log.i(TAG,"response driver getid:  "+response.body().getId());
                 }catch (Exception e){e.printStackTrace();}
@@ -229,6 +201,7 @@ public class Driver_document extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Response_register> call, Throwable t) {
+                progressDialog.dismiss();
                 Toast.makeText(Driver_document.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
             }
         });

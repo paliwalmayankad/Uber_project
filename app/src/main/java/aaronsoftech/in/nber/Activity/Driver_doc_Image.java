@@ -28,6 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +40,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import aaronsoftech.in.nber.R;
+import aaronsoftech.in.nber.Utils.App_Utils;
+
 import static aaronsoftech.in.nber.Activity.Driver_document.path_aadhar;
 import static aaronsoftech.in.nber.Activity.Driver_document.path_insurense;
 import static aaronsoftech.in.nber.Activity.Driver_document.path_licence;
@@ -48,6 +51,9 @@ import static aaronsoftech.in.nber.Activity.Driver_document.path_permit_b;
 import static aaronsoftech.in.nber.Activity.Driver_document.path_police_verification_file;
 import static aaronsoftech.in.nber.Activity.Driver_document.path_registration;
 
+import static aaronsoftech.in.nber.Activity.Driver_document.txt_aadharcard_no;
+import static aaronsoftech.in.nber.Activity.Driver_document.txt_licence_no;
+import static aaronsoftech.in.nber.Activity.Driver_document.txt_pancard_no;
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 public class Driver_doc_Image extends AppCompatActivity {
@@ -71,6 +77,7 @@ public class Driver_doc_Image extends AppCompatActivity {
     public static String lastCompressedImageFileName="";
     Uri selectedImageUri;
     File selectedImageFile3 = null;
+    EditText ed_value;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +88,26 @@ public class Driver_doc_Image extends AppCompatActivity {
         btn_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectimage();
+                if (ed_value.getText().toString().isEmpty() && activity_type.equalsIgnoreCase("1"))
+                {
+                    ed_value.setError("Enter licence no.");
+                    ed_value.requestFocus();
+                }else if (ed_value.getText().toString().isEmpty() && activity_type.equalsIgnoreCase("3"))
+                {
+                    ed_value.setError("Enter pan card no.");
+                    ed_value.requestFocus();
+                }else if (ed_value.getText().toString().isEmpty() && activity_type.equalsIgnoreCase("9"))
+                {
+                    ed_value.setError("Enter aadhar card no.");
+                    ed_value.requestFocus();
+                }else{
+                    selectimage();
+                }
+
+
+
+
+
             }
         });
         btn_photo.setOnClickListener(new View.OnClickListener() {
@@ -93,15 +119,21 @@ public class Driver_doc_Image extends AppCompatActivity {
         activity_type=getIntent().getExtras().getString("type","");
         TextView ed_message=findViewById(R.id.txt_message);
         TextView ed_title=findViewById(R.id.txt_title);
-
+        ed_value=findViewById(R.id.txt_value);
         if (activity_type.equalsIgnoreCase("1"))
         {
             ed_message.setText(getResources().getString(R.string.txt_message_license));
             ed_title.setText(getResources().getString(R.string.txt_title_license));
+            ed_value.setVisibility(View.VISIBLE);
+            ed_value.setHint("Enter Licence card no");
+
         }else if (activity_type.equalsIgnoreCase("3"))
         {
             ed_message.setText(getResources().getString(R.string.txt_message_pancard));
             ed_title.setText(getResources().getString(R.string.txt_title_pancard));
+            ed_value.setVisibility(View.VISIBLE);
+            ed_value.setHint("Enter Pan card no");
+
         }else if (activity_type.equalsIgnoreCase("4"))
         {
             ed_message.setText(getResources().getString(R.string.txt_message_permit_a));
@@ -126,6 +158,8 @@ public class Driver_doc_Image extends AppCompatActivity {
         {
             ed_message.setText(getResources().getString(R.string.txt_message_aadhar));
             ed_title.setText(getResources().getString(R.string.txt_title_aadhar));
+            ed_value.setVisibility(View.VISIBLE);
+            ed_value.setHint("Enter Aadhar card no");
         }
 
         TextView btn_submit=findViewById(R.id.camera_id);
@@ -164,9 +198,11 @@ public class Driver_doc_Image extends AppCompatActivity {
         if (activity_type.equalsIgnoreCase("1"))
         {
             path_licence=picturePath;
+            txt_licence_no=ed_value.getText().toString().trim();
         }else if (activity_type.equalsIgnoreCase("3"))
         {
             path_pancard=picturePath;
+            txt_pancard_no=ed_value.getText().toString().trim();
         }else if (activity_type.equalsIgnoreCase("4"))
         {
             path_permit_a=picturePath;
@@ -185,23 +221,12 @@ public class Driver_doc_Image extends AppCompatActivity {
         }else if (activity_type.equalsIgnoreCase("9"))
         {
             path_aadhar=picturePath;
+            txt_aadharcard_no =ed_value.getText().toString().trim();
         }
         finish();
 
     }
 
-    public static boolean checkAppVersion(){
-        Boolean isM=false;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            isM=true;
-        }
-        else
-        {
-            isM=false;
-        }
-        return isM;
-    }
     private void selectimage(){
 
         final CharSequence[] items={"Camera","Gallery","Cancel"};
@@ -214,7 +239,7 @@ public class Driver_doc_Image extends AppCompatActivity {
                 //      try{
                 if(items[i].equals("Camera"))
                 {
-                    if(checkAppVersion())
+                    if(App_Utils.checkAppVersion())
                     {
                         if( ContextCompat.checkSelfPermission(getApplication(), android.Manifest.permission.CAMERA)== PackageManager.PERMISSION_DENIED) {
                             Intent callcameraapplicationintent = new Intent();
@@ -248,7 +273,7 @@ public class Driver_doc_Image extends AppCompatActivity {
                     else
                     {
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        imageUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE, TAG);
+                        imageUri =App_Utils. getOutputMediaFileUri(MEDIA_TYPE_IMAGE, TAG);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                         //       if(AppUtills.showLogs) Log.v(TAG,"captureimage...."+imageUri);
                         startActivityForResult(intent, REQUEST_CODE_CAMERA_ID);
@@ -270,33 +295,7 @@ public class Driver_doc_Image extends AppCompatActivity {
         });
         builder.show();
     }
-    public static Uri getOutputMediaFileUri(int type,String PageName){
-        // External sdcard location
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),IMAGE_DIRECTORY_NAME);
 
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists())
-        {
-            if (!mediaStorageDir.mkdirs())
-            {
-                //    if(AppUtills.showLogs)Log.d(IMAGE_DIRECTORY_NAME, "Oops! Failed create "+ IMAGE_DIRECTORY_NAME + " directory");
-                return null;
-            }
-        }
-
-        // Create a media file name
-        String time = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE)
-        {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + time + ".jpg");
-        }
-        else
-        {
-            return null;
-        }
-        return  Uri.fromFile(mediaFile);
-    }
     private File createImageFile() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
@@ -340,7 +339,7 @@ public class Driver_doc_Image extends AppCompatActivity {
         }
         else if (requestCode == REQUEST_CODE_CAMERA_ID && resultCode==RESULT_OK)
         {
-            if (checkAppVersion()) {
+            if (App_Utils.checkAppVersion()) {
                 selectedImageUri = imageUri;
                 pickImageFromGallery3(photofile.getPath());
                 // ScanFile so it will be appeared on Gallery
@@ -356,6 +355,7 @@ public class Driver_doc_Image extends AppCompatActivity {
             }
         }
     }
+
     public static String getPath(Uri uri, Context context){
         if (uri == null)
             return null;

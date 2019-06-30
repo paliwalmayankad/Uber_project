@@ -2,13 +2,20 @@ package aaronsoftech.in.nber.Activity;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -17,8 +24,12 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,10 +39,16 @@ import com.akexorcist.googledirection.constant.TransportMode;
 import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -39,16 +56,19 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.R;
 import aaronsoftech.in.nber.Utils.App_Utils;
 
-public class From_Location extends AppCompatActivity{
+public class From_Location extends AppCompatActivity implements LocationListener,GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener{
     String TAG="From_Location";
     LinearLayout coordinatorLayout;
-    //Marker googleMapMarker=null;
+
     GoogleMap googleMap=null;
     LatLng FROM_latLng,TO_latlng;
     public boolean isLocationReceiverRegistered;
@@ -58,11 +78,12 @@ public class From_Location extends AppCompatActivity{
     private static final int REQUEST_CODE_GPSON = 102;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 103;
     private static final int RESULT_CODE_MAPLOCATION = 104;
-    TextView et_location,et_location2,btn_done;
+    EditText et_location,et_location2;
+    TextView btn_done;
 
     Dialog dialog;
     String isFrom="";
-    String focus_type="TO";
+    String focus_type="FROM";
 
     String FROM_LAT="";
     String FROM_LNG="";
@@ -76,17 +97,43 @@ public class From_Location extends AppCompatActivity{
     private static final int KEY_STATE=0xfffffffa;
     private static final int KEY_COUNTRY=0xffffffae;
     private static final int KEY_POSTCODE=0xffffffde;
+    ProgressDialog progressDialog;
+    Location mLastLocation;
+    Marker mCurrLocationMarker;
+    GoogleApiClient mGoogleApiClient;
+    LocationRequest mLocationRequest;
+    List<Address> addressList = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_from__location);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        ImageView get_from_Address_btn=findViewById(R.id.find_location);
+        ImageView get_to_Address_btn=findViewById(R.id.find_location2);
+        get_from_Address_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                focus_type="FROM";
+                et_location2.selectAll();
+                et_location2.setTextIsSelectable(true);
+                String location = et_location.getText().toString();
+                set_location_list(location);
+            }
+        });
+        get_to_Address_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                focus_type="TO";
+                et_location2.selectAll();
+                et_location2.setTextIsSelectable(true);
+                String location = et_location2.getText().toString();
+                set_location_list(location);
+            }
+        });
 
-            Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
-            TextView toolBarTitle = (TextView) toolBar.findViewById(R.id.toolbar_title);
-            toolBarTitle.setText("Book your ride");
-            toolBarTitle.setTextColor(Color.BLACK);
-            setSupportActionBar(toolBar);
+        setToolbar();
+
             btn_done =(TextView)findViewById(R.id.txt_done);
             btn_done.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -95,13 +142,17 @@ public class From_Location extends AppCompatActivity{
                     Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
                 }
             });
-            et_location2 = (TextView) findViewById(R.id.et_location2);
-            et_location = (TextView) findViewById(R.id.et_location);
+
+            et_location2 = (EditText) findViewById(R.id.et_location2);
+            et_location = (EditText) findViewById(R.id.et_location);
+
 
             et_location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    focus_type="TO";
+                    focus_type="FROM";
+                    et_location.selectAll();
+                    et_location.setTextIsSelectable(true);
                     et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
                     et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
                 }
@@ -109,7 +160,9 @@ public class From_Location extends AppCompatActivity{
             et_location2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    focus_type="FROM";
+                    focus_type="TO";
+                    et_location2.selectAll();
+                    et_location2.setTextIsSelectable(true);
                     et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
                     et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
                 }
@@ -119,6 +172,13 @@ public class From_Location extends AppCompatActivity{
             {
                 isFrom=getIntent().getExtras().getString("isFrom");
             }
+
+            Set_location_on_map();
+
+
+    }
+
+    private void Set_location_on_map() {
         if (App_Utils.isNetworkAvailable(From_Location.this))
         {
             if (App_Utils.checkPlayServices(From_Location.this))
@@ -159,6 +219,14 @@ public class From_Location extends AppCompatActivity{
         {
             Toast.makeText(this, "onCreate internet not found else called", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void setToolbar() {
+        Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
+        TextView toolBarTitle = (TextView) toolBar.findViewById(R.id.toolbar_title);
+        toolBarTitle.setText("Book your ride");
+        toolBarTitle.setTextColor(Color.BLACK);
+        setSupportActionBar(toolBar);
 
     }
 
@@ -291,12 +359,15 @@ public class From_Location extends AppCompatActivity{
                                 public void run()
                                 {
                                     displayMap();
+                                    buildGoogleApiClient();
                                 }
-                            },3000);
+                            },1000);
                         }
                         else
                         {
                             displayMap();
+                            buildGoogleApiClient();
+
                         }
                     }
                     else
@@ -342,7 +413,7 @@ public class From_Location extends AppCompatActivity{
             {
                 public void run()
                 {
-                    if (focus_type.equalsIgnoreCase("TO"))
+                    if (focus_type.equalsIgnoreCase("FROM"))
                     {
                         FROM_latLng=latLng;
                         et_location.setTag(KEY_LATLNG,latLng);
@@ -469,5 +540,106 @@ public class From_Location extends AppCompatActivity{
             e.printStackTrace();
         }
     }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API).build();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        /*mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }*/
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        if (mCurrLocationMarker != null) {
+            mCurrLocationMarker.remove();
+        }
+        //Place current location marker
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title("Current Position");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+        mCurrLocationMarker = googleMap.addMarker(markerOptions);
+
+        //move map camera
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+
+        //stop location updates
+        if (mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
+
+    private void set_location_list(final String location) {
+        progressDialog=new ProgressDialog(From_Location.this);
+        progressDialog.setMessage("Finding: "+location);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        if (location != null || !location.equals("")) {
+            Geocoder geocoder = new Geocoder(this);
+            try {
+                    addressList = geocoder.getFromLocationName(location, 3);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try{
+                double Add_lat= addressList.get(0).getLatitude();
+                double Add_long= addressList.get(0).getLongitude();
+
+                if (focus_type.equalsIgnoreCase("FROM"))
+                {
+                    FROM_LAT=String.valueOf(Add_lat);
+                    FROM_LNG=String.valueOf(Add_long);
+                    progressDialog.dismiss();
+                    Address address = addressList.get(0);
+                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                    googleMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                }else{
+                    TO_LAT=String.valueOf(Add_lat);
+                    TO_LNG=String.valueOf(Add_long);
+                    progressDialog.dismiss();
+                    Address address = addressList.get(0);
+                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                    googleMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                }
+            }catch (Exception e){
+                progressDialog.dismiss();
+                e.printStackTrace();}
+
+        }
+    }
+
 
 }

@@ -49,6 +49,9 @@ import java.util.Locale;
 import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.R;
 
+import static aaronsoftech.in.nber.Activity.Driver_doc_Image.IMAGE_DIRECTORY_NAME;
+import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
+
 /**
  * Created by Chouhan on 06/25/2019.
  */
@@ -58,7 +61,33 @@ public class App_Utils {
     private static App_Utils instance = new App_Utils();
 
     public static ProgressDialog progressDialog;
+    public static Uri getOutputMediaFileUri(int type,String PageName){
+        // External sdcard location
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),IMAGE_DIRECTORY_NAME);
 
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists())
+        {
+            if (!mediaStorageDir.mkdirs())
+            {
+                //    if(AppUtills.showLogs)Log.d(IMAGE_DIRECTORY_NAME, "Oops! Failed create "+ IMAGE_DIRECTORY_NAME + " directory");
+                return null;
+            }
+        }
+
+        // Create a media file name
+        String time = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        File mediaFile;
+        if (type == MEDIA_TYPE_IMAGE)
+        {
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + time + ".jpg");
+        }
+        else
+        {
+            return null;
+        }
+        return  Uri.fromFile(mediaFile);
+    }
     public static boolean checkAppVersion(){
         Boolean isM=false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)

@@ -68,8 +68,11 @@ public class Home extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+        try{
+            Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""), Toast.LENGTH_SHORT).show();
+        }catch (Exception e){e.printStackTrace();}
 
-        Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""), Toast.LENGTH_SHORT).show();
+
         LinearLayout get_loaction=findViewById(R.id.location_layout);
         get_loaction.setOnClickListener(new View.OnClickListener() {
             @Override

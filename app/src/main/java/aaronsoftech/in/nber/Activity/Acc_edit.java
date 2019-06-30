@@ -135,15 +135,16 @@ public class Acc_edit extends AppCompatActivity {
         progressDialog.setCancelable(true);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
+
         HashMap<String,String> map=new HashMap<>();
         map.put("id", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
         map.put("name", ""+ed_name.getText().toString().trim());
         map.put("gender", ""+gender);
         map.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
-   //  map.put("email", id);
-   //  map.put("password", id);
-   //  map.put("id_cms_privileges", id);
-   //  map.put("status", id);
+   //   map.put("email", id);
+   //   map.put("password", id);
+   //   map.put("id_cms_privileges", id);
+   //   map.put("status", id);
        map.put("contact_number", ""+tx_mobile.getText().toString().trim());
        map.put("address", ""+ed_address.getText().toString().trim());
        map.put("city", ""+ed_city.getText().toString().trim());
