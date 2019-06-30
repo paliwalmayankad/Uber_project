@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -36,6 +37,8 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -48,6 +51,7 @@ import java.util.Locale;
 
 import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.R;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static aaronsoftech.in.nber.Activity.Driver_doc_Image.IMAGE_DIRECTORY_NAME;
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
@@ -100,6 +104,42 @@ public class App_Utils {
         }
         return isM;
     }
+
+    public static void loadProfileImage(Context conn, String imageURL, CircleImageView imageView)
+    {
+        try
+        {
+            if(imageURL.equals("")  &&  imageURL.isEmpty())
+            {
+                Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +"://" + conn.getResources().getDrawable(R.drawable.ic_user));
+               // if(AppUtills.showLogs)Log.e("AppUtils","loadImage in if imageUri..."+imageUri);
+                Glide.with(conn)
+                        .load(imageUri)
+                        .placeholder(R.drawable.ic_user)
+                        .error(R.drawable.ic_user)
+                        .fallback(R.drawable.ic_user)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .thumbnail(0.1f)
+                        .into(imageView);
+            }
+            else
+            {
+                Glide.with(conn)
+                        .load(imageURL)
+                        .placeholder(R.drawable.ic_user)
+                        .error(R.drawable.ic_user)
+                        .fallback(R.drawable.ic_user)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .thumbnail(0.1f)
+                        .into(imageView);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public static void showAlertSnakeMessage(LinearLayout coordinatorLayout, String message)
     {
         try

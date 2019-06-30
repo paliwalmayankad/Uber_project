@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="aaronsoftech.in.nber.Activity.Vehicle_reg">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:background="@color/colorPrimary"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:src="@drawable/ic_arrow_back"
+                android:padding="11dp"
+                android:id="@+id/btn_back"
+                android:layout_height="wrap_content" />
+        <TextView
+                android:layout_width="match_parent"
+                android:text="Add Vehicle"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                android:padding="11dp"
+                android:textColor="@android:color/black"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="22dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/pic_vehicle"
+                    android:layout_width="111dp"
+                    android:layout_height="111dp"
+                    android:src="@drawable/profile_pics"
+                    app:civ_border_color="@color/colorPrimaryDark"
+                    app:civ_border_overlay="true"
+                    app:civ_border_width="2dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Vehicle Image"
+                    android:textColor="@android:color/black"
+                    android:textSize="18dp" />
+
+            </LinearLayout>
+            <EditText
+                android:layout_width="match_parent"
+                android:hint="Vehicle name"
+                android:inputType="textPersonName"
+                android:padding="11dp"
+                android:id="@+id/txt_vehicle_name"
+                android:layout_margin="11dp"
+                android:background="@drawable/border_black_line"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:layout_width="match_parent"
+                android:hint="Vehicle no"
+                android:inputType="textPersonName"
+                android:padding="11dp"
+                android:id="@+id/vehicle_no"
+                android:layout_margin="11dp"
+                android:background="@drawable/border_black_line"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:layout_width="match_parent"
+                android:hint="Vehicle Seating"
+                android:id="@+id/txt_vehicle_seating"
+                android:inputType="number|none"
+                android:padding="11dp"
+                android:layout_margin="11dp"
+                android:background="@drawable/border_black_line"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:background="@color/grey_5"
+                    android:layout_weight="1"
+                    android:padding="11dp"
+                    android:layout_margin="11dp"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="88dp"
+                        android:id="@+id/pic_permit"
+                        app:civ_border_overlay="true"
+                        app:civ_border_width="2dp"
+                        app:civ_border_color="@color/colorPrimaryDark"
+                        android:src="@drawable/profile_pics"
+                        android:layout_height="88dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:text="Permit"
+                        android:textSize="14dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:padding="11dp"
+                    android:background="@color/grey_5"
+                    android:layout_margin="11dp"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="88dp"
+                        app:civ_border_overlay="true"
+                        app:civ_border_width="2dp"
+                        android:id="@+id/pic_insurece"
+                        app:civ_border_color="@color/colorPrimaryDark"
+                        android:layout_height="88dp"
+                        android:src="@drawable/profile_pics" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:text="Vehicle Insurence ID"
+                        android:textSize="14dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="11dp"
+                    android:background="@color/grey_5"
+                    android:layout_margin="11dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="88dp"
+                        app:civ_border_overlay="true"
+                        app:civ_border_width="2dp"
+                        android:id="@+id/pic_vehicle_rc"
+                        app:civ_border_color="@color/colorPrimaryDark"
+                        android:src="@drawable/profile_pics"
+                        android:layout_height="88dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:text="Vehicle RC"
+                        android:textSize="14dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="11dp"
+                    android:background="@color/grey_5"
+                    android:layout_margin="11dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="88dp"
+                        app:civ_border_overlay="true"
+                        app:civ_border_width="2dp"
+                        android:id="@+id/pic_other"
+                        app:civ_border_color="@color/colorPrimaryDark"
+                        android:src="@drawable/profile_pics"
+                        android:layout_height="88dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:text="Vehicle other Doc"
+                        android:textSize="14dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:text="Add Vehicle"
+        android:textSize="22dp"
+        android:textStyle="bold"
+        android:id="@+id/btn_submit"
+        android:background="@android:color/black"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_margin="11dp"
+        android:padding="11dp"
+        android:textColor="@android:color/white"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

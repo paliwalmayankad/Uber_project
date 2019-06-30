@@ -54,6 +54,11 @@ import static aaronsoftech.in.nber.Activity.Driver_document.path_registration;
 import static aaronsoftech.in.nber.Activity.Driver_document.txt_aadharcard_no;
 import static aaronsoftech.in.nber.Activity.Driver_document.txt_licence_no;
 import static aaronsoftech.in.nber.Activity.Driver_document.txt_pancard_no;
+import static aaronsoftech.in.nber.Activity.Vehicle_reg.PATH_INSURENSE;
+import static aaronsoftech.in.nber.Activity.Vehicle_reg.PATH_OTHER_DOC;
+import static aaronsoftech.in.nber.Activity.Vehicle_reg.PATH_PERMIT;
+import static aaronsoftech.in.nber.Activity.Vehicle_reg.PATH_RC;
+import static aaronsoftech.in.nber.Activity.Vehicle_reg.PATH_VEHICLE;
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 public class Driver_doc_Image extends AppCompatActivity {
@@ -62,7 +67,6 @@ public class Driver_doc_Image extends AppCompatActivity {
     String TAG="Driver_doc_Image";
     ImageView btn_photo;
     String activity_type;
-
 
     public static final int MEDIA_TYPE_IMAGE = 1;
     File photofile = null;
@@ -78,6 +82,7 @@ public class Driver_doc_Image extends AppCompatActivity {
     Uri selectedImageUri;
     File selectedImageFile3 = null;
     EditText ed_value;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,11 +108,6 @@ public class Driver_doc_Image extends AppCompatActivity {
                 }else{
                     selectimage();
                 }
-
-
-
-
-
             }
         });
         btn_photo.setOnClickListener(new View.OnClickListener() {
@@ -160,6 +160,29 @@ public class Driver_doc_Image extends AppCompatActivity {
             ed_title.setText(getResources().getString(R.string.txt_title_aadhar));
             ed_value.setVisibility(View.VISIBLE);
             ed_value.setHint("Enter Aadhar card no");
+        }else if (activity_type.equalsIgnoreCase("11"))
+        {
+            ed_message.setText(getResources().getString(R.string.txt_message_common));
+            ed_title.setText(getResources().getString(R.string.txt_title_permit));
+        }else if (activity_type.equalsIgnoreCase("12"))
+        {
+            ed_message.setText(getResources().getString(R.string.txt_message_common));
+            ed_title.setText(getResources().getString(R.string.txt_title_vehicle));
+        }else if (activity_type.equalsIgnoreCase("13"))
+        {
+            ed_message.setText(getResources().getString(R.string.txt_message_common));
+            ed_title.setText(getResources().getString(R.string.txt_title_vehicle_rc));
+
+        }else if (activity_type.equalsIgnoreCase("14"))
+        {
+            ed_message.setText(getResources().getString(R.string.txt_message_insurense));
+            ed_title.setText(getResources().getString(R.string.txt_title_insurense));
+
+        }else if (activity_type.equalsIgnoreCase("15"))
+        {
+            ed_message.setText(getResources().getString(R.string.txt_message_common));
+            ed_title.setText(getResources().getString(R.string.txt_title_other_doc));
+
         }
 
         TextView btn_submit=findViewById(R.id.camera_id);
@@ -222,6 +245,23 @@ public class Driver_doc_Image extends AppCompatActivity {
         {
             path_aadhar=picturePath;
             txt_aadharcard_no =ed_value.getText().toString().trim();
+        }else if (activity_type.equalsIgnoreCase("11"))
+        {
+            PATH_PERMIT =picturePath;
+        }else if (activity_type.equalsIgnoreCase("12"))
+        {
+            PATH_VEHICLE=picturePath;
+        }else if (activity_type.equalsIgnoreCase("13"))
+        {
+            PATH_RC=picturePath;
+
+        }else if (activity_type.equalsIgnoreCase("14"))
+        {
+            PATH_INSURENSE=picturePath;
+
+        }else if (activity_type.equalsIgnoreCase("15"))
+        {
+            PATH_OTHER_DOC=picturePath;
         }
         finish();
 

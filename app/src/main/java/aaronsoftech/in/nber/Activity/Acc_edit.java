@@ -95,7 +95,6 @@ public class Acc_edit extends AppCompatActivity {
         ed_name.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
         t_name.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
 
-
         String mobileno=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,"");
         tx_mobile.setText(mobileno);
         if (tx_mobile.getText().toString().isEmpty())
@@ -110,6 +109,7 @@ public class Acc_edit extends AppCompatActivity {
         ed_address.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ADDRESS,""));
         ed_city.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CITY,""));
         ed_state.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_STATE,""));
+        t_mobile.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
         ed_country.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_COUNTER,""));
         tx_mobile.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
         ed_zipcode.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ZIP_CODE,""));

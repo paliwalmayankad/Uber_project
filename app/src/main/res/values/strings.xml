@@ -54,6 +54,11 @@
     <string name="txt_message_aadhar">Please upload the document by taking a picture</string>
     <string name="txt_title_aadhar">Take a photo of your \n <b>Aadhar card</b></string>
 
+    <string name="txt_message_common">Please upload the document by taking a picture</string>
+    <string name="txt_title_permit">Take a photo of your \n <b>Permit</b></string>
+    <string name="txt_title_vehicle">Take a photo of your \n <b>Vehicle</b></string>
+    <string name="txt_title_vehicle_rc">Take a photo of your \n <b>Vehicle RC</b></string>
+    <string name="txt_title_other_doc">Take a photo of your \n <b>Other Document</b></string>
     <string name="txt_message_verify">Please upload the document by taking a picture</string>
     <string name="txt_title_verify">Take a photo of your \n <b>Police verification file</b></string>
 

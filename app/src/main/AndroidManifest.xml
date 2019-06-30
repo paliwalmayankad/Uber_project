@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-feature android:name="android.hardware.camera" />
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -28,7 +29,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -154,7 +154,8 @@
         <activity android:name=".Activity.From_Location" />
         <activity android:name=".Activity.Driver_document" />
         <activity android:name=".Activity.Driver_photo" />
-        <activity android:name=".Activity.Driver_doc_Image"></activity>
+        <activity android:name=".Activity.Driver_doc_Image" />
+        <activity android:name=".Activity.Vehicle_reg"></activity>
     </application>
 
 </manifest>

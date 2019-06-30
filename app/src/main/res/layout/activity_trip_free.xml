@@ -5,12 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="aaronsoftech.in.nber.Activity.Trip_free">
-    <LinearLayout
+    <android.appcompat.widget.Toolbar
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:id="@+id/toolbar"
         android:background="@color/background_splash"
-        android:layout_height="56dp">
+        style="@android:style/TextAppearance.Material.Headline"
+        android:theme="@android:style/ThemeOverlay"
+        android:popupTheme="@android:style/Widget.Material.PopupMenu.Overflow"
+        android:elevation="8dp"
+        android:layout_height="wrap_content">
 
         <TextView
             android:layout_width="match_parent"
@@ -20,7 +22,7 @@
             android:textStyle="bold"
             android:textColor="@android:color/white"
             android:layout_height="match_parent" />
-    </LinearLayout>
+    </android.appcompat.widget.Toolbar>
 
     <ScrollView
         android:layout_width="match_parent"

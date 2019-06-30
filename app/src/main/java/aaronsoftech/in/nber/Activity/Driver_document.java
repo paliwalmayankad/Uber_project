@@ -22,6 +22,7 @@ import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.POJO.Response_register;
 import aaronsoftech.in.nber.R;
 import aaronsoftech.in.nber.Service.APIClient;
+import aaronsoftech.in.nber.Utils.App_Utils;
 import aaronsoftech.in.nber.Utils.SP_Utils;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -67,9 +68,9 @@ public class Driver_document extends AppCompatActivity {
         btn_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-               // loadProfileImage2(Driver_document.this,path_licence,img);
-               Call_Document_submit_Api();
+                startActivity(new Intent(Driver_document.this,Vehicle_reg.class));
+                //App_Utils.loadProfileImage(Driver_document.this,path_licence,img);
+               //Call_Document_submit_Api();
             }
         });
 
@@ -191,11 +192,11 @@ public class Driver_document extends AppCompatActivity {
             public void onResponse(Call<Response_register> call, Response<Response_register> response) {
                 progressDialog.dismiss();
                 Toast.makeText(Driver_document.this, "success", Toast.LENGTH_SHORT).show();
-                try{Log.i(TAG,"response driver getid:  "+response.body().getId());
+                try{Log.i(TAG,"response driver getid:  "+response.body().getId().toString());
                 }catch (Exception e){e.printStackTrace();}
-                try{Log.i(TAG,"response driver getApi_message:  "+response.body().getApi_message());
+                try{Log.i(TAG,"response driver getApi_message:  "+response.body().getApi_message().toString());
                 }catch (Exception e){e.printStackTrace();}
-                try{Log.i(TAG,"response driver getApi_status:  "+response.body().getApi_status());
+                try{Log.i(TAG,"response driver getApi_status:  "+response.body().getApi_status().toString());
                 }catch (Exception e){e.printStackTrace();}
                 }
 

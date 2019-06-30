@@ -42,6 +42,25 @@ public interface APIInterface {
     @POST("user_profile")
     public Call<Response_Login> getUpdate_Profile(@FieldMap Map<String, String> map);
 
+
+    @Multipart
+    @POST("vehicle_reg")
+    Call<Response_register> vehicle_register(
+            @Part("driver_id") RequestBody user_id,
+            @Part("vehicle_type_id") RequestBody verified_status,
+            @Part("vehicle_number") RequestBody dl_number,
+            @Part("timestamp") RequestBody aadhar_number,
+            @Part MultipartBody.Part permit_file,
+            @Part MultipartBody.Part vehicle_file,
+            @Part MultipartBody.Part driver_rc_file,
+            @Part MultipartBody.Part aadhar_other_doc,
+            @Part MultipartBody.Part aadhar_insurense
+            /*@Part MultipartBody.Part police_verification_file,
+            @Part MultipartBody.Part file_permit_a,
+            @Part MultipartBody.Part file_permit_b,
+            @Part MultipartBody.Part file_registration*/
+    );
+
     @Multipart
     @POST("driver_reg")
     Call<Response_register> driver_register(
