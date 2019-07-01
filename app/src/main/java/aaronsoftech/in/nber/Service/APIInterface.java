@@ -2,7 +2,9 @@ package aaronsoftech.in.nber.Service;
 
 import java.util.Map;
 
+import aaronsoftech.in.nber.POJO.Response_All_Vehicle;
 import aaronsoftech.in.nber.POJO.Response_Login;
+import aaronsoftech.in.nber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.nber.POJO.Response_register;
 import aaronsoftech.in.nber.POJO.Response_vehicle;
 import okhttp3.MultipartBody;
@@ -43,6 +45,13 @@ public interface APIInterface {
     @POST("user_profile")
     public Call<Response_Login> getUpdate_Profile(@FieldMap Map<String, String> map);
 
+    @FormUrlEncoded
+    @POST("get_all_vehicle_type")
+    public Call<Response_Vehicle_type> get_All_vehicle_type(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("get_select_vehicle")
+    public Call<Response_All_Vehicle> get_All_select_vehicle(@FieldMap Map<String, String> map);
 
     @Multipart
     @POST("vehicle_reg")

@@ -1,6 +1,7 @@
 package aaronsoftech.in.nber.Activity;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -9,27 +10,24 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,18 +52,26 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import aaronsoftech.in.nber.Adapter.Adapter_Vehicle;
+import aaronsoftech.in.nber.Adapter.Adapter_vehicle_type;
 import aaronsoftech.in.nber.App_Conteroller;
+import aaronsoftech.in.nber.POJO.Response_All_Vehicle;
+import aaronsoftech.in.nber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.nber.R;
+import aaronsoftech.in.nber.Service.APIClient;
 import aaronsoftech.in.nber.Utils.App_Utils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class From_Location extends AppCompatActivity implements LocationListener,GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.OnConnectionFailedListener,Adapter_vehicle_type.Click_Adapter_Item_listner,Adapter_Vehicle.Vehicle_Item_listner {
     String TAG="From_Location";
     LinearLayout coordinatorLayout;
 
@@ -89,6 +95,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     String FROM_LNG="";
     String TO_LAT="";
     String TO_LNG="";
+    double Total_distanse=0;
     ArrayList<String> google_map_list = new ArrayList<String>();
     private static final int KEY_LATLNG=0xffffffff;
     private static final int KEY_ADDRESS=0xfffffffd;
@@ -103,7 +110,11 @@ public class From_Location extends AppCompatActivity implements LocationListener
     GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
     List<Address> addressList = null;
+    List<Response_Vehicle_type.Data_List> get_vehicle_type_list=new ArrayList<>();
+    List<Response_All_Vehicle.Data_Vehicle_List> get_vehicle_select_list=new ArrayList<>();
+    RecyclerView recyclerView_vehicle_type,recy_vehicle_list;
 
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,12 +144,12 @@ public class From_Location extends AppCompatActivity implements LocationListener
         });
 
         setToolbar();
-
             btn_done =(TextView)findViewById(R.id.txt_done);
             btn_done.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Show_polyline_map();
+                    Call_Vihicle_Api();
                     Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -173,9 +184,93 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 isFrom=getIntent().getExtras().getString("isFrom");
             }
 
-            Set_location_on_map();
 
+        recyclerView_vehicle_type = (RecyclerView)findViewById(R.id.recycle_vehicle_type);
+        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL);
+        recyclerView_vehicle_type.setLayoutManager(staggeredGridLayoutManager); // set LayoutManager to RecyclerView
 
+        recy_vehicle_list = (RecyclerView)findViewById(R.id.recycle_vehicle_Select_list);
+        StaggeredGridLayoutManager staggeredGridLayoutManager2 = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
+        recy_vehicle_list.setLayoutManager(staggeredGridLayoutManager2); // set LayoutManager to RecyclerView
+
+        Set_location_on_map();
+    }
+
+    private void Call_Vihicle_Api() {
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+        get_vehicle_type_list.clear();
+        recyclerView_vehicle_type.setVisibility(View.VISIBLE);
+        HashMap map= new HashMap<>();
+        Call<Response_Vehicle_type> call= APIClient.getWebServiceMethod().get_All_vehicle_type(map);
+        call.enqueue(new Callback<Response_Vehicle_type>() {
+            @Override
+            public void onResponse(Call<Response_Vehicle_type> call, Response<Response_Vehicle_type> response) {
+                progressDialog.dismiss();
+                String status=response.body().getApi_status();
+                String msg=response.body().getApi_message();
+                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                {
+                    Adapter_vehicle_type adapter_past=new Adapter_vehicle_type(From_Location.this,response.body().getData(),From_Location.this);
+                    get_vehicle_type_list=response.body().getData();
+                    recyclerView_vehicle_type.setAdapter(adapter_past);
+
+                }else{
+                    progressDialog.dismiss();
+                    Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response_Vehicle_type> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(From_Location.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void Call_Select_Vihicle_Api(String vehicle_id) {
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+        get_vehicle_select_list.clear();
+        recy_vehicle_list.setVisibility(View.VISIBLE);
+        HashMap map= new HashMap<>();
+        map.put("vehicle_type_id",vehicle_id);
+        Call<Response_All_Vehicle> call= APIClient.getWebServiceMethod().get_All_select_vehicle(map);
+        call.enqueue(new Callback<Response_All_Vehicle>() {
+            @Override
+            public void onResponse(Call<Response_All_Vehicle> call, Response<Response_All_Vehicle> response) {
+                progressDialog.dismiss();
+                String status=response.body().getApi_status();
+                String msg=response.body().getApi_message();
+                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                {
+                    get_vehicle_select_list=response.body().getData();
+                    for (int i=0;i<get_vehicle_select_list.size();i++)
+                    {
+                        double price=Total_distanse*4;
+                        get_vehicle_select_list.get(i).setVehicle_price(String.valueOf(price));
+                    }
+                    Adapter_Vehicle adapter_past=new Adapter_Vehicle(From_Location.this,get_vehicle_select_list,From_Location.this);
+
+                    recy_vehicle_list.setAdapter(adapter_past);
+
+                }else{
+                    progressDialog.dismiss();
+                    Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response_All_Vehicle> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(From_Location.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void Set_location_on_map() {
@@ -234,9 +329,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
     {
         if (FROM_LAT!="" && FROM_LNG!="" && TO_LAT!="" && TO_LNG!="")
         {
-
-
-
             GoogleDirection.withServerKey(getResources().getString(R.string.google_maps_key))
                     .from(FROM_latLng)
                     .to(TO_latlng)
@@ -305,7 +397,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         double dist = earthRadius * c;// output distance, in Km
 
         Log.i(TAG,"Distance in km: "+dist);
-
+        Total_distanse=dist;
         return dist; // output distance, in Km
     }
 
@@ -642,4 +734,13 @@ public class From_Location extends AppCompatActivity implements LocationListener
     }
 
 
+    @Override
+    public void OnClick_item(Response_All_Vehicle.Data_Vehicle_List vehicle_id) {
+        //for vehicle book call api
+    }
+
+    @Override
+    public void OnClick_item(String vehicle_type) {
+        Call_Select_Vihicle_Api(vehicle_type);
+    }
 }
