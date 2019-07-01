@@ -20,6 +20,7 @@ import java.util.Date;
 
 import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.POJO.Response_register;
+import aaronsoftech.in.nber.POJO.Response_vehicle;
 import aaronsoftech.in.nber.R;
 import aaronsoftech.in.nber.Service.APIClient;
 import aaronsoftech.in.nber.Utils.App_Utils;
@@ -40,6 +41,7 @@ public class Vehicle_reg extends AppCompatActivity {
     EditText ed_name,ed_seating,ed_no;
     ProgressDialog progressDialog;
     String TAG="Vehicle_reg";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +133,7 @@ public class Vehicle_reg extends AppCompatActivity {
         progressDialog.setMessage("Loading...");
         progressDialog.setCancelable(false);
         progressDialog.show();
+
         File file_permit = new File(PATH_PERMIT);
         File file_vehicle = new File(PATH_VEHICLE);
         File file_rc = new File(PATH_RC);
@@ -149,39 +152,38 @@ public class Vehicle_reg extends AppCompatActivity {
         MultipartBody.Part body_request_other_doc = MultipartBody.Part.createFormData("vehicle_other_doc", file_other_doc.getName(), request_file_other_doc);
         MultipartBody.Part body_request_insurense = MultipartBody.Part.createFormData("vehicle_insurance_id", file_insurense.getName(), request_file_insurense);
 
-        String userId= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
-        RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+userId);
-
+       // String userId= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
+        RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, "14");
+        RequestBody body_type_id =RequestBody.create(okhttp3.MultipartBody.FORM, "2");
         RequestBody body_name =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_name.getText().toString().trim());
         RequestBody body_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_no.getText().toString().trim());
         RequestBody body_seating =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_seating.getText().toString().trim());
 
-        RequestBody body_timestamp =RequestBody.create(okhttp3.MultipartBody.FORM, ""+new_date.toString());
-
-
-        Call<Response_register> call= APIClient.getWebServiceMethod().vehicle_register(body_driver_id,body_name,body_number,
-                body_timestamp,body_request_permit,body_request_vehicle,body_request_rc,body_request_other_doc,body_request_insurense);
-        call.enqueue(new Callback<Response_register>() {
+        Call<Response_vehicle> call= APIClient.getWebServiceMethod().vehicle_register(body_driver_id,body_type_id,body_number,
+        body_request_permit,body_request_vehicle,body_request_rc,body_request_other_doc,body_request_insurense);
+        call.enqueue(new Callback<Response_vehicle>() {
             @Override
-            public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+            public void onResponse(Call<Response_vehicle> call, Response<Response_vehicle> response) {
                 progressDialog.dismiss();
+
                 Toast.makeText(Vehicle_reg.this, "success", Toast.LENGTH_SHORT).show();
                 try{
-                    Log.i(TAG,"response driver getid:  "+response.body().getId().toString());
+                    Log.i(TAG,"response driver getid:  "+response.body().getId());
                 }catch (Exception e){e.printStackTrace();}
-                try{Log.i(TAG,"response driver getApi_message:  "+response.body().getApi_message().toString());
+                try{Log.i(TAG,"response driver getApi_message:  "+response.body().getApi_message());
                 }catch (Exception e){e.printStackTrace();}
-                try{Log.i(TAG,"response driver getApi_status:  "+response.body().getApi_status().toString());
+                try{Log.i(TAG,"response driver getApi_status:  "+response.body().getApi_status());
                 }catch (Exception e){e.printStackTrace();}
+
             }
 
             @Override
-            public void onFailure(Call<Response_register> call, Throwable t) {
+            public void onFailure(Call<Response_vehicle> call, Throwable t) {
                 progressDialog.dismiss();
                 Toast.makeText(Vehicle_reg.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
             }
-        });
 
+        });
     }
 
     private void Init() {
@@ -203,11 +205,12 @@ public class Vehicle_reg extends AppCompatActivity {
     }
 
     private void Set_docu_pic() {
-        if (PATH_PERMIT!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_PERMIT,btn_permit); }
-        if (PATH_VEHICLE!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_VEHICLE,btn_vehicle);  }
-        if (PATH_RC!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_RC,btn_vehicle_rc);  }
+
+        if (PATH_PERMIT!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_PERMIT,btn_permit);              }
+        if (PATH_VEHICLE!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_VEHICLE,btn_vehicle);           }
+        if (PATH_RC!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_RC,btn_vehicle_rc);                  }
         if (PATH_INSURENSE!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_INSURENSE,btn_insurence_id);  }
-        if (PATH_OTHER_DOC!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_OTHER_DOC,btn_other_doc); }
+        if (PATH_OTHER_DOC!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_OTHER_DOC,btn_other_doc);     }
 
     }
 }

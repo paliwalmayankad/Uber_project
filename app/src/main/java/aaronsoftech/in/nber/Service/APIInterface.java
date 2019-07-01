@@ -4,6 +4,7 @@ import java.util.Map;
 
 import aaronsoftech.in.nber.POJO.Response_Login;
 import aaronsoftech.in.nber.POJO.Response_register;
+import aaronsoftech.in.nber.POJO.Response_vehicle;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -45,11 +46,10 @@ public interface APIInterface {
 
     @Multipart
     @POST("vehicle_reg")
-    Call<Response_register> vehicle_register(
-            @Part("driver_id") RequestBody user_id,
-            @Part("vehicle_type_id") RequestBody verified_status,
-            @Part("vehicle_number") RequestBody dl_number,
-            @Part("timestamp") RequestBody aadhar_number,
+    Call<Response_vehicle> vehicle_register(
+            @Part("driver_id") RequestBody driver_id,
+            @Part("vehicle_type_id") RequestBody vehicle_type_id,
+            @Part("vehicle_number") RequestBody number,
             @Part MultipartBody.Part permit_file,
             @Part MultipartBody.Part vehicle_file,
             @Part MultipartBody.Part driver_rc_file,
