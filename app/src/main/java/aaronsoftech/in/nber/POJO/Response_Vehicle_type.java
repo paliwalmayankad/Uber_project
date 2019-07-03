@@ -62,6 +62,18 @@ public class Response_Vehicle_type {
         @Expose
         private String seating_capacity="";
 
+        @SerializedName("km_price")
+        @Expose
+        private String km_price="";
+
+        public String getKm_price() {
+            return km_price;
+        }
+
+        public void setKm_price(String km_price) {
+            this.km_price = km_price;
+        }
+
         public String getId() {
             return id;
         }

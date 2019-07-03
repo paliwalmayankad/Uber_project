@@ -14,6 +14,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.HashMap;
 
 import aaronsoftech.in.nber.App_Conteroller;
@@ -21,6 +23,7 @@ import aaronsoftech.in.nber.POJO.Response_Login;
 import aaronsoftech.in.nber.R;
 import aaronsoftech.in.nber.Service.APIClient;
 import aaronsoftech.in.nber.Utils.SP_Utils;
+import de.hdodenhof.circleimageview.CircleImageView;
 import github.nisrulz.easydeviceinfo.base.EasyLocationMod;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,7 +36,8 @@ public class Acc_edit extends AppCompatActivity {
     public static String Lat="0.0";
     public static String Longt="0.0";
     ProgressDialog progressDialog;
-    EditText ed_name,ed_address,ed_city,ed_state,ed_country,tx_mobile,ed_zipcode;
+    CircleImageView profile_img;
+    EditText ed_name,ed_address,ed_city,ed_email,ed_state,ed_country,tx_mobile,ed_zipcode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,14 +48,14 @@ public class Acc_edit extends AppCompatActivity {
         Set_Profile_data();
 
         try {
-            EasyLocationMod easyLocationMod = new EasyLocationMod(Acc_edit.this);
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Acc_edit.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            double[] l = easyLocationMod.getLatLong();
-            Lat = String.valueOf(l[0]);
-            Longt = String.valueOf(l[1]);
-        }catch (Exception e){e.printStackTrace();}
+               EasyLocationMod easyLocationMod = new EasyLocationMod(Acc_edit.this);
+               if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Acc_edit.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                  return;
+                }
+                double[] l = easyLocationMod.getLatLong();
+                Lat = String.valueOf(l[0]);
+                Longt = String.valueOf(l[1]);
+             }catch (Exception e){e.printStackTrace();}
 
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +71,10 @@ public class Acc_edit extends AppCompatActivity {
                 {
                     ed_name.setError("Enter Name");
                     ed_name.requestFocus();
+                }else if (ed_email.getText().toString().isEmpty())
+                {
+                    ed_email.setError("Enter Email-Id");
+                    ed_email.requestFocus();
                 }else if (ed_address.getText().toString().isEmpty())
                 {
                     ed_address.setError("Enter Address");
@@ -104,6 +112,13 @@ public class Acc_edit extends AppCompatActivity {
             tx_mobile.setEnabled(false);
         }
 
+        try{
+            String photo= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,"");
+            Picasso.with(Acc_edit.this).load(photo)
+                .placeholder(R.drawable.ic_user)
+                .error(R.drawable.ic_user)
+                .into(profile_img);
+        }catch (Exception e){e.printStackTrace();}
 
         t_email.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
         ed_address.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ADDRESS,""));
@@ -115,7 +130,7 @@ public class Acc_edit extends AppCompatActivity {
         ed_zipcode.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ZIP_CODE,""));
         t_status.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_USR_STATUS,""));
         String gender_txt=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_GENDER,"");
-
+        ed_email.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
         if (gender_txt.equalsIgnoreCase("Female"))
         {
             rb_btn_female.setChecked(true);
@@ -141,21 +156,21 @@ public class Acc_edit extends AppCompatActivity {
         map.put("name", ""+ed_name.getText().toString().trim());
         map.put("gender", ""+gender);
         map.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
-   //   map.put("email", id);
-   //   map.put("password", id);
-   //   map.put("id_cms_privileges", id);
-   //   map.put("status", id);
+        map.put("email", ""+ed_email.getText().toString());
+    //   map.put("password", id);
+    //   map.put("id_cms_privileges", id);
+    //   map.put("status", id);
        map.put("contact_number", ""+tx_mobile.getText().toString().trim());
        map.put("address", ""+ed_address.getText().toString().trim());
        map.put("city", ""+ed_city.getText().toString().trim());
        map.put("state", ""+ed_state.getText().toString().trim());
        map.put("country", ""+ed_country.getText().toString().trim());
-   //    map.put("lat", ""+Lat);
-   //    map.put("lng", ""+Longt);
+       map.put("password", "12345");
+    //  map.put("lng", ""+Longt);
        map.put("zip_code", ""+ed_zipcode.getText().toString().trim());
     //    map.put("mac_id", id);
     //    map.put("passcode", id);
-    //    map.put("usr_status", id);
+    //    map.put("if_driver_id", id);
 
         Call<Response_Login> call= APIClient.getWebServiceMethod().getUpdate_Profile(map);
         call.enqueue(new Callback<Response_Login>() {
@@ -176,10 +191,7 @@ public class Acc_edit extends AppCompatActivity {
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+gender);
                       //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());
 
-                      /*if (response.body().getData().get(0).getEmail()==null)
-                        {       App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,"");          }
-                        else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());                    }
-                      */
+                       App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+ed_email.getText().toString().trim());
                       //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
                       //  App_Conteroller. editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
                       //  App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
@@ -198,23 +210,23 @@ public class Acc_edit extends AppCompatActivity {
 
                     App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+ed_address.getText().toString().trim());
 
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+ed_city.getText().toString().trim());
+                    App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+ed_city.getText().toString().trim());
 
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+ed_state.getText().toString().trim());
+                    App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+ed_state.getText().toString().trim());
 
 
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+ed_country.getText().toString().trim());
+                    App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+ed_country.getText().toString().trim());
                       //  App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
                       //  App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+ed_zipcode.getText().toString().trim());
+                    App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+ed_zipcode.getText().toString().trim());
                       //  App_Conteroller. editor.putString(SP_Utils.LOGIN_MAC_ID,""+response.body().getData().get(0).getMac_id());
                       //  App_Conteroller. editor.putString(SP_Utils.LOGIN_SOCIAL_TYPE,""+response.body().getData().get(0).getSocial_type());
                       //  App_Conteroller. editor.putString(SP_Utils.LOGIN_TOKEN_ID,""+response.body().getData().get(0).getToken_id());
                       //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSCODE,""+response.body().getData().get(0).getPasscode());
                       //  App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());
 
-                        App_Conteroller. editor.commit();
-                        Toast.makeText(getApplicationContext(), "Update Successfully", Toast.LENGTH_LONG).show();
+                    App_Conteroller. editor.commit();
+                    Toast.makeText(getApplicationContext(), "Update Successfully", Toast.LENGTH_LONG).show();
 
                 }else{
                     progressDialog.dismiss();
@@ -232,6 +244,7 @@ public class Acc_edit extends AppCompatActivity {
 
 
     private void Init() {
+        profile_img=findViewById(R.id.profile_image);
         t_status=findViewById(R.id.user_status);
         ed_zipcode=findViewById(R.id.e_zipcode);
         btn_save=findViewById(R.id.btn_save);
@@ -246,10 +259,6 @@ public class Acc_edit extends AppCompatActivity {
         ed_city=findViewById(R.id.e_city);
         ed_state=findViewById(R.id.e_state);
         ed_country=findViewById(R.id.e_country);
-
-
-
-
-
+        ed_email=findViewById(R.id.e_email);
     }
 }

@@ -112,7 +112,6 @@ public class App_Utils {
             if(imageURL.equals("")  &&  imageURL.isEmpty())
             {
                 Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +"://" + conn.getResources().getDrawable(R.drawable.ic_user));
-               // if(AppUtills.showLogs)Log.e("AppUtils","loadImage in if imageUri..."+imageUri);
                 Glide.with(conn)
                         .load(imageUri)
                         .placeholder(R.drawable.ic_user)
@@ -128,7 +127,6 @@ public class App_Utils {
                         .load(imageURL)
                         .placeholder(R.drawable.ic_user)
                         .error(R.drawable.ic_user)
-                        .fallback(R.drawable.ic_user)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .thumbnail(0.1f)
                         .into(imageView);

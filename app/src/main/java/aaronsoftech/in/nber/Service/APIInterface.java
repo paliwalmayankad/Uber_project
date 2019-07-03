@@ -34,13 +34,12 @@ public interface APIInterface {
     public Call<Response_Login> getSocial_Login(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
-    @POST("login")
+    @POST("login_mobile")
     public Call<Response_Login> getContect_Login(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
     @POST("booked_ride")
     public Call<Response_register> getBooked_ride(@FieldMap Map<String, String> map);
-
 
     @FormUrlEncoded
     @POST("login_with_id")
@@ -69,10 +68,6 @@ public interface APIInterface {
             @Part MultipartBody.Part driver_rc_file,
             @Part MultipartBody.Part aadhar_other_doc,
             @Part MultipartBody.Part aadhar_insurense
-            /*@Part MultipartBody.Part police_verification_file,
-            @Part MultipartBody.Part file_permit_a,
-            @Part MultipartBody.Part file_permit_b,
-            @Part MultipartBody.Part file_registration*/
     );
 
     @Multipart
@@ -90,10 +85,6 @@ public interface APIInterface {
             @Part MultipartBody.Part pan_file,
             @Part MultipartBody.Part driver_insured_file,
             @Part MultipartBody.Part aadhar_file
-            /*@Part MultipartBody.Part police_verification_file,
-            @Part MultipartBody.Part file_permit_a,
-            @Part MultipartBody.Part file_permit_b,
-            @Part MultipartBody.Part file_registration*/
     );
 
 }

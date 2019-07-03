@@ -78,6 +78,9 @@ public class Response_Login {
         @SerializedName("zip_code")
         public String zip_code = null;
 
+        @SerializedName("if_driver_id")
+        public String if_driver_id = null;
+
         @SerializedName("mac_id")
         public String mac_id = null;
 
@@ -92,6 +95,14 @@ public class Response_Login {
 
         @SerializedName("usr_status")
         public String usr_status = null;
+
+        public String getIf_driver_id() {
+            return if_driver_id;
+        }
+
+        public void setIf_driver_id(String if_driver_id) {
+            this.if_driver_id = if_driver_id;
+        }
 
         public Integer getId() {
             return id;

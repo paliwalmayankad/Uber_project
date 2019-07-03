@@ -68,8 +68,10 @@ public class Home extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+
         try{
-            Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""), Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"")+"\n\n"+"Driver ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""), Toast.LENGTH_SHORT).show();
         }catch (Exception e){e.printStackTrace();}
 
 
@@ -77,7 +79,15 @@ public class Home extends AppCompatActivity
         get_loaction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Home.this,From_Location.class));
+                if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,"").equalsIgnoreCase("")
+                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,"").equalsIgnoreCase(""))
+                {
+                    Toast.makeText(Home.this, "Please Complite your profile", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(Home.this,Acc_edit.class));
+                }else
+                {
+                    startActivity(new Intent(Home.this,From_Location.class));
+                }
             }
         });
 
@@ -94,7 +104,23 @@ public class Home extends AppCompatActivity
         btn_driver_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Home.this,Driver_document.class));
+                if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,"").equalsIgnoreCase("")
+                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,"").equalsIgnoreCase(""))
+                {
+                    Toast.makeText(Home.this, "Please Complite your profile", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(Home.this,Acc_edit.class));
+                }else
+                    {
+                        if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
+                                || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
+                                || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
+                        {
+                            startActivity(new Intent(Home.this,Driver_document.class));
+                        }else{
+                            startActivity(new Intent(Home.this,Vehicle_reg.class));
+                        }
+                    }
+
             }
         });
 
@@ -121,7 +147,7 @@ public class Home extends AppCompatActivity
             String name= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,"");
             String photo= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,"");
             header_name.setText(name);
-            Picasso.with(Home.this).load(photo).fit().centerCrop()
+            Picasso.with(Home.this).load(photo)
                     .placeholder(R.drawable.ic_user)
                     .error(R.drawable.ic_user)
                     .into(image_header);

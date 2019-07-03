@@ -14,14 +14,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.squareup.picasso.Picasso;
 
 import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.R;
 import aaronsoftech.in.nber.Utils.SP_Utils;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Acc_setting extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     TextView t_name,t_mobile,t_email;
+    CircleImageView img_profile;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +47,7 @@ public class Acc_setting extends AppCompatActivity {
                 App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
                 App_Conteroller.editor.clear();
                 App_Conteroller.editor.commit();
-                startActivity(new Intent(Acc_setting.this,Register_mobile.class).
+                startActivity(new Intent(Acc_setting.this,login_mobile.class).
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 finish();
             }
@@ -60,12 +63,19 @@ public class Acc_setting extends AppCompatActivity {
     }
 
     private void Init() {
+        img_profile=findViewById(R.id.profile);
         t_name=findViewById(R.id.txt_name);
         t_mobile=findViewById(R.id.txt_mobile);
         t_email=findViewById(R.id.txt_emailid);
         t_mobile.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
         t_name.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
         t_email.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
-
+        try{
+            String photo= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,"");
+            Picasso.with(Acc_setting.this).load(photo)
+                    .placeholder(R.drawable.ic_user)
+                    .error(R.drawable.ic_user)
+                    .into(img_profile);
+        }catch (Exception e){e.printStackTrace();}
     }
 }

@@ -161,7 +161,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
             et_location2 = (EditText) findViewById(R.id.et_location2);
             et_location = (EditText) findViewById(R.id.et_location);
 
-
             et_location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -187,7 +186,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
             {
                 isFrom=getIntent().getExtras().getString("isFrom");
             }
-
 
         recyclerView_vehicle_type = (RecyclerView)findViewById(R.id.recycle_vehicle_type);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL);
@@ -221,6 +219,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                     get_vehicle_type_list=response.body().getData();
                     recyclerView_vehicle_type.setAdapter(adapter_past);
 
+
                 }else{
                     progressDialog.dismiss();
                     Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
@@ -235,7 +234,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         });
     }
 
-    private void Call_Select_Vihicle_Api(String vehicle_id) {
+    private void Call_Select_Vihicle_Api(String vehicle_id, final String vehicle_price) {
         progressDialog=new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
@@ -253,14 +252,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 String msg=response.body().getApi_message();
                 if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                 {
+                    double price_pkm= Double.parseDouble(vehicle_price);
                     get_vehicle_select_list=response.body().getData();
                     for (int i=0;i<get_vehicle_select_list.size();i++)
                     {
-                        double price=Total_distanse*4;
+                        double price=Total_distanse*price_pkm;
                         get_vehicle_select_list.get(i).setVehicle_price(String.valueOf(price));
                     }
                     Adapter_Vehicle adapter_past=new Adapter_Vehicle(From_Location.this,get_vehicle_select_list,From_Location.this);
-
                     recy_vehicle_list.setAdapter(adapter_past);
 
                 }else{
@@ -693,7 +692,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
     }
 
-
     private void set_location_list(final String location) {
         progressDialog=new ProgressDialog(From_Location.this);
         progressDialog.setMessage("Finding: "+location);
@@ -737,7 +735,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
     }
 
-
     @Override
     public void OnClick_item(Response_All_Vehicle.Data_Vehicle_List vehicle_id) {
         //for vehicle book call api
@@ -779,14 +776,16 @@ public class From_Location extends AppCompatActivity implements LocationListener
             public void onResponse(Call<Response_register> call, Response<Response_register> response) {
                 String status=response.body().getApi_status();
                 String msg=response.body().getApi_message();
+                progressDialog.dismiss();
                 if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                 {
                     String id=response.body().getId();
-                    Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+                    finish();
+                    //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
                     Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
                 }else{
-                    progressDialog.dismiss();
-                    Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+
+                   Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -800,7 +799,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     }
 
     @Override
-    public void OnClick_item(String vehicle_type) {
-        Call_Select_Vihicle_Api(vehicle_type);
+    public void OnClick_item(Response_Vehicle_type.Data_List vehicle_type) {
+        Call_Select_Vihicle_Api(vehicle_type.getId(),vehicle_type.getKm_price());
     }
 }

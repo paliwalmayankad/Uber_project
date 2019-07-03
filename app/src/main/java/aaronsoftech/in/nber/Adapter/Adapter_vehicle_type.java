@@ -54,7 +54,7 @@ public class Adapter_vehicle_type extends RecyclerView.Adapter<Adapter_vehicle_t
         holder.llayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                click_adapter_item_listner.OnClick_item(get_list.get(position).getId());
+                click_adapter_item_listner.OnClick_item(get_list.get(position));
             }
         });
     }
@@ -79,7 +79,7 @@ public class Adapter_vehicle_type extends RecyclerView.Adapter<Adapter_vehicle_t
 
     public interface Click_Adapter_Item_listner {
 
-        void OnClick_item(String vehicle_type);
+        void OnClick_item(Response_Vehicle_type.Data_List getData);
     }
 
 

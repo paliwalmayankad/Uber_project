@@ -195,6 +195,8 @@ public class Social_Login extends AppCompatActivity implements
                         {       App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,"");          }
                         else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());                  }
 
+                        App_Conteroller.editor.putString(SP_Utils.LOGIN_DRIVER_ID,""+response.body().getData().get(0).getIf_driver_id());
+
                         App_Conteroller.editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
                         App_Conteroller.editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
                         App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
@@ -542,6 +544,7 @@ public class Social_Login extends AppCompatActivity implements
                         {       App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,"");          }
                         else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());                  }
 
+                        App_Conteroller.editor.putString(SP_Utils.LOGIN_DRIVER_ID,""+response.body().getData().get(0).getIf_driver_id());
                         App_Conteroller.editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
                         App_Conteroller.editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
                         App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());

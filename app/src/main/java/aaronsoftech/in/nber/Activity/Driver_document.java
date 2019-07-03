@@ -17,8 +17,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.File;
+import java.util.HashMap;
 
 import aaronsoftech.in.nber.App_Conteroller;
+import aaronsoftech.in.nber.POJO.Response_Login;
 import aaronsoftech.in.nber.POJO.Response_register;
 import aaronsoftech.in.nber.R;
 import aaronsoftech.in.nber.Service.APIClient;
@@ -133,6 +135,37 @@ public class Driver_document extends AppCompatActivity {
         });
     }
 
+    public void Update_info(final String driver_id)
+    {
+
+        HashMap<String,String> map=new HashMap<>();
+        map.put("id", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
+        map.put("if_driver_id", ""+driver_id);
+
+        Call<Response_Login> call= APIClient.getWebServiceMethod().getUpdate_Profile(map);
+        call.enqueue(new Callback<Response_Login>() {
+            @Override
+            public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
+                String status=response.body().getApi_status();
+                String msg=response.body().getApi_message();
+                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                {
+                    App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                    App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+                    App_Conteroller. editor.putString(SP_Utils.LOGIN_DRIVER_ID,""+driver_id);
+                    App_Conteroller. editor.commit();
+
+                }else{
+                    Toast.makeText(Driver_document.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response_Login> call, Throwable t) {
+                Toast.makeText(Driver_document.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private void Call_Document_submit_Api() {
         progressDialog=new ProgressDialog(Driver_document.this);
@@ -177,28 +210,25 @@ public class Driver_document extends AppCompatActivity {
         RequestBody body_pan_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+txt_pancard_no);
         RequestBody body_police_verification_status =RequestBody.create(okhttp3.MultipartBody.FORM, "verify");
         RequestBody body_driver_insured_status =RequestBody.create(okhttp3.MultipartBody.FORM, "true");
-        RequestBody body_timestamp =RequestBody.create(okhttp3.MultipartBody.FORM, "28.6.19");
 
          Call<Response_register> call=APIClient.getWebServiceMethod().driver_register(body_user_id,
                 body_verified_status,body_dl_number,body_aadhar_number,body_pan_number,
                 body_police_verification_status,body_driver_insured_status,
                 body_status,body_request_file_licence,body_request_file_pancard,
-                 body_request_file_police_verify,body_request_file_aadhar )/*,
-                body_request_file_police_verify,body_request_file_permit_a,
-                body_request_file_permit_b,body_request_file_registration)*/;
+                body_request_file_police_verify,body_request_file_aadhar );
         call.enqueue(new Callback<Response_register>() {
             @Override
             public void onResponse(Call<Response_register> call, Response<Response_register> response) {
                 progressDialog.dismiss();
-                startActivity(new Intent(Driver_document.this,Vehicle_reg.class));
+                Toast.makeText(Driver_document.this, "Submit your document ", Toast.LENGTH_SHORT).show();
 
-                Toast.makeText(Driver_document.this, "success", Toast.LENGTH_SHORT).show();
-                try{Log.i(TAG,"response driver getid:  "+response.body().getId().toString());
+                try{Log.i(TAG,"response driver getid:  "+response.body().getId());
+                    Update_info(response.body().getId());}catch (Exception e){e.printStackTrace();}
+                try{Log.i(TAG,"response driver getApi_message:  "+response.body().getApi_message());
                 }catch (Exception e){e.printStackTrace();}
-                try{Log.i(TAG,"response driver getApi_message:  "+response.body().getApi_message().toString());
+                try{Log.i(TAG,"response driver getApi_status:  "+response.body().getApi_status());
                 }catch (Exception e){e.printStackTrace();}
-                try{Log.i(TAG,"response driver getApi_status:  "+response.body().getApi_status().toString());
-                }catch (Exception e){e.printStackTrace();}
+                finish();
                 }
 
             @Override

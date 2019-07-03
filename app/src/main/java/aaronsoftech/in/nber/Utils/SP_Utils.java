@@ -23,6 +23,7 @@ public class SP_Utils {
     public static String LOGIN_COUNTER="sp_country";
     public static String LOGIN_LAT="sp_lat";
     public static String LOGIN_LNG="sp_lng";
+    public static String LOGIN_DRIVER_ID="sp_if_driver_id";
     public static String LOGIN_ZIP_CODE="sp_zip_code";
     public static String LOGIN_MAC_ID="sp_mac_id";
     public static String LOGIN_SOCIAL_TYPE="sp_social_type";

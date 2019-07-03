@@ -6,8 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,9 +19,14 @@ import org.w3c.dom.Text;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
+import aaronsoftech.in.nber.Adapter.Adapter_vehicle_type;
 import aaronsoftech.in.nber.App_Conteroller;
+import aaronsoftech.in.nber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.nber.POJO.Response_register;
 import aaronsoftech.in.nber.POJO.Response_vehicle;
 import aaronsoftech.in.nber.R;
@@ -36,11 +44,15 @@ import retrofit2.Response;
 
 public class Vehicle_reg extends AppCompatActivity {
     TextView btn_ok;
+    ArrayList vehicle_list=new ArrayList();
     public static String PATH_PERMIT="",PATH_VEHICLE="",PATH_RC="",PATH_INSURENSE="",PATH_OTHER_DOC="";
     CircleImageView btn_permit,btn_vehicle,btn_vehicle_rc,btn_insurence_id,btn_other_doc;
-    EditText ed_name,ed_seating,ed_no;
+    EditText ed_name,ed_no;
     ProgressDialog progressDialog;
     String TAG="Vehicle_reg";
+    Spinner vehicle_type;
+    List<Response_Vehicle_type.Data_List> get_vehicle_type_list=new ArrayList<>();
+    String get_Vehicle_id="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,10 +118,6 @@ public class Vehicle_reg extends AppCompatActivity {
                 {
                     ed_name.setError("Enter name");
                     ed_name.requestFocus();
-                }else if (ed_seating.getText().toString().isEmpty())
-                {
-                    ed_seating.setError("Enter seating capacity");
-                    ed_seating.requestFocus();
                 }else if (ed_no.getText().toString().isEmpty())
                 {
                     ed_no.setError("Enter vehicle no.");
@@ -120,8 +128,64 @@ public class Vehicle_reg extends AppCompatActivity {
 
             }
         });
+        Call_Vihicle_Api();
+        vehicle_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                try{
+                    get_Vehicle_id=get_vehicle_type_list.get(i).getId();
+                }catch (Exception e){e.printStackTrace();}
 
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
+
+
+    private void Call_Vihicle_Api() {
+
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+        HashMap map= new HashMap<>();
+        Call<Response_Vehicle_type> call= APIClient.getWebServiceMethod().get_All_vehicle_type(map);
+        call.enqueue(new Callback<Response_Vehicle_type>() {
+            @Override
+            public void onResponse(Call<Response_Vehicle_type> call, Response<Response_Vehicle_type> response) {
+                progressDialog.dismiss();
+                String status=response.body().getApi_status();
+                String msg=response.body().getApi_message();
+                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                {
+                    for (int i=0;i<response.body().getData().size();i++)
+                    {
+                        vehicle_list.add(response.body().getData().get(i).getVehicle_type());
+                    }
+                    get_vehicle_type_list=response.body().getData();
+                    ArrayAdapter aa=new ArrayAdapter(Vehicle_reg.this,R.layout.textview_address_show,vehicle_list);
+                    vehicle_type.setAdapter(aa);
+
+                }else{
+                    progressDialog.dismiss();
+                 //   Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response_Vehicle_type> call, Throwable t) {
+                progressDialog.dismiss();
+               Toast.makeText(Vehicle_reg.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
 
     private void Call_Api() {
 
@@ -152,21 +216,21 @@ public class Vehicle_reg extends AppCompatActivity {
         MultipartBody.Part body_request_other_doc = MultipartBody.Part.createFormData("vehicle_other_doc", file_other_doc.getName(), request_file_other_doc);
         MultipartBody.Part body_request_insurense = MultipartBody.Part.createFormData("vehicle_insurance_id", file_insurense.getName(), request_file_insurense);
 
-       // String userId= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
-        RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, "14");
-        RequestBody body_type_id =RequestBody.create(okhttp3.MultipartBody.FORM, "2");
+        String Driver_ID= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+        RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+Driver_ID);
+        RequestBody body_type_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+get_Vehicle_id);
         RequestBody body_name =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_name.getText().toString().trim());
         RequestBody body_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_no.getText().toString().trim());
-        RequestBody body_seating =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_seating.getText().toString().trim());
 
         Call<Response_vehicle> call= APIClient.getWebServiceMethod().vehicle_register(body_driver_id,body_type_id,body_number,
         body_request_permit,body_request_vehicle,body_request_rc,body_request_other_doc,body_request_insurense);
+
         call.enqueue(new Callback<Response_vehicle>() {
             @Override
             public void onResponse(Call<Response_vehicle> call, Response<Response_vehicle> response) {
                 progressDialog.dismiss();
 
-                Toast.makeText(Vehicle_reg.this, "success", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Vehicle_reg.this, "successfully Add Your Vehicle", Toast.LENGTH_SHORT).show();
                 try{
                     Log.i(TAG,"response driver getid:  "+response.body().getId());
                 }catch (Exception e){e.printStackTrace();}
@@ -187,6 +251,7 @@ public class Vehicle_reg extends AppCompatActivity {
     }
 
     private void Init() {
+        vehicle_type=findViewById(R.id.spiner_type);
         btn_ok=findViewById(R.id.btn_submit);
         btn_permit=findViewById(R.id.pic_permit);
         btn_other_doc=findViewById(R.id.pic_other);
@@ -194,7 +259,6 @@ public class Vehicle_reg extends AppCompatActivity {
         btn_vehicle_rc=findViewById(R.id.pic_vehicle_rc);
         btn_insurence_id=findViewById(R.id.pic_insurece);
         ed_name=findViewById(R.id.txt_vehicle_name);
-        ed_seating=findViewById(R.id.txt_vehicle_seating);
         ed_no=findViewById(R.id.vehicle_no);
     }
 
@@ -206,11 +270,11 @@ public class Vehicle_reg extends AppCompatActivity {
 
     private void Set_docu_pic() {
 
-        if (PATH_PERMIT!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_PERMIT,btn_permit);              }
-        if (PATH_VEHICLE!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_VEHICLE,btn_vehicle);           }
-        if (PATH_RC!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_RC,btn_vehicle_rc);                  }
-        if (PATH_INSURENSE!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_INSURENSE,btn_insurence_id);  }
-        if (PATH_OTHER_DOC!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_OTHER_DOC,btn_other_doc);     }
+        if (PATH_PERMIT!=""){    App_Utils.loadProfileImage(Vehicle_reg.this,PATH_PERMIT,btn_permit);                }
+        if (PATH_VEHICLE!=""){   App_Utils.loadProfileImage(Vehicle_reg.this,PATH_VEHICLE,btn_vehicle);              }
+        if (PATH_RC!=""){        App_Utils.loadProfileImage(Vehicle_reg.this,PATH_RC,btn_vehicle_rc);                }
+        if (PATH_INSURENSE!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_INSURENSE,btn_insurence_id);       }
+        if (PATH_OTHER_DOC!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_OTHER_DOC,btn_other_doc);          }
 
     }
 }
