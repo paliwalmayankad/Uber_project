@@ -85,7 +85,6 @@ public class Social_Login extends AppCompatActivity implements
         ImageView btn_back1=findViewById(R.id.btn_back);
         ImageView btn_back2=findViewById(R.id.btn_back2);
 
-
         btn_back1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -331,8 +330,6 @@ public class Social_Login extends AppCompatActivity implements
                                 fb_name = object.getString("name");
                             }catch (Exception e){e.printStackTrace();}
                             try{ socialId = object.getString("id");}catch (Exception e){e.printStackTrace();}
-
-
 
                             photourl =object.getJSONObject("picture").getJSONObject("data").getString("url");
                             Log.i(TAG,"Social login fb_email"+fb_email);

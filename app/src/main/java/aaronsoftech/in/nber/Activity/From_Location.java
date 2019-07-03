@@ -55,6 +55,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -63,9 +64,11 @@ import aaronsoftech.in.nber.Adapter.Adapter_vehicle_type;
 import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.POJO.Response_All_Vehicle;
 import aaronsoftech.in.nber.POJO.Response_Vehicle_type;
+import aaronsoftech.in.nber.POJO.Response_register;
 import aaronsoftech.in.nber.R;
 import aaronsoftech.in.nber.Service.APIClient;
 import aaronsoftech.in.nber.Utils.App_Utils;
+import aaronsoftech.in.nber.Utils.SP_Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -132,6 +135,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 set_location_list(location);
             }
         });
+
         get_to_Address_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -474,6 +478,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             e.printStackTrace();
         }
     }
+
     public void startMapAnimation()
     {
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(App_Conteroller.latitute,App_Conteroller.longitude), 17), 2200,new GoogleMap.CancelableCallback()
@@ -540,7 +545,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
             e.printStackTrace();
         }
     }
-
 
     private void displayMap()
     {
@@ -737,6 +741,62 @@ public class From_Location extends AppCompatActivity implements LocationListener
     @Override
     public void OnClick_item(Response_All_Vehicle.Data_Vehicle_List vehicle_id) {
         //for vehicle book call api
+        String vehicleid=vehicle_id.getId();
+        String amount=vehicle_id.getVehicle_price();
+        Call_Api_book_ride(vehicleid,amount);
+    }
+
+    public void Call_Api_book_ride(String vehicleid,String pricc){
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+        Date date=new Date();
+        HashMap<String,String> map=new HashMap<>();
+        String userid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
+        map.put("user_id",""+userid);
+        map.put("vehicle_id",""+vehicleid);
+        map.put("booked_date_time",""+date);
+        map.put("from_lat",""+FROM_LAT);
+        map.put("from_lng",""+FROM_LNG);
+        map.put("from_address",""+et_location.getText().toString().trim());
+        map.put("to_address",""+et_location2.getText().toString().trim());
+        map.put("to_lat",""+TO_LAT);
+        map.put("to_lng",""+TO_LNG);
+        map.put("stoppage_date_time","");
+        map.put("payment_status","cash");
+        map.put("payment_id","2342687624");
+        map.put("amount",""+pricc);
+        map.put("pickup","now");
+        map.put("status","Active");
+        map.put("mac_id","121212");
+        map.put("remark","yes");
+        map.put("ip","959595");
+
+        Call<Response_register> call= APIClient.getWebServiceMethod().getBooked_ride(map);
+        call.enqueue(new Callback<Response_register>() {
+            @Override
+            public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+                String status=response.body().getApi_status();
+                String msg=response.body().getApi_message();
+                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                {
+                    String id=response.body().getId();
+                    Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
+                }else{
+                    progressDialog.dismiss();
+                    Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response_register> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(From_Location.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     @Override

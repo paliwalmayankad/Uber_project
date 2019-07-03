@@ -68,9 +68,8 @@ public class Driver_document extends AppCompatActivity {
         btn_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Driver_document.this,Vehicle_reg.class));
                 //App_Utils.loadProfileImage(Driver_document.this,path_licence,img);
-               //Call_Document_submit_Api();
+               Call_Document_submit_Api();
             }
         });
 
@@ -191,6 +190,8 @@ public class Driver_document extends AppCompatActivity {
             @Override
             public void onResponse(Call<Response_register> call, Response<Response_register> response) {
                 progressDialog.dismiss();
+                startActivity(new Intent(Driver_document.this,Vehicle_reg.class));
+
                 Toast.makeText(Driver_document.this, "success", Toast.LENGTH_SHORT).show();
                 try{Log.i(TAG,"response driver getid:  "+response.body().getId().toString());
                 }catch (Exception e){e.printStackTrace();}
