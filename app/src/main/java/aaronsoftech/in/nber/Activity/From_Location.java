@@ -252,7 +252,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 String msg=response.body().getApi_message();
                 if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                 {
-                    double price_pkm= Double.parseDouble(vehicle_price);
+
+                    Log.i(TAG,"Log driver price :"+vehicle_price);
+                    double price_pkm= Double.valueOf(vehicle_price);
                     get_vehicle_select_list=response.body().getData();
                     for (int i=0;i<get_vehicle_select_list.size();i++)
                     {
@@ -800,6 +802,12 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     @Override
     public void OnClick_item(Response_Vehicle_type.Data_List vehicle_type) {
-        Call_Select_Vihicle_Api(vehicle_type.getId(),vehicle_type.getKm_price());
+        if (vehicle_type.getKm_price()==null)
+        {
+            Call_Select_Vihicle_Api(vehicle_type.getId(),"1");
+        }else{
+            Call_Select_Vihicle_Api(vehicle_type.getId(),vehicle_type.getKm_price());
+        }
+
     }
 }
