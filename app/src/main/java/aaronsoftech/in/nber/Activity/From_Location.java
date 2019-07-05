@@ -117,7 +117,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     List<Response_All_Vehicle.Data_Vehicle_List> get_vehicle_select_list=new ArrayList<>();
     RecyclerView recyclerView_vehicle_type,recy_vehicle_list;
 
-    @TargetApi(Build.VERSION_CODES.M)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,8 +153,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 @Override
                 public void onClick(View view) {
                     Show_polyline_map();
-                    Call_Vihicle_Api();
-                    Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
+
                 }
             });
 
@@ -332,8 +331,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     private void Show_polyline_map()
     {
-        if (FROM_LAT!="" && FROM_LNG!="" && TO_LAT!="" && TO_LNG!="")
-        {
+        if ((FROM_LAT!="") && (FROM_LNG!="") && (TO_LAT!="") && (TO_LNG!=""))
+            {
             GoogleDirection.withServerKey(getResources().getString(R.string.google_maps_key))
                     .from(FROM_latLng)
                     .to(TO_latlng)
@@ -374,7 +373,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 }
             });
             btn_done.setText("Distance in km: "+String.valueOf(distance(Double.valueOf(FROM_LAT),Double.valueOf(FROM_LNG),Double.valueOf(TO_LAT),Double.valueOf(TO_LNG))));
-
+            Call_Vihicle_Api();
 
         }
         else {
@@ -703,8 +702,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
         if (location != null || !location.equals("")) {
             Geocoder geocoder = new Geocoder(this);
             try {
-                    addressList = geocoder.getFromLocationName(location, 3);
+                    addressList = geocoder.getFromLocationName(location, 10);
 
+                    for (int i=0;i<addressList.size();i++)
+                    {
+                        double Add_lat= addressList.get(i).getLatitude();
+                        double Add_long= addressList.get(i).getLongitude();
+                        Log.i(TAG,"Location Address :"+i+" latitude :"+Add_lat+"  longitude :"+Add_long);
+                    }
             } catch (IOException e) {
                 e.printStackTrace();
             }

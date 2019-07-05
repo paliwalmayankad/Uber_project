@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,18 @@ public class Adapter_Vehicle extends RecyclerView.Adapter<Adapter_Vehicle.MyView
     @Override
     public void onBindViewHolder(Adapter_Vehicle.MyViewHolder holder, final int position) {
     try{
-        holder.txt_price.setText("Price: "+String.valueOf(get_list.get(position).getVehicle_price().toString()));
+        DecimalFormat df2=new DecimalFormat("#.##");
+        if (get_list.get(position).getVehicle_price()!=null)
+        {
+            double price= Double.parseDouble(get_list.get(position).getVehicle_price());
+            holder.txt_price.setText(String.valueOf(df2.format(price)));
+
+        }else{
+            holder.txt_price.setText("1");
+
+        }
+
+
         holder.txt_no.setText("No :"+String.valueOf(get_list.get(position).getVehicle_number().toString()));
         String img_url=String.valueOf(get_list.get(position).getVehicle_photo().toString());
         Picasso.with(con).load(img_url).fit().centerCrop()
