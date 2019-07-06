@@ -50,6 +50,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -114,7 +120,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     List<Response_Vehicle_type.Data_List> get_vehicle_type_list=new ArrayList<>();
     List<Response_All_Vehicle.Data_Vehicle_List> get_vehicle_select_list=new ArrayList<>();
     RecyclerView recyclerView_vehicle_type,recy_vehicle_list;
-
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,6 +199,27 @@ public class From_Location extends AppCompatActivity implements LocationListener
         recy_vehicle_list.setLayoutManager(staggeredGridLayoutManager2); // set LayoutManager to RecyclerView
 
         Set_location_on_map();
+
+    }
+
+    private void Save_data_on_firebase(DatabaseReference mDatabase) {
+        // Read from the database
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+            //    String value = dataSnapshot.getValue(String.class);
+              //  Log.d(TAG, "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+
     }
 
     private void Call_Vihicle_Api() {
@@ -316,6 +343,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
         {
             Toast.makeText(this, "onCreate internet not found else called", Toast.LENGTH_SHORT).show();
         }
+
+
     }
 
     private void setToolbar() {
@@ -745,16 +774,19 @@ public class From_Location extends AppCompatActivity implements LocationListener
         //for vehicle book call api
         String vehicleid=vehicle_id.getId();
         String amount=vehicle_id.getVehicle_price();
-        Call_Api_book_ride(vehicleid,amount);
+        String Driver_ID=vehicle_id.getDriver_id();
+        String vehicle_no=vehicle_id.getVehicle_number();
+        String vehicle_image=vehicle_id.getVehicle_photo();
+        Call_Api_book_ride(vehicleid,amount,Driver_ID,vehicle_no,vehicle_image);
     }
 
-    public void Call_Api_book_ride(String vehicleid,String pricc){
+    public void Call_Api_book_ride(final String vehicleid, String pricc, final String driver_ID, final String vehicle_no, final String vehicle_image){
         progressDialog=new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
         Date date=new Date();
-        HashMap<String,String> map=new HashMap<>();
+        final HashMap<String,String> map=new HashMap<>();
         String userid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
         map.put("user_id",""+userid);
         map.put("vehicle_id",""+vehicleid);
@@ -785,6 +817,13 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                 {
                     String id=response.body().getId();
+                    mDatabase = FirebaseDatabase.getInstance().getReference();
+                    map.put("vehicle_no",vehicle_no);
+                    map.put("driver_ID",driver_ID);
+                    map.put("vehicle_image",vehicle_image);
+                    mDatabase.child("Booking_ID").child(id).setValue(map);
+                    Save_data_on_firebase(mDatabase);
+
                     finish();
                     //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
                     Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();

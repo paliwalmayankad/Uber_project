@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "775563072716",
+    "firebase_url": "https://nber-de32e.firebaseio.com",
+    "project_id": "nber-de32e",
+    "storage_bucket": "nber-de32e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:775563072716:android:4108a04d7d253876",
+        "android_client_info": {
+          "package_name": "aaronsoftech.in.unber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "775563072716-pjflor0r8mputkv5osfik8jnkpdvos6j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "aaronsoftech.in.unber",
+            "certificate_hash": "7257124de0ddea7f025d67b8737fc42f35feeac4"
+          }
+        },
+        {
+          "client_id": "775563072716-gtqg21bfqrgmrj40o8aiogjqse4a47nj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyXfD6UMflvPPQfD188XrD5hwO9YGZZNk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "775563072716-gtqg21bfqrgmrj40o8aiogjqse4a47nj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
