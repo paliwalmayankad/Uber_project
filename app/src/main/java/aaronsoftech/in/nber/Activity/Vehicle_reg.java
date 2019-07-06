@@ -262,6 +262,15 @@ public class Vehicle_reg extends AppCompatActivity {
         btn_insurence_id=findViewById(R.id.pic_insurece);
         ed_name=findViewById(R.id.txt_vehicle_name);
         ed_no=findViewById(R.id.vehicle_no);
+
+        ImageView btn_back1=findViewById(R.id.btn_back);
+        btn_back1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
     }
 
     @Override
