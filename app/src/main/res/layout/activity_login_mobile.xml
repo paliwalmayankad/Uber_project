@@ -7,7 +7,7 @@
     android:gravity="center"
     android:layout_gravity="center"
     android:layout_height="match_parent"
-    tools:context="aaronsoftech.in.nber.Activity.login_mobile">
+    tools:context="aaronsoftech.in.unber.Activity.login_mobile">
    <LinearLayout
        android:layout_width="match_parent"
        android:orientation="vertical"

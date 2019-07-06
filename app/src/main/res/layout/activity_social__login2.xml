@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context="aaronsoftech.in.nber.Activity.Social_Login">
+    tools:context="aaronsoftech.in.unber.Activity.Social_Login">
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

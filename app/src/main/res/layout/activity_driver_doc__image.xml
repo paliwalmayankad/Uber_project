@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context="aaronsoftech.in.nber.Activity.Driver_doc_Image">
+    tools:context="aaronsoftech.in.unber.Activity.Driver_doc_Image">
 
     <ImageView
         android:layout_width="wrap_content"

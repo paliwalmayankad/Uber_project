@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="aaronsoftech.in.nber">
+    package="aaronsoftech.in.unber">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -39,7 +39,7 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <activity android:name=".Activity.Splash" android:theme="@style/AppTheme_one">
+        <activity android:name="aaronsoftech.in.unber.Activity.Splash" android:theme="@style/AppTheme_one">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,55 +47,55 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activity.MainActivity"
+            android:name="aaronsoftech.in.unber.Activity.MainActivity"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.login_mobile"
+            android:name="aaronsoftech.in.unber.Activity.login_mobile"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.login_email"
+            android:name="aaronsoftech.in.unber.Activity.login_email"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Acc_setting"
+            android:name="aaronsoftech.in.unber.Activity.Acc_setting"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Acc_edit"
+            android:name="aaronsoftech.in.unber.Activity.Acc_edit"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Trip"
+            android:name="aaronsoftech.in.unber.Activity.Trip"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Select_payment"
+            android:name="aaronsoftech.in.unber.Activity.Select_payment"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Payment_add"
+            android:name="aaronsoftech.in.unber.Activity.Payment_add"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Payment_code"
+            android:name="aaronsoftech.in.unber.Activity.Payment_code"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Trip_free"
+            android:name="aaronsoftech.in.unber.Activity.Trip_free"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Password"
+            android:name="aaronsoftech.in.unber.Activity.Password"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Privacy_setting"
+            android:name="aaronsoftech.in.unber.Activity.Privacy_setting"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Contacts"
+            android:name="aaronsoftech.in.unber.Activity.Contacts"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Notification"
+            android:name="aaronsoftech.in.unber.Activity.Notification"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Help"
+            android:name="aaronsoftech.in.unber.Activity.Help"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Register_mobile"
+            android:name="aaronsoftech.in.unber.Activity.Register_mobile"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Home"
+            android:name="aaronsoftech.in.unber.Activity.Home"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme_one" />
 
@@ -133,7 +133,7 @@
              android:value="@string/google_maps_key" />
         -->
         <activity
-            android:name=".Activity.Social_Login"
+            android:name="aaronsoftech.in.unber.Activity.Social_Login"
             android:theme="@style/AppTheme_one" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -148,14 +148,14 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".Activity.MapsActivity"
+            android:name="aaronsoftech.in.unber.Activity.MapsActivity"
             android:label="@string/title_activity_maps"                              />
-        <activity android:name=".Activity.Verification"      />
-        <activity android:name=".Activity.From_Location"    android:theme="@style/AppTheme_one"  />
-        <activity android:name=".Activity.Driver_document"   />
-        <activity android:name=".Activity.Driver_photo"      />
-        <activity android:name=".Activity.Driver_doc_Image"  />
-        <activity android:name=".Activity.Vehicle_reg"       android:theme="@style/AppTheme_one" ></activity>
+        <activity android:name="aaronsoftech.in.unber.Activity.Verification"      />
+        <activity android:name="aaronsoftech.in.unber.Activity.From_Location"    android:theme="@style/AppTheme_one"  />
+        <activity android:name="aaronsoftech.in.unber.Activity.Driver_document"   />
+        <activity android:name="aaronsoftech.in.unber.Activity.Driver_photo"      />
+        <activity android:name="aaronsoftech.in.unber.Activity.Driver_doc_Image"  />
+        <activity android:name="aaronsoftech.in.unber.Activity.Vehicle_reg"       android:theme="@style/AppTheme_one" ></activity>
     </application>
 
 </manifest>
