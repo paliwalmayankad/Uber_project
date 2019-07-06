@@ -3,12 +3,14 @@ package aaronsoftech.in.unber.Activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,11 +20,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,22 +40,32 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import aaronsoftech.in.unber.App_Conteroller;
+import aaronsoftech.in.unber.Model.FB_Driver_res;
 import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Utils.SP_Utils;
 
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback{
     private GoogleMap mMap;
     ImageView image_header;
     TextView header_name;
+    String TAG="Home";
     String[] locationPermissionsl = {"android.permission.ACCESS_COARSE_LOCATION","android.permission.ACCESS_FINE_LOCATION"};
     private static int REQUEST_CODE_LOCATIONl = 102;
     private DatabaseReference mDatabase;
-
+    double lat= 0.0;
+    double lng= 0.0;
+    boolean setCurrentLocation=true;
+    List<FB_Driver_res >get_driver_loc=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,28 +154,10 @@ public class Home extends AppCompatActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         Give_Permission();
-
-        Call_firebase_service();
+        Show_Driver_Location();
     }
 
-    private void Call_firebase_service() {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-        mDatabase.child("driver_ID").child(Driver_ID);
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-
-
-
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
 
     private void set_Header_value() {
         try{
@@ -229,20 +227,140 @@ public class Home extends AppCompatActivity
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        mMap.setMyLocationEnabled(true);
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(24.571270, 73.691544);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Udaipur"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-       // Construct a CameraPosition focusing on Mountain View and animate the camera to that position.
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(sydney)      // Sets the center of the map to Mountain View
-                .zoom(17)                   // Sets the zoom
-                .bearing(90)                // Sets the orientation of the camera to east
-                .tilt(30)                   // Sets the tilt of the camera to 30 degrees
-                .build();                   // Creates a CameraPosition from the builder
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        try
+        {
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().
+                findFragmentById(R.id.map);
+            assert mapFragment.getView() != null;
+            final ViewGroup parent = (ViewGroup) mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton").getParent();
+            parent.post(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        for (int i = 0, n = parent.getChildCount(); i < n; i++) {
+                            View view = parent.getChildAt(i);
+                            RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) view.getLayoutParams();
+                            // position on right bottom
+                            rlp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+                            rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+                            rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                            rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                            rlp.rightMargin = 25;
+                            rlp.bottomMargin = 25;
+                            view.requestLayout();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
+        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+            @Override
+            public void onMyLocationChange(Location location) {
+
+                if (setCurrentLocation){
+
+                    lat=location.getLatitude();
+                    lng=location.getLongitude();                    // Add a marker in Sydney and move the camera
+                    LatLng sydney = new LatLng(lat, lng);
+                    //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Udaipur"));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                    // Construct a CameraPosition focusing on Mountain View and animate the camera to that position.
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(sydney)      // Sets the center of the map to Mountain View
+                            .zoom(17)                   // Sets the zoom
+                            .bearing(90)                // Sets the orientation of the camera to east
+                            .tilt(30)                   // Sets the tilt of the camera to 30 degrees
+                            .build();                   // Creates a CameraPosition from the builder
+                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                    setCurrentLocation=false;
+                }
+
+                if (       App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
+                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
+                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
+                {
+
+                }else{
+
+                    lat=location.getLatitude();
+                    lng=location.getLongitude();
+                    double speed=location.getSpeed();
+                    Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
+
+                    String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+                    HashMap<String,String> map=new HashMap<>();
+                    map.put("driver_ID",""+driver_id);
+                    map.put("name", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+                    map.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
+                    map.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
+                    map.put("lat",""+lat);
+                    map.put("lng",""+lng);
+                    map.put("speed",""+speed);
+                    Call_firebase_service(map);
+                }
+            }
+        });
+    }
+
+    private void Show_Driver_Location() {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+     //   mDatabase = FirebaseDatabase.getInstance().getReference();
+        Query myTopPostsQuery = mDatabase.child("Driver_ID").child("24");
+
+        myTopPostsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    get_driver_loc.clear();
+
+                    String id=dataSnapshot.getKey();
+                    String contactno = String.valueOf(dataSnapshot.child("contact_number").getValue());
+                    String driver_ID = String.valueOf(dataSnapshot.child("driver_ID").getValue());
+                    String name = String.valueOf(dataSnapshot.child("name").getValue());
+                    String photo = String.valueOf(dataSnapshot.child("photo").getValue());
+                    String lat = String.valueOf(dataSnapshot.child("lat").getValue());
+                    String lng = String.valueOf(dataSnapshot.child("lng").getValue());
+                    String speed = String.valueOf(dataSnapshot.child("speed").getValue());
+                    get_driver_loc.add(new FB_Driver_res(driver_ID,name,photo,contactno,lat,lng,speed));
+
+
+            try{
+                if (get_driver_loc.size()!=0)
+                {
+
+                    for (int i=0;i<get_driver_loc.size();i++)
+                    {
+
+                        String  get_driverid= get_driver_loc.get(i).getDriver_ID();
+                        String nameq=get_driver_loc.get(i).getName();
+                        Toast.makeText(Home.this, "name "+nameq+"\n"+"get_driverid "+get_driverid, Toast.LENGTH_SHORT).show();
+                    double get_lat= Double.valueOf(get_driver_loc.get(i).getLat());
+                    double get_lng=Double.valueOf(get_driver_loc.get(i).getLng());
+                    LatLng sydney = new LatLng(get_lat, get_lng);
+                    mMap.addMarker(new MarkerOptions().position(sydney).title(nameq));
+
+                    }
+                }
+            }catch (Exception e){e.printStackTrace();}
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -288,4 +406,26 @@ public class Home extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    private void Call_firebase_service(HashMap<String, String> map) {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("Driver_ID").child(Driver_ID).setValue(map);
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    Log.i(TAG,"Firebase data : "+postSnapshot);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 }
