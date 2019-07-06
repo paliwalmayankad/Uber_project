@@ -215,9 +215,11 @@ public class Vehicle_reg extends AppCompatActivity {
         MultipartBody.Part body_request_rc = MultipartBody.Part.createFormData("vehicle_rc", file_rc.getName(), request_file_rc);
         MultipartBody.Part body_request_other_doc = MultipartBody.Part.createFormData("vehicle_other_doc", file_other_doc.getName(), request_file_other_doc);
         MultipartBody.Part body_request_insurense = MultipartBody.Part.createFormData("vehicle_insurance_id", file_insurense.getName(), request_file_insurense);
-
-        String Driver_ID= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+        String Driver_ID="";
+   try{ Driver_ID= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+     }catch (Exception e){e.printStackTrace();}
         RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+Driver_ID);
+
         RequestBody body_type_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+get_Vehicle_id);
         RequestBody body_name =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_name.getText().toString().trim());
         RequestBody body_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_no.getText().toString().trim());

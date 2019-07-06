@@ -86,6 +86,7 @@ public class Home extends AppCompatActivity
                     startActivity(new Intent(Home.this,Acc_edit.class));
                 }else
                 {
+                  //  startActivity(new Intent(Home.this,Contacts.class));
                     startActivity(new Intent(Home.this,From_Location.class));
                 }
             }
@@ -208,9 +209,6 @@ public class Home extends AppCompatActivity
             //      int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-
-
-
             return;
         }
 

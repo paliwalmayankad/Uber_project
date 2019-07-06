@@ -39,7 +39,7 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <activity android:name=".Activity.Splash">
+        <activity android:name=".Activity.Splash" android:theme="@style/AppTheme_one">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -151,10 +151,10 @@
             android:name=".Activity.MapsActivity"
             android:label="@string/title_activity_maps"                              />
         <activity android:name=".Activity.Verification"      />
-        <activity android:name=".Activity.From_Location"     android:theme="@style/AppTheme_one" />
-        <activity android:name=".Activity.Driver_document"   android:theme="@style/AppTheme_one" />
-        <activity android:name=".Activity.Driver_photo"      android:theme="@style/AppTheme_one" />
-        <activity android:name=".Activity.Driver_doc_Image"  android:theme="@style/AppTheme_one" />
+        <activity android:name=".Activity.From_Location"     />
+        <activity android:name=".Activity.Driver_document"   />
+        <activity android:name=".Activity.Driver_photo"      />
+        <activity android:name=".Activity.Driver_doc_Image"  />
         <activity android:name=".Activity.Vehicle_reg"       android:theme="@style/AppTheme_one" ></activity>
     </application>
 

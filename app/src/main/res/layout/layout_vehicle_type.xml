@@ -10,8 +10,8 @@
     android:layout_margin="11dp"
     android:background="@color/grey_5"
     android:layout_height="wrap_content">
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="111dp"
+    <ImageView
+        android:layout_width="222dp"
         android:src="@drawable/profile_pics"
         android:id="@+id/vehicle_type_img"
         android:layout_height="111dp" />

@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -45,9 +46,15 @@ public class Adapter_vehicle_type extends RecyclerView.Adapter<Adapter_vehicle_t
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.txt_name.setText(get_list.get(position).getVehicle_type());
-        holder.txt_seating.setText("Seating :"+get_list.get(position).getSeating_capacity());
+        if (get_list.get(position).getSeating_capacity()==null)
+        {
+            holder.txt_seating.setText("Seating : 1");
+
+        }else{
+            holder.txt_seating.setText("Seating :"+get_list.get(position).getSeating_capacity());
+        }
         String img_url=get_list.get(position).getVehicle_icon();
-        Picasso.with(con).load(img_url).fit().centerCrop()
+        Picasso.with(con).load(img_url).fit()
                 .placeholder(R.drawable.ic_user)
                 .error(R.drawable.ic_user)
                 .into(holder.img);
@@ -65,7 +72,7 @@ public class Adapter_vehicle_type extends RecyclerView.Adapter<Adapter_vehicle_t
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        CircleImageView img;
+        ImageView img;
         LinearLayout llayout;
         TextView txt_name,txt_seating;
         public MyViewHolder(View itemView) {

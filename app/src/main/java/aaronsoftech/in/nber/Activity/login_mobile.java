@@ -47,7 +47,7 @@ public class login_mobile extends AppCompatActivity {
 
             }
         });
-
+        Give_Permission();
     }
 
     private void Give_Permission() {
