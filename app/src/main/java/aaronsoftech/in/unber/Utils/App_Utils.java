@@ -21,6 +21,7 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
@@ -77,6 +78,26 @@ public class App_Utils {
         }
         return  Uri.fromFile(mediaFile);
     }
+
+    public static void saveAppVersionAndDeviceId(String gcm_deviceId)
+    {
+        try
+        {
+
+            //if token is not null
+            if (gcm_deviceId == null)
+            {
+                gcm_deviceId="";
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
     public static boolean checkAppVersion(){
         Boolean isM=false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)

@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +27,7 @@ import retrofit2.Response;
 public class Verification extends AppCompatActivity {
     public static String Lat="0.0";
     public static String Longt="0.0";
-    String mobileno;
+    String mobileno,refreshedToken;
     ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +35,7 @@ public class Verification extends AppCompatActivity {
         setContentView(R.layout.activity_verification);
         ImageView btn_next=findViewById(R.id.next_button);
         mobileno=getIntent().getExtras().getString("mobile");
-
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,7 +57,7 @@ public class Verification extends AppCompatActivity {
         register_map.put("lng",""+Longt);
         register_map.put("mac_id","0");
         register_map.put("social_type","contact");
-        register_map.put("token_id","");
+        register_map.put("token_id",""+refreshedToken);
         register_map.put("name","");
         register_map.put("email","");
 

@@ -6,10 +6,13 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import aaronsoftech.in.unber.R;
 
@@ -17,13 +20,16 @@ public class login_mobile extends AppCompatActivity {
     EditText ed_mobile;
     String[] locationPermissionsl = {"android.permission.ACCESS_FINE_LOCATION","android.permission.ACCESS_COARSE_LOCATION"};
     private static int REQUEST_CODE_LOCATIONl = 102;
+    String refreshedToken;
+    String TAG="login_mobile";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_mobile);
         final TextView social_login=findViewById(R.id.social_login);
         ed_mobile=findViewById(R.id.t_mobile);
-
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
         ImageView btn_next=findViewById(R.id.next_button);
         social_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,6 +41,8 @@ public class login_mobile extends AppCompatActivity {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                Log.i(TAG,"Token ID :  "+refreshedToken);
                 if (ed_mobile.getText().toString().isEmpty())
                 {
                     ed_mobile.setError("Enter mobile no.");
