@@ -149,6 +149,8 @@ public class Driver_document extends AppCompatActivity {
                     App_Conteroller. editor.putString(SP_Utils.LOGIN_DRIVER_ID,""+driver_id);
                     App_Conteroller. editor.commit();
 
+
+
                 }else{
                     Toast.makeText(Driver_document.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
                 }
@@ -188,12 +190,12 @@ public class Driver_document extends AppCompatActivity {
         MultipartBody.Part body_request_file_aadhar = MultipartBody.Part.createFormData("aadhar_file", file_aadhar.getName(), request_aadhar);
         MultipartBody.Part body_request_file_police_verify = MultipartBody.Part.createFormData("police_verification_file", file_police_verification.getName(), request_police_verification);
 
-       MultipartBody.Part body_request_file_licence = MultipartBody.Part.createFormData("dl_file", file_licence.getName(), request_file_licence);
-       MultipartBody.Part body_request_file_pancard = MultipartBody.Part.createFormData("pan_file", file_pancard.getName(), request_file_pancard);
-     //   MultipartBody.Part body_request_file_permit_a = MultipartBody.Part.createFormData("dl_file", file_licence.getName(), request_file_permit_a);
-     //   MultipartBody.Part body_request_file_permit_b = MultipartBody.Part.createFormData("dl_file", file_licence.getName(), request_file_permit_b);
-     //  MultipartBody.Part body_request_file_registration = MultipartBody.Part.createFormData("file_registration", file_licence.getName(), request_file_registration);
-     //   MultipartBody.Part body_request_file_insurense = MultipartBody.Part.createFormData("driver_insured_file", file_insurense.getName(), request_file_insurense);
+        MultipartBody.Part body_request_file_licence = MultipartBody.Part.createFormData("dl_file", file_licence.getName(), request_file_licence);
+        MultipartBody.Part body_request_file_pancard = MultipartBody.Part.createFormData("pan_file", file_pancard.getName(), request_file_pancard);
+        //   MultipartBody.Part body_request_file_permit_a = MultipartBody.Part.createFormData("dl_file", file_licence.getName(), request_file_permit_a);
+        //   MultipartBody.Part body_request_file_permit_b = MultipartBody.Part.createFormData("dl_file", file_licence.getName(), request_file_permit_b);
+        //  MultipartBody.Part body_request_file_registration = MultipartBody.Part.createFormData("file_registration", file_licence.getName(), request_file_registration);
+        //   MultipartBody.Part body_request_file_insurense = MultipartBody.Part.createFormData("driver_insured_file", file_insurense.getName(), request_file_insurense);
 
         String userId= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
         RequestBody body_user_id =RequestBody.create(okhttp3.MultipartBody.FORM, userId);
@@ -205,7 +207,7 @@ public class Driver_document extends AppCompatActivity {
         RequestBody body_police_verification_status =RequestBody.create(okhttp3.MultipartBody.FORM, "verify");
         RequestBody body_driver_insured_status =RequestBody.create(okhttp3.MultipartBody.FORM, "true");
 
-         Call<Response_register> call=APIClient.getWebServiceMethod().driver_register(body_user_id,
+        Call<Response_register> call=APIClient.getWebServiceMethod().driver_register(body_user_id,
                 body_verified_status,body_dl_number,body_aadhar_number,body_pan_number,
                 body_police_verification_status,body_driver_insured_status,
                 body_status,body_request_file_licence,body_request_file_pancard,
@@ -214,21 +216,30 @@ public class Driver_document extends AppCompatActivity {
             @Override
             public void onResponse(Call<Response_register> call, Response<Response_register> response) {
                 progressDialog.dismiss();
-                Toast.makeText(Driver_document.this, "Submit your document ", Toast.LENGTH_SHORT).show();
+                try{
+                    String status=response.body().getApi_status();
+                    String msg=response.body().getApi_message();
 
-                try{Log.i(TAG,"response driver getid:  "+response.body().getId());
-                    Update_info(response.body().getId());}catch (Exception e){e.printStackTrace();}
-                try{Log.i(TAG,"response driver getApi_message:  "+response.body().getApi_message());
-                }catch (Exception e){e.printStackTrace();}
-                try{Log.i(TAG,"response driver getApi_status:  "+response.body().getApi_status());
-                }catch (Exception e){e.printStackTrace();}
-                finish();
-                }
+                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                    {
+
+                        Update_info(response.body().getId());
+                        Toast.makeText(Driver_document.this, "Submit your document ", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }else{
+
+                        Toast.makeText(Driver_document.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_LONG).show();
+                    }
+                }catch (Exception e){
+                    Toast.makeText(Driver_document.this, "Server error", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();}
+
+            }
 
             @Override
             public void onFailure(Call<Response_register> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(Driver_document.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Driver_document.this, " please retry", Toast.LENGTH_SHORT).show();
             }
         });
 

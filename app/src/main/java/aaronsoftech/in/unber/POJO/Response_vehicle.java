@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 public class Response_vehicle {
     @SerializedName("api_status")
     @Expose
-    private Integer api_status;
+    private String api_status;
 
     @SerializedName("api_message")
     @Expose
@@ -18,13 +18,13 @@ public class Response_vehicle {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private String id;
 
-    public Integer getApi_status() {
+    public String getApi_status() {
         return api_status;
     }
 
-    public void setApi_status(Integer api_status) {
+    public void setApi_status(String api_status) {
         this.api_status = api_status;
     }
 
@@ -36,11 +36,11 @@ public class Response_vehicle {
         this.api_message = api_message;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 }

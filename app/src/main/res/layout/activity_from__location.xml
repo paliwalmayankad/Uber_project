@@ -45,6 +45,7 @@
 
         </android.support.v7.widget.Toolbar>
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -97,7 +98,7 @@
                             android:textSize="22dp"
                             android:textColor="@android:color/black"
                             android:textStyle="bold" />
-                        <EditText
+                        <TextView
                             android:id="@+id/et_location"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -107,17 +108,24 @@
                             android:hint="From address here..."
                             android:inputType="text|textNoSuggestions"
                             android:padding="5dp"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
                             android:singleLine="true"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:textColor="@android:color/black"
                             android:textColorHint="@android:color/darker_gray"
-                            android:windowSoftInputMode="stateHidden"
+
                             />
                         <ImageView
                             android:layout_width="wrap_content"
                             android:src="@drawable/ic_mapplace"
                             android:id="@+id/find_location"
                             android:layout_height="30dp" />
+                        <fragment
+                            android:id="@+id/place_autocomplete_fragment"
+                            android:layout_width="40dp"
+                            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                            android:layout_height="match_parent" />
                     </LinearLayout>
                 </FrameLayout>
 
@@ -169,7 +177,8 @@
                             android:textSize="22dp"
                             android:textColor="@android:color/black"
                             android:textStyle="bold" />
-                        <EditText
+
+                        <TextView
                             android:id="@+id/et_location2"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -177,6 +186,9 @@
                             android:layout_weight="1"
                             android:background="@drawable/login_et_rectangle1"
                             android:cursorVisible="true"
+                            android:editable="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
                             android:hint="To address here..."
                             android:inputType="text|textNoSuggestions"
                             android:padding="5dp"
@@ -184,13 +196,17 @@
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:textColor="@android:color/black"
                             android:textColorHint="@android:color/darker_gray"
-                            android:windowSoftInputMode="stateHidden"
-                             />
+                            android:windowSoftInputMode="stateHidden" />
                         <ImageView
                             android:layout_width="wrap_content"
                             android:src="@drawable/ic_mapplace"
                             android:id="@+id/find_location2"
                             android:layout_height="30dp" />
+                        <fragment
+                            android:id="@+id/place_autocomplete_fragment2"
+                            android:layout_width="40dp"
+                            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                            android:layout_height="match_parent" />
                     </LinearLayout>
                 </FrameLayout>
 

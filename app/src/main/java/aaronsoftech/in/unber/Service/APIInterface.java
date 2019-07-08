@@ -57,6 +57,7 @@ public interface APIInterface {
     @Multipart
     @POST("vehicle_reg")
     Call<Response_vehicle> vehicle_register(
+            @Part("token_no") RequestBody token_no,
             @Part("driver_id") RequestBody driver_id,
             @Part("vehicle_type_id") RequestBody vehicle_type_id,
             @Part("vehicle_number") RequestBody number,
@@ -80,7 +81,7 @@ public interface APIInterface {
             @Part("status") RequestBody status,
             @Part MultipartBody.Part dl_file,
             @Part MultipartBody.Part pan_file,
-            @Part MultipartBody.Part driver_insured_file,
+            @Part MultipartBody.Part police_verification_file,
             @Part MultipartBody.Part aadhar_file
     );
 

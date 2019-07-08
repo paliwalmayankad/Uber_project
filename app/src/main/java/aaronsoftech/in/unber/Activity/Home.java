@@ -99,8 +99,8 @@ public class Home extends AppCompatActivity
                     startActivity(new Intent(Home.this,Acc_edit.class));
                 }else
                 {
-                   // startActivity(new Intent(Home.this,Contacts.class));
-                    startActivity(new Intent(Home.this,From_Location.class));
+                  //  startActivity(new Intent(Home.this,Contacts.class));
+                   startActivity(new Intent(Home.this,From_Location.class));
                 }
             }
         });
@@ -155,6 +155,7 @@ public class Home extends AppCompatActivity
         mapFragment.getMapAsync(this);
         Give_Permission();
         Show_Driver_Location();
+
     }
 
 
@@ -314,8 +315,6 @@ public class Home extends AppCompatActivity
 
     private void Show_Driver_Location() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-     //   mDatabase = FirebaseDatabase.getInstance().getReference();
         Query myTopPostsQuery = mDatabase.child("Driver_ID").child("24");
 
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {

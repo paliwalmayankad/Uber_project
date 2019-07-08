@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -37,6 +36,7 @@ import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -50,15 +50,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +95,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     private static final int REQUEST_CODE_GPSON = 102;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 103;
     private static final int RESULT_CODE_MAPLOCATION = 104;
-    EditText et_location,et_location2;
+    TextView et_location,et_location2;
     TextView btn_done;
 
     Dialog dialog;
@@ -122,6 +126,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     RecyclerView recyclerView_vehicle_type,recy_vehicle_list;
     private DatabaseReference mDatabase;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,21 +138,74 @@ public class From_Location extends AppCompatActivity implements LocationListener
             @Override
             public void onClick(View view) {
                 focus_type="FROM";
-                et_location2.selectAll();
+             //   et_location2.selectAll();
                 et_location2.setTextIsSelectable(true);
-                String location = et_location.getText().toString();
-                set_location_list(location);
+
             }
         });
+
+
+        // Initialize Places.
+        Places.initialize(getApplicationContext(), "AIzaSyAK3tlcPCVzkHcJcK-J_DdBJf-wO6LYyok");
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(this);
+        // Initialize the AutocompleteSupportFragment.
+        final AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                 //   et_location.selectAll();
+                    et_location.setTextIsSelectable(true);
+                    et_location.setText(place.getName()+","+place.getId());
+                    LatLng get_latlong=place.getLatLng();
+                    set_location_list(get_latlong);
+                    autocompleteFragment.onDestroy();  }
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);}
+        });
+
+
+        // Initialize the AutocompleteSupportFragment.
+        final AutocompleteSupportFragment autocompleteFragment2 = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment2);
+        // Specify the types of place data to return.
+        autocompleteFragment2.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment2.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+           //     et_location2.selectAll();
+                et_location2.setTextIsSelectable(true);
+                et_location2.setText(place.getName()+","+place.getId());
+                LatLng get_latlong=place.getLatLng();
+                set_location_list(get_latlong);
+                autocompleteFragment2.onDestroy();  }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
+
+
+
+
 
         get_to_Address_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 focus_type="TO";
-                et_location2.selectAll();
+            //    et_location2.selectAll();
                 et_location2.setTextIsSelectable(true);
                 String location = et_location2.getText().toString();
-                set_location_list(location);
+               // set_location_list(location);
             }
         });
 
@@ -161,14 +219,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 }
             });
 
-            et_location2 = (EditText) findViewById(R.id.et_location2);
-            et_location = (EditText) findViewById(R.id.et_location);
+            et_location2 =  findViewById(R.id.et_location2);
+            et_location =  findViewById(R.id.et_location);
 
             et_location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     focus_type="FROM";
-                    et_location.selectAll();
+              //      et_location.selectAll();
                     et_location.setTextIsSelectable(true);
                     et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
                     et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
@@ -178,7 +236,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 @Override
                 public void onClick(View view) {
                     focus_type="TO";
-                    et_location2.selectAll();
+            //        et_location2.selectAll();
                     et_location2.setTextIsSelectable(true);
                     et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
                     et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
@@ -265,6 +323,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         progressDialog.show();
         get_vehicle_select_list.clear();
         recy_vehicle_list.setVisibility(View.VISIBLE);
+        recy_vehicle_list.clearFocus();
         HashMap map= new HashMap<>();
         map.put("vehicle_type_id",vehicle_id);
         Call<Response_All_Vehicle> call= APIClient.getWebServiceMethod().get_All_select_vehicle(map);
@@ -720,29 +779,15 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
     }
 
-    private void set_location_list(final String location) {
+    private void set_location_list(final LatLng location) {
         progressDialog=new ProgressDialog(From_Location.this);
         progressDialog.setMessage("Finding: "+location);
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        if (location != null || !location.equals("")) {
-            Geocoder geocoder = new Geocoder(this);
-            try {
-                    addressList = geocoder.getFromLocationName(location, 10);
-
-                    for (int i=0;i<addressList.size();i++)
-                    {
-                        double Add_lat= addressList.get(i).getLatitude();
-                        double Add_long= addressList.get(i).getLongitude();
-                        Log.i(TAG,"Location Address :"+i+" latitude :"+Add_lat+"  longitude :"+Add_long);
-                    }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             try{
-                double Add_lat= addressList.get(0).getLatitude();
-                double Add_long= addressList.get(0).getLongitude();
+                double Add_lat= location.latitude;
+                double Add_long= location.longitude;
 
                 if (focus_type.equalsIgnoreCase("FROM"))
                 {
@@ -751,7 +796,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                     progressDialog.dismiss();
                     Address address = addressList.get(0);
                     LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                    googleMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                    googleMap.addMarker(new MarkerOptions().position(latLng));
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 }else{
                     TO_LAT=String.valueOf(Add_lat);
@@ -759,14 +804,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
                     progressDialog.dismiss();
                     Address address = addressList.get(0);
                     LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                    googleMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                    googleMap.addMarker(new MarkerOptions().position(latLng));
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 }
             }catch (Exception e){
                 progressDialog.dismiss();
                 e.printStackTrace();}
 
-        }
+
     }
 
     @Override
@@ -777,10 +822,11 @@ public class From_Location extends AppCompatActivity implements LocationListener
         String Driver_ID=vehicle_id.getDriver_id();
         String vehicle_no=vehicle_id.getVehicle_number();
         String vehicle_image=vehicle_id.getVehicle_photo();
-        Call_Api_book_ride(vehicleid,amount,Driver_ID,vehicle_no,vehicle_image);
+        String refreshtoken=vehicle_id.getToken_no();
+        Call_Api_book_ride(vehicleid,amount,Driver_ID,vehicle_no,vehicle_image,refreshtoken);
     }
 
-    public void Call_Api_book_ride(final String vehicleid, String pricc, final String driver_ID, final String vehicle_no, final String vehicle_image){
+    public void Call_Api_book_ride(final String vehicleid, String pricc, final String driver_ID, final String vehicle_no, final String vehicle_image, String refreshtoken){
         progressDialog=new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
@@ -797,7 +843,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         map.put("to_address",""+et_location2.getText().toString().trim());
         map.put("to_lat",""+TO_LAT);
         map.put("to_lng",""+TO_LNG);
-        map.put("stoppage_date_time","");
+        map.put("stoppage_date_time",""+date);
         map.put("payment_status","cash");
         map.put("payment_id","2342687624");
         map.put("amount",""+pricc);
@@ -806,31 +852,36 @@ public class From_Location extends AppCompatActivity implements LocationListener
         map.put("mac_id","121212");
         map.put("remark","yes");
         map.put("ip","959595");
-
+        map.put("token_no",""+refreshtoken);
+        map.put("driver_id",""+driver_ID);
         Call<Response_register> call= APIClient.getWebServiceMethod().getBooked_ride(map);
         call.enqueue(new Callback<Response_register>() {
             @Override
             public void onResponse(Call<Response_register> call, Response<Response_register> response) {
-                String status=response.body().getApi_status();
-                String msg=response.body().getApi_message();
                 progressDialog.dismiss();
-                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                {
-                    String id=response.body().getId();
-                    mDatabase = FirebaseDatabase.getInstance().getReference();
-                    map.put("vehicle_no",vehicle_no);
-                    map.put("driver_ID",driver_ID);
-                    map.put("vehicle_image",vehicle_image);
-                    mDatabase.child("Booking_ID").child(id).setValue(map);
-                    Save_data_on_firebase(mDatabase);
+                try{
+                    String status=response.body().getApi_status();
+                    String msg=response.body().getApi_message();
 
-                    finish();
-                    //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
-                }else{
+                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                    {
+                        String id=response.body().getId();
+                        mDatabase = FirebaseDatabase.getInstance().getReference();
+                        map.put("vehicle_no",vehicle_no);
+                        map.put("vehicle_image",vehicle_image);
+                        mDatabase.child("Booking_ID").child(id).setValue(map);
+                        Save_data_on_firebase(mDatabase);
+                        finish();
+                        //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
+                    }else{
 
-                   Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
-                }
+                        Toast.makeText(From_Location.this, "status "+status+"\n"+" msg "+msg, Toast.LENGTH_LONG).show();
+                    }
+                }catch (Exception e){
+                    Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();}
+
             }
 
             @Override

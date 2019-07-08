@@ -111,7 +111,7 @@ public class App_Utils {
         return isM;
     }
 
-   /* public static void loadProfileImage(Context conn, String imageURL, CircleImageView imageView)
+    public static void loadProfileImage(Context conn, String imageURL, CircleImageView imageView)
     {
         try
         {
@@ -120,21 +120,12 @@ public class App_Utils {
                 Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +"://" + conn.getResources().getDrawable(R.drawable.ic_user));
                 Glide.with(conn)
                         .load(imageUri)
-                        .placeholder(R.drawable.ic_user)
-                        .error(R.drawable.ic_user)
-                        .fallback(R.drawable.ic_user)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .thumbnail(0.1f)
                         .into(imageView);
             }
             else
             {
                 Glide.with(conn)
                         .load(imageURL)
-                        .placeholder(R.drawable.ic_user)
-                        .error(R.drawable.ic_user)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .thumbnail(0.1f)
                         .into(imageView);
             }
         }
@@ -142,7 +133,7 @@ public class App_Utils {
         {
             e.printStackTrace();
         }
-    }*/
+    }
 
     public static void showAlertSnakeMessage(LinearLayout coordinatorLayout, String message)
     {

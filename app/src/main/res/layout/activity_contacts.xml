@@ -1,45 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="aaronsoftech.in.unber.Activity.Contacts">
-    <AutoCompleteTextView
-        android:id="@+id/location_actv"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:hint="Search Your Location"
-        android:gravity="center_vertical"
-        android:padding="8dp"
-        android:layout_margin="16dp"
-        />
+        android:layout_height="match_parent"
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
-        >
+        tools:context=".AutocompleteTestActivity">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="The result will be displayed here"
-            />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/address_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-        <TextView
-            android:id="@+id/location_display_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            <!--Autocomplete parameters-->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="autocomplete_location_bias_label"/>
 
-    </LinearLayout>
-</RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/autocomplete_location_bias_south_west"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="autocomplete_location_south_west_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"/>
+
+                <EditText
+                    android:id="@+id/autocomplete_location_bias_north_east"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="autocomplete_location_north_east_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="autocomplete_location_restriction_label"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/autocomplete_location_restriction_south_west"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="autocomplete_location_south_west_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"/>
+
+                <EditText
+                    android:id="@+id/autocomplete_location_restriction_north_east"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="autocomplete_location_north_east_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"/>
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/autocomplete_query"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="autocomplete_query_hint"
+                android:imeOptions="actionNext"
+                android:inputType="text"/>
+
+            <!-- Autocomplete fragment only -->
+            <EditText
+                android:id="@+id/autocomplete_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="autocomplete_hint_hint"
+                android:imeOptions="actionNext"
+                android:inputType="text"/>
+
+            <EditText
+                android:id="@+id/autocomplete_country"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="autocomplete_country_hint"
+                android:imeOptions="actionNext"
+                android:inputType="text"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/autocomplete_use_type_filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="autocomplete_use_type_filter"/>
+
+                <Spinner
+                    android:id="@+id/autocomplete_type_filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <!-- Autocomplete predictions only -->
+            <CheckBox
+                android:id="@+id/autocomplete_use_session_token"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="autocomplete_use_session_token"/>
+
+            <!-- Autocomplete activity only -->
+            <CheckBox
+                android:id="@+id/autocomplete_activity_overlay_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="autocomplete_activity_overlay_mode"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/use_custom_fields"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="use_custom_fields"/>
+
+                <TextView
+                    android:id="@+id/custom_fields_list"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/fetch_autocomplete_predictions_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="fetch_autocomplete_predictions_button"/>
+
+            <Button
+                android:id="@+id/autocomplete_activity_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="autocomplete_activity_button"/>
+
+            <!-- Autocomplete support fragment -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/autocomplete_support_fragment_text_label"
+                android:text="autocomplete_support_fragment_text_label"/>
+            <fragment
+                android:id="@+id/autocomplete_support_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                />
+            <Button
+                android:id="@+id/autocomplete_support_fragment_update_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="autocomplete_support_fragment_update_button"/>
+
+            <!-- Results -->
+            <CheckBox
+                android:id="@+id/display_raw_results"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="display_raw_results"/>
+
+            <ProgressBar
+                android:id="@+id/loading"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/response"
+                android:textIsSelectable="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+    </ScrollView>
+</android.support.constraint.ConstraintLayout>

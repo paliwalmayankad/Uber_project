@@ -70,6 +70,19 @@ public class Response_All_Vehicle {
         @Expose
         private String vehicle_price="";
 
+        @SerializedName("token_no")
+        @Expose
+        private String token_no="";
+
+
+        public String getToken_no() {
+            return token_no;
+        }
+
+        public void setToken_no(String token_no) {
+            this.token_no = token_no;
+        }
+
         public String getVehicle_price() {
             return vehicle_price;
         }

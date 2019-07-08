@@ -1,7 +1,10 @@
 package aaronsoftech.in.unber.Activity;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +17,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -51,12 +58,12 @@ public class Vehicle_reg extends AppCompatActivity {
     Spinner vehicle_type;
     List<Response_Vehicle_type.Data_List> get_vehicle_type_list=new ArrayList<>();
     String get_Vehicle_id="";
-
+    String refreshedToken;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vehicle_reg);
-
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Init();
 
         btn_permit.setOnClickListener(new View.OnClickListener() {
@@ -208,36 +215,44 @@ public class Vehicle_reg extends AppCompatActivity {
         RequestBody request_file_other_doc = RequestBody.create(MediaType.parse("multipart/form-data"), file_other_doc);
         RequestBody request_file_insurense = RequestBody.create(MediaType.parse("multipart/form-data"), file_insurense);
 
+
         MultipartBody.Part body_request_permit = MultipartBody.Part.createFormData("permit", file_permit.getName(), request_file_permit);
         MultipartBody.Part body_request_vehicle = MultipartBody.Part.createFormData("vehicle_photo", file_vehicle.getName(), request_file_vehicle);
         MultipartBody.Part body_request_rc = MultipartBody.Part.createFormData("vehicle_rc", file_rc.getName(), request_file_rc);
         MultipartBody.Part body_request_other_doc = MultipartBody.Part.createFormData("vehicle_other_doc", file_other_doc.getName(), request_file_other_doc);
         MultipartBody.Part body_request_insurense = MultipartBody.Part.createFormData("vehicle_insurance_id", file_insurense.getName(), request_file_insurense);
         String Driver_ID="";
-   try{ Driver_ID= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-     }catch (Exception e){e.printStackTrace();}
+        try{ Driver_ID= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+            }catch (Exception e){e.printStackTrace();}
         RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+Driver_ID);
 
         RequestBody body_type_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+get_Vehicle_id);
-        RequestBody body_name =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_name.getText().toString().trim());
+        RequestBody body_tokene =RequestBody.create(okhttp3.MultipartBody.FORM, ""+refreshedToken);
         RequestBody body_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_no.getText().toString().trim());
 
-        Call<Response_vehicle> call= APIClient.getWebServiceMethod().vehicle_register(body_driver_id,body_type_id,body_number,
+        Call<Response_vehicle> call= APIClient.getWebServiceMethod().vehicle_register(body_tokene,body_driver_id,body_type_id,body_number,
         body_request_permit,body_request_vehicle,body_request_rc,body_request_other_doc,body_request_insurense);
 
         call.enqueue(new Callback<Response_vehicle>() {
             @Override
             public void onResponse(Call<Response_vehicle> call, Response<Response_vehicle> response) {
                 progressDialog.dismiss();
-
-                Toast.makeText(Vehicle_reg.this, "successfully Add Your Vehicle", Toast.LENGTH_SHORT).show();
                 try{
-                    Log.i(TAG,"response driver getid:  "+response.body().getId());
-                }catch (Exception e){e.printStackTrace();}
-                try{Log.i(TAG,"response driver getApi_message:  "+response.body().getApi_message());
-                }catch (Exception e){e.printStackTrace();}
-                try{Log.i(TAG,"response driver getApi_status:  "+response.body().getApi_status());
-                }catch (Exception e){e.printStackTrace();}
+                    String status=response.body().getApi_status();
+                    String msg=response.body().getApi_message();
+
+                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                    {
+
+                        Toast.makeText(Vehicle_reg.this, "successfully Add Your Vehicle", Toast.LENGTH_SHORT).show();
+                    }else{
+
+                        Toast.makeText(Vehicle_reg.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                    }
+
+                }catch (Exception e){
+                    Toast.makeText(Vehicle_reg.this, "Please retry..", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();}
 
             }
 
@@ -278,11 +293,23 @@ public class Vehicle_reg extends AppCompatActivity {
     }
 
     private void Set_docu_pic() {
+
+        if (PATH_PERMIT!=""){    App_Utils.loadProfileImage(Vehicle_reg.this,PATH_PERMIT,btn_permit);                }
+        if (PATH_VEHICLE!=""){   App_Utils.loadProfileImage(Vehicle_reg.this,PATH_VEHICLE,btn_vehicle);              }
+        if (PATH_RC!=""){        App_Utils.loadProfileImage(Vehicle_reg.this,PATH_RC,btn_vehicle_rc);                }
+        if (PATH_INSURENSE!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_INSURENSE,btn_insurence_id);       }
+        if (PATH_OTHER_DOC!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_OTHER_DOC,btn_other_doc);          }
+
+    }
+
+   /* private void Set_docu_pic() {
+
         if (PATH_PERMIT!="")      {     Picasso.with(Vehicle_reg.this).load(PATH_PERMIT).placeholder(R.drawable.ic_user).error(R.drawable.ic_user).into(btn_permit);                }
         if (PATH_VEHICLE!="")     {     Picasso.with(Vehicle_reg.this).load(PATH_VEHICLE).placeholder(R.drawable.ic_user).error(R.drawable.ic_user).into(btn_vehicle);             }
         if (PATH_RC!="")          {     Picasso.with(Vehicle_reg.this).load(PATH_RC).placeholder(R.drawable.ic_user).error(R.drawable.ic_user).into(btn_vehicle_rc);              }
         if (PATH_INSURENSE!="")   {     Picasso.with(Vehicle_reg.this).load(PATH_INSURENSE).placeholder(R.drawable.ic_user).error(R.drawable.ic_user).into(btn_insurence_id);      }
         if (PATH_OTHER_DOC!="")   {     Picasso.with(Vehicle_reg.this).load(PATH_OTHER_DOC).placeholder(R.drawable.ic_user).error(R.drawable.ic_user).into(btn_other_doc);         }
 
-    }
+    }*/
+
 }
