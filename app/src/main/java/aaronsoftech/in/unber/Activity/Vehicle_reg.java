@@ -237,6 +237,7 @@ public class Vehicle_reg extends AppCompatActivity {
             @Override
             public void onResponse(Call<Response_vehicle> call, Response<Response_vehicle> response) {
                 progressDialog.dismiss();
+
                 try{
                     String status=response.body().getApi_status();
                     String msg=response.body().getApi_message();

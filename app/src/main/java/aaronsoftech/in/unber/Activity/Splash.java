@@ -20,6 +20,8 @@ public class Splash extends AppCompatActivity {
         App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
 
 
+
+
     }
 
     @Override
