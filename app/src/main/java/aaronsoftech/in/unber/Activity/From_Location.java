@@ -3,6 +3,7 @@ package aaronsoftech.in.unber.Activity;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -22,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -71,6 +73,7 @@ import aaronsoftech.in.unber.Adapter.Adapter_Vehicle;
 import aaronsoftech.in.unber.Adapter.Adapter_vehicle_type;
 import aaronsoftech.in.unber.App_Conteroller;
 import aaronsoftech.in.unber.POJO.Response_All_Vehicle;
+import aaronsoftech.in.unber.POJO.Response_Login;
 import aaronsoftech.in.unber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.unber.POJO.Response_register;
 import aaronsoftech.in.unber.R;
@@ -80,6 +83,8 @@ import aaronsoftech.in.unber.Utils.SP_Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 public class From_Location extends AppCompatActivity implements LocationListener,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,Adapter_vehicle_type.Click_Adapter_Item_listner,Adapter_Vehicle.Vehicle_Item_listner {
@@ -288,32 +293,39 @@ public class From_Location extends AppCompatActivity implements LocationListener
         get_vehicle_type_list.clear();
         recyclerView_vehicle_type.setVisibility(View.VISIBLE);
         HashMap map= new HashMap<>();
-        Call<Response_Vehicle_type> call= APIClient.getWebServiceMethod().get_All_vehicle_type(map);
-        call.enqueue(new Callback<Response_Vehicle_type>() {
-            @Override
-            public void onResponse(Call<Response_Vehicle_type> call, Response<Response_Vehicle_type> response) {
-                progressDialog.dismiss();
-                String status=response.body().getApi_status();
-                String msg=response.body().getApi_message();
-                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                {
-                    Adapter_vehicle_type adapter_past=new Adapter_vehicle_type(From_Location.this,response.body().getData(),From_Location.this);
-                    get_vehicle_type_list=response.body().getData();
-                    recyclerView_vehicle_type.setAdapter(adapter_past);
 
-
-                }else{
+        if (isNetworkAvailable(From_Location.this))
+        {
+            Call<Response_Vehicle_type> call= APIClient.getWebServiceMethod().get_All_vehicle_type(map);
+            call.enqueue(new Callback<Response_Vehicle_type>() {
+                @Override
+                public void onResponse(Call<Response_Vehicle_type> call, Response<Response_Vehicle_type> response) {
                     progressDialog.dismiss();
-                    Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
-                }
-            }
+                    String status=response.body().getApi_status();
+                    String msg=response.body().getApi_message();
+                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                    {
+                        Adapter_vehicle_type adapter_past=new Adapter_vehicle_type(From_Location.this,response.body().getData(),From_Location.this);
+                        get_vehicle_type_list=response.body().getData();
+                        recyclerView_vehicle_type.setAdapter(adapter_past);
 
-            @Override
-            public void onFailure(Call<Response_Vehicle_type> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(From_Location.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+
+                    }else{
+                        progressDialog.dismiss();
+                        Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Response_Vehicle_type> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(From_Location.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(From_Location.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void Call_Select_Vihicle_Api(String vehicle_id, final String vehicle_price) {
@@ -326,39 +338,45 @@ public class From_Location extends AppCompatActivity implements LocationListener
         recy_vehicle_list.clearFocus();
         HashMap map= new HashMap<>();
         map.put("vehicle_type_id",vehicle_id);
-        Call<Response_All_Vehicle> call= APIClient.getWebServiceMethod().get_All_select_vehicle(map);
-        call.enqueue(new Callback<Response_All_Vehicle>() {
-            @Override
-            public void onResponse(Call<Response_All_Vehicle> call, Response<Response_All_Vehicle> response) {
-                progressDialog.dismiss();
-                String status=response.body().getApi_status();
-                String msg=response.body().getApi_message();
-                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                {
-
-                    Log.i(TAG,"Log driver price :"+vehicle_price);
-                    double price_pkm= Double.valueOf(vehicle_price);
-                    get_vehicle_select_list=response.body().getData();
-                    for (int i=0;i<get_vehicle_select_list.size();i++)
-                    {
-                        double price=Total_distanse*price_pkm;
-                        get_vehicle_select_list.get(i).setVehicle_price(String.valueOf(price));
-                    }
-                    Adapter_Vehicle adapter_past=new Adapter_Vehicle(From_Location.this,get_vehicle_select_list,From_Location.this);
-                    recy_vehicle_list.setAdapter(adapter_past);
-
-                }else{
+        if (isNetworkAvailable(From_Location.this))
+        {
+            Call<Response_All_Vehicle> call= APIClient.getWebServiceMethod().get_All_select_vehicle(map);
+            call.enqueue(new Callback<Response_All_Vehicle>() {
+                @Override
+                public void onResponse(Call<Response_All_Vehicle> call, Response<Response_All_Vehicle> response) {
                     progressDialog.dismiss();
-                    Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
-                }
-            }
+                    String status=response.body().getApi_status();
+                    String msg=response.body().getApi_message();
+                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                    {
 
-            @Override
-            public void onFailure(Call<Response_All_Vehicle> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(From_Location.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                        Log.i(TAG,"Log driver price :"+vehicle_price);
+                        double price_pkm= Double.valueOf(vehicle_price);
+                        get_vehicle_select_list=response.body().getData();
+                        for (int i=0;i<get_vehicle_select_list.size();i++)
+                        {
+                            double price=Total_distanse*price_pkm;
+                            get_vehicle_select_list.get(i).setVehicle_price(String.valueOf(price));
+                        }
+                        Adapter_Vehicle adapter_past=new Adapter_Vehicle(From_Location.this,get_vehicle_select_list,From_Location.this);
+                        recy_vehicle_list.setAdapter(adapter_past);
+
+                    }else{
+                        progressDialog.dismiss();
+                        Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Response_All_Vehicle> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(From_Location.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(From_Location.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void Set_location_on_map() {
@@ -862,43 +880,50 @@ public class From_Location extends AppCompatActivity implements LocationListener
         map.put("ip","959595");
         map.put("token_no",""+refreshtoken);
         map.put("driver_id",""+driver_ID);
-        Call<Response_register> call= APIClient.getWebServiceMethod().getBooked_ride(map);
-        call.enqueue(new Callback<Response_register>() {
-            @Override
-            public void onResponse(Call<Response_register> call, Response<Response_register> response) {
-                progressDialog.dismiss();
-                try{
-                    String status=response.body().getApi_status();
-                    String msg=response.body().getApi_message();
 
-                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                    {
-                        String id=response.body().getId();
-                        mDatabase = FirebaseDatabase.getInstance().getReference();
-                        map.put("vehicle_no",vehicle_no);
-                        map.put("vehicle_image",vehicle_image);
-                        mDatabase.child("Booking_ID").child(id).setValue(map);
-                        Save_data_on_firebase(mDatabase);
-                        finish();
-                        //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
-                        Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
-                    }else{
+        if (isNetworkAvailable(From_Location.this))
+        {
+            Call<Response_register> call= APIClient.getWebServiceMethod().getBooked_ride(map);
+            call.enqueue(new Callback<Response_register>() {
+                @Override
+                public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+                    progressDialog.dismiss();
+                    try{
+                        String status=response.body().getApi_status();
+                        String msg=response.body().getApi_message();
 
-                        Toast.makeText(From_Location.this, "status "+status+"\n"+" msg "+msg, Toast.LENGTH_LONG).show();
-                    }
-                }catch (Exception e){
-                    Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();}
+                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                        {
+                            String id=response.body().getId();
+                            mDatabase = FirebaseDatabase.getInstance().getReference();
+                            map.put("vehicle_no",vehicle_no);
+                            map.put("vehicle_image",vehicle_image);
+                            mDatabase.child("Booking_ID").child(id).setValue(map);
+                            Save_data_on_firebase(mDatabase);
+                            finish();
+                            //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
+                        }else{
 
-            }
+                            Toast.makeText(From_Location.this, "status "+status+"\n"+" msg "+msg, Toast.LENGTH_LONG).show();
+                        }
+                    }catch (Exception e){
+                        Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();}
 
-            @Override
-            public void onFailure(Call<Response_register> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(From_Location.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
 
-            }
-        });
+                @Override
+                public void onFailure(Call<Response_register> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(From_Location.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        }else{
+            Toast.makeText(From_Location.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override

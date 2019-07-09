@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import aaronsoftech.in.unber.App_Conteroller;
 import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Utils.SP_Utils;
@@ -14,18 +16,20 @@ import aaronsoftech.in.unber.Utils.SP_Utils;
 public class Splash extends AppCompatActivity {
     String userid="";
     String book_id="1";
+    String refreshedToken;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
         App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
-        try{
+       /* try{
             book_id=getIntent().getExtras().getString("book_id","");
             Toast.makeText(this, "book_id: "+book_id, Toast.LENGTH_SHORT).show();
 
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){e.printStackTrace();}*/
 
     }
 

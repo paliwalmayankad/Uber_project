@@ -17,6 +17,7 @@ import java.util.HashMap;
 import aaronsoftech.in.unber.App_Conteroller;
 import aaronsoftech.in.unber.POJO.Response_Login;
 import aaronsoftech.in.unber.POJO.Response_register;
+import aaronsoftech.in.unber.POJO.Response_vehicle;
 import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Service.APIClient;
 import aaronsoftech.in.unber.Utils.SP_Utils;
@@ -26,6 +27,8 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 
 public class Driver_document extends AppCompatActivity {
@@ -64,8 +67,47 @@ public class Driver_document extends AppCompatActivity {
         btn_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //App_Utils.loadProfileImage(Driver_document.this,path_licence,img);
-               Call_Document_submit_Api();
+                
+               if (path_licence=="" || path_licence.isEmpty() )
+               {
+                   Toast.makeText(Driver_document.this, "Please select Licence Image", Toast.LENGTH_SHORT).show();
+
+               }else if (path_pancard=="" || path_pancard.isEmpty())
+               {
+                   Toast.makeText(Driver_document.this, "Please select Pancard Image", Toast.LENGTH_SHORT).show();
+               }else if (path_permit_a=="" || path_permit_a.isEmpty())
+               {
+                   Toast.makeText(Driver_document.this, "Please select permit A", Toast.LENGTH_SHORT).show();
+               }else if (path_permit_b=="" || path_permit_b.isEmpty())
+               {
+                   Toast.makeText(Driver_document.this, "Please select permit B", Toast.LENGTH_SHORT).show();
+               }else if (path_registration=="" || path_registration.isEmpty())
+               {
+                   Toast.makeText(Driver_document.this, "Please select Registration", Toast.LENGTH_SHORT).show();
+               }else if (path_insurense=="" || path_insurense.isEmpty())
+               {
+                   Toast.makeText(Driver_document.this, "Please select Insurense Image", Toast.LENGTH_SHORT).show();
+               }else if (path_aadhar=="" || path_aadhar.isEmpty())
+               {
+                   Toast.makeText(Driver_document.this, "Please select Aadhar Image", Toast.LENGTH_SHORT).show();
+               }else if (path_police_verification_file=="" || path_police_verification_file.isEmpty())
+               {
+                   Toast.makeText(Driver_document.this, "Please select Ploice verification file", Toast.LENGTH_SHORT).show();
+               }else if ((txt_aadharcard_no=="") || (txt_aadharcard_no.isEmpty()))
+               {
+                   Toast.makeText(Driver_document.this, "Please enter Aadhar card no", Toast.LENGTH_SHORT).show();
+               }else if ((txt_pancard_no=="") || (txt_pancard_no.isEmpty()))
+               {
+                   Toast.makeText(Driver_document.this, "Please enter pancard no", Toast.LENGTH_SHORT).show();
+               }else if ((txt_licence_no=="") || (txt_licence_no.isEmpty()))
+               {
+                   Toast.makeText(Driver_document.this, "Please enter Licence no", Toast.LENGTH_SHORT).show();
+               }
+                else{
+                   Call_Document_submit_Api();
+               }
+                
+
             }
         });
 
@@ -136,31 +178,37 @@ public class Driver_document extends AppCompatActivity {
         map.put("id", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
         map.put("if_driver_id", ""+driver_id);
 
-        Call<Response_Login> call= APIClient.getWebServiceMethod().getUpdate_Profile(map);
-        call.enqueue(new Callback<Response_Login>() {
-            @Override
-            public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
-                String status=response.body().getApi_status();
-                String msg=response.body().getApi_message();
-                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                {
-                    App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
-                    App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
-                    App_Conteroller. editor.putString(SP_Utils.LOGIN_DRIVER_ID,""+driver_id);
-                    App_Conteroller. editor.commit();
+        if (isNetworkAvailable(Driver_document.this))
+        {
+            Call<Response_Login> call= APIClient.getWebServiceMethod().getUpdate_Profile(map);
+            call.enqueue(new Callback<Response_Login>() {
+                @Override
+                public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
+                    String status=response.body().getApi_status();
+                    String msg=response.body().getApi_message();
+                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                    {
+                        App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                        App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_DRIVER_ID,""+driver_id);
+                        App_Conteroller. editor.commit();
 
 
 
-                }else{
-                    Toast.makeText(Driver_document.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(Driver_document.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<Response_Login> call, Throwable t) {
-                Toast.makeText(Driver_document.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<Response_Login> call, Throwable t) {
+                    Toast.makeText(Driver_document.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(Driver_document.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void Call_Document_submit_Api() {
@@ -207,41 +255,47 @@ public class Driver_document extends AppCompatActivity {
         RequestBody body_police_verification_status =RequestBody.create(okhttp3.MultipartBody.FORM, "verify");
         RequestBody body_driver_insured_status =RequestBody.create(okhttp3.MultipartBody.FORM, "true");
 
-        Call<Response_register> call=APIClient.getWebServiceMethod().driver_register(body_user_id,
-                body_verified_status,body_dl_number,body_aadhar_number,body_pan_number,
-                body_police_verification_status,body_driver_insured_status,
-                body_status,body_request_file_licence,body_request_file_pancard,
-                body_request_file_police_verify,body_request_file_aadhar );
-        call.enqueue(new Callback<Response_register>() {
-            @Override
-            public void onResponse(Call<Response_register> call, Response<Response_register> response) {
-                progressDialog.dismiss();
-                try{
-                    String status=response.body().getApi_status();
-                    String msg=response.body().getApi_message();
+        if (isNetworkAvailable(Driver_document.this))
+        {
+            Call<Response_register> call=APIClient.getWebServiceMethod().driver_register(body_user_id,
+                    body_verified_status,body_dl_number,body_aadhar_number,body_pan_number,
+                    body_police_verification_status,body_driver_insured_status,
+                    body_status,body_request_file_licence,body_request_file_pancard,
+                    body_request_file_police_verify,body_request_file_aadhar );
+            call.enqueue(new Callback<Response_register>() {
+                @Override
+                public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+                    progressDialog.dismiss();
+                    try{
+                        String status=response.body().getApi_status();
+                        String msg=response.body().getApi_message();
 
-                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                    {
+                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                        {
 
-                        Update_info(response.body().getId());
-                        Toast.makeText(Driver_document.this, "Submit your document ", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }else{
+                            Update_info(response.body().getId());
+                            Toast.makeText(Driver_document.this, "Submit your document ", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }else{
 
-                        Toast.makeText(Driver_document.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_LONG).show();
-                    }
-                }catch (Exception e){
-                    Toast.makeText(Driver_document.this, "Server error", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();}
+                            Toast.makeText(Driver_document.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_LONG).show();
+                        }
+                    }catch (Exception e){
+                        Toast.makeText(Driver_document.this, "Server error", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();}
 
-            }
+                }
 
-            @Override
-            public void onFailure(Call<Response_register> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(Driver_document.this, " please retry", Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<Response_register> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(Driver_document.this, " please retry", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }else{
+            Toast.makeText(Driver_document.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
 
 
     }

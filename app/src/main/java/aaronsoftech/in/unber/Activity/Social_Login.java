@@ -36,6 +36,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +56,8 @@ import github.nisrulz.easydeviceinfo.base.EasyLocationMod;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 public class Social_Login extends AppCompatActivity implements
         View.OnClickListener {
@@ -127,30 +130,36 @@ public class Social_Login extends AppCompatActivity implements
 
     private void Call_Register_Api(Map map){
 
-        Call<Response_register> call= APIClient.getWebServiceMethod().getRegister(map);
-        call.enqueue(new Callback<Response_register>() {
-            @Override
-            public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+        if (isNetworkAvailable(Social_Login.this))
+        {
+            Call<Response_register> call= APIClient.getWebServiceMethod().getRegister(map);
+            call.enqueue(new Callback<Response_register>() {
+                @Override
+                public void onResponse(Call<Response_register> call, Response<Response_register> response) {
 
-                String status=response.body().getApi_status();
-                String msg=response.body().getApi_message();
-                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                {
-                    String id=response.body().getId();
-                    Toast.makeText(Social_Login.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
-                    get_login_with_Id(id);
-                }else{
-                    progressDialog.dismiss();
-                    Toast.makeText(Social_Login.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                    String status=response.body().getApi_status();
+                    String msg=response.body().getApi_message();
+                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                    {
+                        String id=response.body().getId();
+                        Toast.makeText(Social_Login.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+                        get_login_with_Id(id);
+                    }else{
+                        progressDialog.dismiss();
+                        Toast.makeText(Social_Login.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<Response_register> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(Social_Login.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<Response_register> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(Social_Login.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(con, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
 
 
     }
@@ -159,111 +168,117 @@ public class Social_Login extends AppCompatActivity implements
 
         HashMap<String,String>map=new HashMap<>();
         map.put("id", id);
-        Call<Response_Login> call= APIClient.getWebServiceMethod().getLogin_with_id(map);
-        call.enqueue(new Callback<Response_Login>() {
-            @Override
-            public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
+        if (isNetworkAvailable(Social_Login.this))
+        {
+            Call<Response_Login> call= APIClient.getWebServiceMethod().getLogin_with_id(map);
+            call.enqueue(new Callback<Response_Login>() {
+                @Override
+                public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
 
-                String status=response.body().getApi_status();
-                String msg=response.body().getApi_message();
-                progressDialog.dismiss();
-                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                {
-                    int size_list=response.body().getData().size();
-                    if (size_list!=0)
+                    String status=response.body().getApi_status();
+                    String msg=response.body().getApi_message();
+                    progressDialog.dismiss();
+                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                     {
-                        progressDialog.dismiss();
-                        App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
-                        App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+                        int size_list=response.body().getData().size();
+                        if (size_list!=0)
+                        {
+                            progressDialog.dismiss();
+                            App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                            App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
 
 
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
-                        if (response.body().getData().get(0).getName()==null)
-                        {       App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,"");
-                        }else{  App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+response.body().getData().get(0).getName());                    }
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
+                            if (response.body().getData().get(0).getName()==null)
+                            {       App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,"");
+                            }else{  App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+response.body().getData().get(0).getName());                    }
 
 
-                        if (response.body().getData().get(0).getGender()==null)
-                        {         App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,"");
-                        }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+response.body().getData().get(0).getGender());              }
+                            if (response.body().getData().get(0).getGender()==null)
+                            {         App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,"");
+                            }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+response.body().getData().get(0).getGender());              }
 
-                        if (response.body().getData().get(0).getPhoto()==null)
-                        {          App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,"");
-                        }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());               }
+                            if (response.body().getData().get(0).getPhoto()==null)
+                            {          App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,"");
+                            }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());               }
 
-                        if (response.body().getData().get(0).getEmail()==null)
-                        {       App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,"");          }
-                        else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());                  }
+                            if (response.body().getData().get(0).getEmail()==null)
+                            {       App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,"");          }
+                            else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());                  }
 
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_DRIVER_ID,""+response.body().getData().get(0).getIf_driver_id());
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_DRIVER_ID,""+response.body().getData().get(0).getIf_driver_id());
 
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_IS_SUPERADMIN,""+response.body().getData().get(0).getCms_privileges_is_superadmin());
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_THEME_COLOR,""+response.body().getData().get(0).getCms_privileges_theme_color());
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_IS_SUPERADMIN,""+response.body().getData().get(0).getCms_privileges_is_superadmin());
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_THEME_COLOR,""+response.body().getData().get(0).getCms_privileges_theme_color());
 
-                        if (response.body().getData().get(0).getStatus()==null)
-                        {          App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,"");
-                        }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,""+response.body().getData().get(0).getStatus());                                  }
-
-
-                        if (response.body().getData().get(0).getContact_number()==null)
-                        {         App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,"");
-                        }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());                    }
+                            if (response.body().getData().get(0).getStatus()==null)
+                            {          App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,"");
+                            }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,""+response.body().getData().get(0).getStatus());                                  }
 
 
-                        if (response.body().getData().get(0).getAddress()==null)
-                        {         App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,"");
-                        }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+response.body().getData().get(0).getAddress());                               }
+                            if (response.body().getData().get(0).getContact_number()==null)
+                            {         App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,"");
+                            }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());                    }
 
 
-                        if (response.body().getData().get(0).getCity()==null)
-                        {         App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,"");
-                        }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+response.body().getData().get(0).getCity());                                   }
-
-                        if(response.body().getData().get(0).getState()==null)
-                        {        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,"");
-                        }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+response.body().getData().get(0).getState());                  }
+                            if (response.body().getData().get(0).getAddress()==null)
+                            {         App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,"");
+                            }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+response.body().getData().get(0).getAddress());                               }
 
 
-                        if (response.body().getData().get(0).getCountry()==null)
-                        {        App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,"");
-                        }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+response.body().getData().get(0).getCountry());               }
+                            if (response.body().getData().get(0).getCity()==null)
+                            {         App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,"");
+                            }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+response.body().getData().get(0).getCity());                                   }
+
+                            if(response.body().getData().get(0).getState()==null)
+                            {        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,"");
+                            }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+response.body().getData().get(0).getState());                  }
 
 
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
+                            if (response.body().getData().get(0).getCountry()==null)
+                            {        App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,"");
+                            }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+response.body().getData().get(0).getCountry());               }
 
-                        if (response.body().getData().get(0).getZip_code()==null)
-                        {          App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,"");
-                        }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+response.body().getData().get(0).getZip_code());            }
 
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_MAC_ID,""+response.body().getData().get(0).getMac_id());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_SOCIAL_TYPE,""+response.body().getData().get(0).getSocial_type());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_TOKEN_ID,""+response.body().getData().get(0).getToken_id());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSCODE,""+response.body().getData().get(0).getPasscode());
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
 
-                        if (response.body().getData().get(0).getUsr_status()==null)
-                        {        App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,"");
-                        }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());                    }
+                            if (response.body().getData().get(0).getZip_code()==null)
+                            {          App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,"");
+                            }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+response.body().getData().get(0).getZip_code());            }
 
-                        App_Conteroller. editor.commit();
-                        Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(Social_Login.this, Home.class));
-                        finish();
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_MAC_ID,""+response.body().getData().get(0).getMac_id());
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_SOCIAL_TYPE,""+response.body().getData().get(0).getSocial_type());
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_TOKEN_ID,""+response.body().getData().get(0).getToken_id());
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSCODE,""+response.body().getData().get(0).getPasscode());
+
+                            if (response.body().getData().get(0).getUsr_status()==null)
+                            {        App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,"");
+                            }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());                    }
+
+                            App_Conteroller. editor.commit();
+                            Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
+                            startActivity(new Intent(Social_Login.this, Home.class));
+                            finish();
+                        }
+                    }else{
+                        Toast.makeText(Social_Login.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
                     }
-                }else{
-                    Toast.makeText(Social_Login.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
+
                 }
 
-            }
+                @Override
+                public void onFailure(Call<Response_Login> call, Throwable t) {
+                    Toast.makeText(Social_Login.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(Social_Login.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
 
-            @Override
-            public void onFailure(Call<Response_Login> call, Throwable t) {
-                Toast.makeText(Social_Login.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
 
     }
 
@@ -507,116 +522,121 @@ public class Social_Login extends AppCompatActivity implements
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
+        if (isNetworkAvailable(Social_Login.this))
+        {
+            Call<Response_Login> call= APIClient.getWebServiceMethod().getSocial_Login(login_map);
+            call.enqueue(new Callback<Response_Login>() {
+                @Override
+                public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
 
-        Call<Response_Login> call= APIClient.getWebServiceMethod().getSocial_Login(login_map);
-        call.enqueue(new Callback<Response_Login>() {
-            @Override
-            public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
-
-                String status=response.body().getApi_status();
-                String msg=response.body().getApi_message();
-                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                {
-                    int size_list=response.body().getData().size();
-                    if (size_list==0)
+                    String status=response.body().getApi_status();
+                    String msg=response.body().getApi_message();
+                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                     {
-                        Call_Register_Api(register_map);
+                        int size_list=response.body().getData().size();
+                        if (size_list==0)
+                        {
+                            Call_Register_Api(register_map);
+                        }else{
+                            progressDialog.dismiss();
+                            App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                            App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
+                            if (response.body().getData().get(0).getName()==null)
+                            {       App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,"");
+                            }else{  App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+response.body().getData().get(0).getName());                    }
+
+
+                            if (response.body().getData().get(0).getGender()==null)
+                            {         App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,"");
+                            }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+response.body().getData().get(0).getGender());              }
+
+                            if (response.body().getData().get(0).getPhoto()==null)
+                            {          App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,"");
+                            }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());               }
+
+                            if (response.body().getData().get(0).getEmail()==null)
+                            {       App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,"");          }
+                            else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());                  }
+
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_DRIVER_ID,""+response.body().getData().get(0).getIf_driver_id());
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_IS_SUPERADMIN,""+response.body().getData().get(0).getCms_privileges_is_superadmin());
+                            App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_THEME_COLOR,""+response.body().getData().get(0).getCms_privileges_theme_color());
+
+                            if (response.body().getData().get(0).getStatus()==null)
+                            {          App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,"");
+                            }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,""+response.body().getData().get(0).getStatus());                                  }
+
+
+                            if (response.body().getData().get(0).getContact_number()==null)
+                            {         App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,"");
+                            }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());                    }
+
+
+                            if (response.body().getData().get(0).getAddress()==null)
+                            {         App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,"");
+                            }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+response.body().getData().get(0).getAddress());                               }
+
+
+                            if (response.body().getData().get(0).getCity()==null)
+                            {         App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,"");
+                            }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+response.body().getData().get(0).getCity());                                   }
+
+                            if(response.body().getData().get(0).getState()==null)
+                            {        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,"");
+                            }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+response.body().getData().get(0).getState());                  }
+
+
+                            if (response.body().getData().get(0).getCountry()==null)
+                            {        App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,"");
+                            }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+response.body().getData().get(0).getCountry());               }
+
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
+
+
+                            if (response.body().getData().get(0).getZip_code()==null)
+                            {          App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,"");
+                            }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+response.body().getData().get(0).getZip_code());            }
+
+
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_MAC_ID,""+response.body().getData().get(0).getMac_id());
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_SOCIAL_TYPE,""+response.body().getData().get(0).getSocial_type());
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_TOKEN_ID,""+response.body().getData().get(0).getToken_id());
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSCODE,""+response.body().getData().get(0).getPasscode());
+
+                            if (response.body().getData().get(0).getUsr_status()==null)
+                            {        App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,"");
+                            }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());                    }
+
+
+                            App_Conteroller. editor.commit();
+                            Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
+                            startActivity(new Intent(Social_Login.this, Home.class));
+                            finish();
+                        }
                     }else{
                         progressDialog.dismiss();
-                        App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
-                        App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
-                        if (response.body().getData().get(0).getName()==null)
-                        {       App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,"");
-                        }else{  App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+response.body().getData().get(0).getName());                    }
-
-
-                        if (response.body().getData().get(0).getGender()==null)
-                        {         App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,"");
-                        }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+response.body().getData().get(0).getGender());              }
-
-                        if (response.body().getData().get(0).getPhoto()==null)
-                        {          App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,"");
-                        }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());               }
-
-                        if (response.body().getData().get(0).getEmail()==null)
-                        {       App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,"");          }
-                        else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+response.body().getData().get(0).getEmail());                  }
-
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_DRIVER_ID,""+response.body().getData().get(0).getIf_driver_id());
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_IS_SUPERADMIN,""+response.body().getData().get(0).getCms_privileges_is_superadmin());
-                        App_Conteroller.editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_THEME_COLOR,""+response.body().getData().get(0).getCms_privileges_theme_color());
-
-                        if (response.body().getData().get(0).getStatus()==null)
-                        {          App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,"");
-                        }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,""+response.body().getData().get(0).getStatus());                                  }
-
-
-                        if (response.body().getData().get(0).getContact_number()==null)
-                        {         App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,"");
-                        }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());                    }
-
-
-                        if (response.body().getData().get(0).getAddress()==null)
-                        {         App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,"");
-                        }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+response.body().getData().get(0).getAddress());                               }
-
-
-                        if (response.body().getData().get(0).getCity()==null)
-                        {         App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,"");
-                        }else{    App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+response.body().getData().get(0).getCity());                                   }
-
-                        if(response.body().getData().get(0).getState()==null)
-                        {        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,"");
-                        }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+response.body().getData().get(0).getState());                  }
-
-
-                        if (response.body().getData().get(0).getCountry()==null)
-                        {        App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,"");
-                        }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+response.body().getData().get(0).getCountry());               }
-
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
-
-
-                        if (response.body().getData().get(0).getZip_code()==null)
-                        {          App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,"");
-                        }else{     App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+response.body().getData().get(0).getZip_code());            }
-
-
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_MAC_ID,""+response.body().getData().get(0).getMac_id());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_SOCIAL_TYPE,""+response.body().getData().get(0).getSocial_type());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_TOKEN_ID,""+response.body().getData().get(0).getToken_id());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSCODE,""+response.body().getData().get(0).getPasscode());
-
-                        if (response.body().getData().get(0).getUsr_status()==null)
-                        {        App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,"");
-                        }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());                    }
-
-
-                        App_Conteroller. editor.commit();
-                        Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(Social_Login.this, Home.class));
-                        finish();
+                        Toast.makeText(Social_Login.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                     }
-                }else{
-                    progressDialog.dismiss();
-                    Toast.makeText(Social_Login.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                 }
-            }
 
-            @Override
-            public void onFailure(Call<Response_Login> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(Social_Login.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<Response_Login> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(Social_Login.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(con, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override

@@ -41,20 +41,32 @@ public class login_mobile extends AppCompatActivity {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                Log.i(TAG,"Token ID :  "+refreshedToken);
-                if (ed_mobile.getText().toString().isEmpty())
-                {
-                    ed_mobile.setError("Enter mobile no.");
-                    ed_mobile.requestFocus();
-                }else{
-                    startActivity(new Intent(login_mobile.this,Verification.class)
-                            .putExtra("mobile",ed_mobile.getText().toString().trim()));
-                }
+                Call_Intent();
+
 
             }
         });
         Give_Permission();
+    }
+
+    private void Call_Intent() {
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.i(TAG,"Token ID :  "+refreshedToken);
+        if ((refreshedToken==null) || (refreshedToken.equalsIgnoreCase(null)) ||
+                (refreshedToken.equalsIgnoreCase("null")) || (refreshedToken==""))
+        {
+            Call_Intent();
+        }else{
+            if (ed_mobile.getText().toString().isEmpty())
+            {
+                ed_mobile.setError("Enter mobile no.");
+                ed_mobile.requestFocus();
+            }else{
+                startActivity(new Intent(login_mobile.this,Verification.class)
+                        .putExtra("mobile",ed_mobile.getText().toString().trim()));
+            }
+        }
+
     }
 
     private void Give_Permission() {

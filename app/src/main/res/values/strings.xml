@@ -94,7 +94,7 @@
     <!-- Messages for the Rest API activity -->
     <string name="connections_fmt">Connections: %1$s</string>
     <string name="msg_contacts_failed">Get contacts failed.</string>
-<string name="connect_social_msg"><u>or connect using social account</u></string>
+    <string name="connect_social_msg"><u>or connect using social account</u></string>
     <string name="facebook_app_id">452862485517824</string>
     <string name="fb_login_protocol_scheme">fb452862485517824</string>
     <!-- TODO(user): replace with your real server client ID -->

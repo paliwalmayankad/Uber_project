@@ -31,7 +31,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import aaronsoftech.in.unber.Adapter.Adapter_Vehicle;
+import aaronsoftech.in.unber.Adapter.Adapter_vehicle_type;
 import aaronsoftech.in.unber.App_Conteroller;
+import aaronsoftech.in.unber.POJO.Response_All_Vehicle;
 import aaronsoftech.in.unber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.unber.POJO.Response_vehicle;
 import aaronsoftech.in.unber.R;
@@ -45,6 +48,8 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 
 public class Vehicle_reg extends AppCompatActivity {
@@ -158,35 +163,41 @@ public class Vehicle_reg extends AppCompatActivity {
         progressDialog.setMessage("Loading...");
         progressDialog.show();
         HashMap map= new HashMap<>();
-        Call<Response_Vehicle_type> call= APIClient.getWebServiceMethod().get_All_vehicle_type(map);
-        call.enqueue(new Callback<Response_Vehicle_type>() {
-            @Override
-            public void onResponse(Call<Response_Vehicle_type> call, Response<Response_Vehicle_type> response) {
-                progressDialog.dismiss();
-                String status=response.body().getApi_status();
-                String msg=response.body().getApi_message();
-                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                {
-                    for (int i=0;i<response.body().getData().size();i++)
-                    {
-                        vehicle_list.add(response.body().getData().get(i).getVehicle_type());
-                    }
-                    get_vehicle_type_list=response.body().getData();
-                    ArrayAdapter aa=new ArrayAdapter(Vehicle_reg.this,R.layout.textview_address_show,vehicle_list);
-                    vehicle_type.setAdapter(aa);
-
-                }else{
+        if (isNetworkAvailable(Vehicle_reg.this))
+        {
+            Call<Response_Vehicle_type> call= APIClient.getWebServiceMethod().get_All_vehicle_type(map);
+            call.enqueue(new Callback<Response_Vehicle_type>() {
+                @Override
+                public void onResponse(Call<Response_Vehicle_type> call, Response<Response_Vehicle_type> response) {
                     progressDialog.dismiss();
-                 //   Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
-                }
-            }
+                    String status=response.body().getApi_status();
+                    String msg=response.body().getApi_message();
+                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                    {
+                        for (int i=0;i<response.body().getData().size();i++)
+                        {
+                            vehicle_list.add(response.body().getData().get(i).getVehicle_type());
+                        }
+                        get_vehicle_type_list=response.body().getData();
+                        ArrayAdapter aa=new ArrayAdapter(Vehicle_reg.this,R.layout.textview_address_show,vehicle_list);
+                        vehicle_type.setAdapter(aa);
 
-            @Override
-            public void onFailure(Call<Response_Vehicle_type> call, Throwable t) {
-                progressDialog.dismiss();
-               Toast.makeText(Vehicle_reg.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    }else{
+                        progressDialog.dismiss();
+                        //   Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Response_Vehicle_type> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(Vehicle_reg.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 
@@ -230,40 +241,46 @@ public class Vehicle_reg extends AppCompatActivity {
         RequestBody body_tokene =RequestBody.create(okhttp3.MultipartBody.FORM, ""+refreshedToken);
         RequestBody body_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_no.getText().toString().trim());
 
-        Call<Response_vehicle> call= APIClient.getWebServiceMethod().vehicle_register(body_tokene,body_driver_id,body_type_id,body_number,
-        body_request_permit,body_request_vehicle,body_request_rc,body_request_other_doc,body_request_insurense);
+        if (isNetworkAvailable(Vehicle_reg.this))
+        {
+            Call<Response_vehicle> call= APIClient.getWebServiceMethod().vehicle_register(body_tokene,body_driver_id,body_type_id,body_number,
+                    body_request_permit,body_request_vehicle,body_request_rc,body_request_other_doc,body_request_insurense);
 
-        call.enqueue(new Callback<Response_vehicle>() {
-            @Override
-            public void onResponse(Call<Response_vehicle> call, Response<Response_vehicle> response) {
-                progressDialog.dismiss();
+            call.enqueue(new Callback<Response_vehicle>() {
+                @Override
+                public void onResponse(Call<Response_vehicle> call, Response<Response_vehicle> response) {
+                    progressDialog.dismiss();
 
-                try{
-                    String status=response.body().getApi_status();
-                    String msg=response.body().getApi_message();
+                    try{
+                        String status=response.body().getApi_status();
+                        String msg=response.body().getApi_message();
 
-                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                    {
+                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                        {
 
-                        Toast.makeText(Vehicle_reg.this, "successfully Add Your Vehicle", Toast.LENGTH_SHORT).show();
-                    }else{
+                            Toast.makeText(Vehicle_reg.this, "successfully Add Your Vehicle", Toast.LENGTH_SHORT).show();
+                        }else{
 
-                        Toast.makeText(Vehicle_reg.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
-                    }
+                            Toast.makeText(Vehicle_reg.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                        }
 
-                }catch (Exception e){
-                    Toast.makeText(Vehicle_reg.this, "Please retry..", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();}
+                    }catch (Exception e){
+                        Toast.makeText(Vehicle_reg.this, "Please retry..", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();}
 
-            }
+                }
 
-            @Override
-            public void onFailure(Call<Response_vehicle> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(Vehicle_reg.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
-            }
+                @Override
+                public void onFailure(Call<Response_vehicle> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(Vehicle_reg.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
 
-        });
+            });
+        }else{
+            Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void Init() {

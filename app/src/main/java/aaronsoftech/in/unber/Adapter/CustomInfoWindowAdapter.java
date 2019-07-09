@@ -22,7 +22,6 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     @Override
     public View getInfoWindow(Marker marker) {
         return null;
-
     }
 
     @Override
@@ -41,6 +40,8 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                 et_title.setText(consteind.getTitle());
             }
         }catch (Exception e){e.printStackTrace();}
+
+
 
         return view;
     }

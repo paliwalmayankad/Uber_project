@@ -3,6 +3,7 @@ package aaronsoftech.in.unber.Activity;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,8 @@ import github.nisrulz.easydeviceinfo.base.EasyLocationMod;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 public class Acc_edit extends AppCompatActivity {
     TextView t_name,t_mobile,t_email,btn_save,t_status;
@@ -171,33 +174,34 @@ public class Acc_edit extends AppCompatActivity {
     //    map.put("mac_id", id);
     //    map.put("passcode", id);
     //    map.put("if_driver_id", id);
-
-        Call<Response_Login> call= APIClient.getWebServiceMethod().getUpdate_Profile(map);
-        call.enqueue(new Callback<Response_Login>() {
-            @Override
-            public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
-                String status=response.body().getApi_status();
-                String msg=response.body().getApi_message();
-                progressDialog.dismiss();
-                if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                {
+        if (isNetworkAvailable(Acc_edit.this))
+        {
+            Call<Response_Login> call= APIClient.getWebServiceMethod().getUpdate_Profile(map);
+            call.enqueue(new Callback<Response_Login>() {
+                @Override
+                public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
+                    String status=response.body().getApi_status();
+                    String msg=response.body().getApi_message();
+                    progressDialog.dismiss();
+                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                    {
 
                         App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
                         App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
 
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+ed_name.getText().toString().trim());
 
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+gender);
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());
 
-                       App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+ed_email.getText().toString().trim());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_IS_SUPERADMIN,""+response.body().getData().get(0).getCms_privileges_is_superadmin());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_THEME_COLOR,""+response.body().getData().get(0).getCms_privileges_theme_color());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,""+response.body().getData().get(0).getStatus());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+ed_email.getText().toString().trim());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_IS_SUPERADMIN,""+response.body().getData().get(0).getCms_privileges_is_superadmin());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_THEME_COLOR,""+response.body().getData().get(0).getCms_privileges_theme_color());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,""+response.body().getData().get(0).getStatus());
 
                        /* if (response.body().getData().get(0).getContact_number()==null)
                         {
@@ -206,40 +210,44 @@ public class Acc_edit extends AppCompatActivity {
                             App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());
                         }*/
 
-                    App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+tx_mobile.getText().toString().trim());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+tx_mobile.getText().toString().trim());
 
-                    App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+ed_address.getText().toString().trim());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+ed_address.getText().toString().trim());
 
-                    App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+ed_city.getText().toString().trim());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+ed_city.getText().toString().trim());
 
-                    App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+ed_state.getText().toString().trim());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+ed_state.getText().toString().trim());
 
 
-                    App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+ed_country.getText().toString().trim());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
-                    App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+ed_zipcode.getText().toString().trim());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_MAC_ID,""+response.body().getData().get(0).getMac_id());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_SOCIAL_TYPE,""+response.body().getData().get(0).getSocial_type());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_TOKEN_ID,""+response.body().getData().get(0).getToken_id());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSCODE,""+response.body().getData().get(0).getPasscode());
-                      //  App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+ed_country.getText().toString().trim());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+ed_zipcode.getText().toString().trim());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_MAC_ID,""+response.body().getData().get(0).getMac_id());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_SOCIAL_TYPE,""+response.body().getData().get(0).getSocial_type());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_TOKEN_ID,""+response.body().getData().get(0).getToken_id());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSCODE,""+response.body().getData().get(0).getPasscode());
+                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());
 
-                    App_Conteroller. editor.commit();
-                    Toast.makeText(getApplicationContext(), "Update Successfully", Toast.LENGTH_LONG).show();
+                        App_Conteroller. editor.commit();
+                        Toast.makeText(getApplicationContext(), "Update Successfully", Toast.LENGTH_LONG).show();
 
-                }else{
-                    progressDialog.dismiss();
-                    Toast.makeText(Acc_edit.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
+                    }else{
+                        progressDialog.dismiss();
+                        Toast.makeText(Acc_edit.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<Response_Login> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(Acc_edit.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<Response_Login> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(Acc_edit.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(Acc_edit.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 

@@ -13,6 +13,11 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <uses-feature android:name="android.hardware.camera" />
     <!--
@@ -28,7 +33,10 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/nber_logo"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBar"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".Activity.Show_Vehicle"></activity>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -38,10 +46,37 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
-            android:value="false" />
-        <activity android:name="aaronsoftech.in.unber.Activity.Splash" android:theme="@style/AppTheme_one">
+            android:value="false" /> <!-- start service for FCM -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/nber_logo" />
+        <!--
+             Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/yellow_600" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" /> <!-- start service for FCM -->
+        <service android:name=".FCM.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".FCM.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".Activity.Splash"
+            android:theme="@style/AppTheme_one">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -49,55 +84,55 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="aaronsoftech.in.unber.Activity.MainActivity"
+            android:name=".Activity.MainActivity"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.login_mobile"
+            android:name=".Activity.login_mobile"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.login_email"
+            android:name=".Activity.login_email"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Acc_setting"
+            android:name=".Activity.Acc_setting"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Acc_edit"
+            android:name=".Activity.Acc_edit"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Trip"
+            android:name=".Activity.Trip"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Select_payment"
+            android:name=".Activity.Select_payment"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Payment_add"
+            android:name=".Activity.Payment_add"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Payment_code"
+            android:name=".Activity.Payment_code"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Trip_free"
+            android:name=".Activity.Trip_free"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Password"
+            android:name=".Activity.Password"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Privacy_setting"
+            android:name=".Activity.Privacy_setting"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Contacts"
+            android:name=".Activity.Contacts"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Notification"
+            android:name=".Activity.Notification"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Help"
+            android:name=".Activity.Help"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Register_mobile"
+            android:name=".Activity.Register_mobile"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Home"
+            android:name=".Activity.Home"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme_one" />
 
@@ -135,7 +170,7 @@
              android:value="@string/google_maps_key" />
         -->
         <activity
-            android:name="aaronsoftech.in.unber.Activity.Social_Login"
+            android:name=".Activity.Social_Login"
             android:theme="@style/AppTheme_one" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -150,14 +185,18 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="aaronsoftech.in.unber.Activity.MapsActivity"
-            android:label="@string/title_activity_maps"                              />
-        <activity android:name="aaronsoftech.in.unber.Activity.Verification"      />
-        <activity android:name="aaronsoftech.in.unber.Activity.From_Location"    android:theme="@style/AppTheme_one"  />
-        <activity android:name="aaronsoftech.in.unber.Activity.Driver_document"   />
-        <activity android:name="aaronsoftech.in.unber.Activity.Driver_photo"      />
-        <activity android:name="aaronsoftech.in.unber.Activity.Driver_doc_Image"  />
-        <activity android:name="aaronsoftech.in.unber.Activity.Vehicle_reg"       android:theme="@style/AppTheme_one" ></activity>
+            android:name=".Activity.MapsActivity"
+            android:label="@string/title_activity_maps" />
+        <activity android:name=".Activity.Verification" />
+        <activity
+            android:name=".Activity.From_Location"
+            android:theme="@style/AppTheme_one" />
+        <activity android:name=".Activity.Driver_document" />
+        <activity android:name=".Activity.Driver_photo" />
+        <activity android:name=".Activity.Driver_doc_Image" />
+        <activity
+            android:name=".Activity.Vehicle_reg"
+            android:theme="@style/AppTheme_one" />
     </application>
 
 </manifest>

@@ -46,8 +46,8 @@ public class MyNotificationManager {
                     .setSubText(message)
                     .setPriority(Notification.PRIORITY_MAX)
                     .setContentText(title)
-                    .setSmallIcon(R.drawable.logo1)
-                    .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.drawable.logo1));
+                    .setSmallIcon(R.drawable.nber_logo)
+                    .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.drawable.nber_logo));
 
 
             NotificationCompat.BigPictureStyle bigPicStyle = new NotificationCompat.BigPictureStyle();
@@ -75,9 +75,9 @@ public class MyNotificationManager {
                     .setContentTitle(mCtx.getResources().getString(R.string.app_name))
                     .setSubText(message)
                     .setContentText(title)
-                    .setPriority(Notification.PRIORITY_HIGH)
-                    .setSmallIcon(R.drawable.logo1)
-                    .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.drawable.logo1))
+                    .setPriority(Notification.PRIORITY_MAX)
+                    .setSmallIcon(R.drawable.nber_logo)
+                    .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.drawable.nber_logo))
                     .setContentIntent(pendingIntent);
 
             generateNotification(mBuilder);

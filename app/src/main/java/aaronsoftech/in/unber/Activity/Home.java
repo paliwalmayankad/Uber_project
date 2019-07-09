@@ -1,8 +1,10 @@
 package aaronsoftech.in.unber.Activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -44,6 +47,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -79,6 +83,7 @@ public class Home extends AppCompatActivity
     TextView header_name;
     String TAG="Home";
     int update_marker = 0;
+    int update_marker2=0;
     String[] locationPermissionsl = {"android.permission.ACCESS_COARSE_LOCATION","android.permission.ACCESS_FINE_LOCATION"};
     private static int REQUEST_CODE_LOCATIONl = 102;
     private DatabaseReference mDatabase;
@@ -89,6 +94,8 @@ public class Home extends AppCompatActivity
     String booked_id="";
     RelativeLayout coordinatorLayout;
     double oldlat,oldlong;
+    Boolean Accept_this_booking=true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +110,7 @@ public class Home extends AppCompatActivity
             }catch (Exception e){e.printStackTrace();}
 
 
+
             FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -113,7 +121,6 @@ public class Home extends AppCompatActivity
             });
 
             try{
-
                 Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"")+"\n\n"+"Driver ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""), Toast.LENGTH_SHORT).show();
             }catch (Exception e){e.printStackTrace();}
 
@@ -127,11 +134,15 @@ public class Home extends AppCompatActivity
                     {
                         Toast.makeText(Home.this, "Please Complite your profile", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(Home.this,Acc_edit.class));
-                    }else
+                    }else if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
+                            || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
+                            || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
                     {
-                        //  startActivity(new Intent(Home.this,Contacts.class));
                         startActivity(new Intent(Home.this,From_Location.class));
+                    }else{
+                        startActivity(new Intent(Home.this,Show_Vehicle.class));
                     }
+
                 }
             });
 
@@ -186,10 +197,121 @@ public class Home extends AppCompatActivity
             Give_Permission();
 
             Check_User_Id_on_firebase();
+
         }catch (Exception e){
             e.printStackTrace();
             Crashlytics.logException(e);}
 
+    }
+
+    private void Check_driver_booking(final Location location) {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Query myTopPostsQuery = mDatabase.child("Booking_ID");
+        // My top posts by number of stars
+        myTopPostsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+
+                Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    // Extract a Message object from the DataSnapshot
+                    Response_Booking message = child.getValue(Response_Booking.class);
+
+                    if (message.getDriver_id().equalsIgnoreCase(Driver_ID) && Accept_this_booking )
+                    {
+                        Show_dialog_box(location);
+
+                    }else if (message.getDriver_id().equalsIgnoreCase(Driver_ID))
+                    {
+                        lat=location.getLatitude();
+                        lng=location.getLongitude();
+                        double speed=location.getSpeed();
+                        Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
+                        String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+                        HashMap<String,String> map=new HashMap<>();
+                        map.put("driver_ID",""+driver_id);
+                        map.put("name", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+                        map.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
+                        map.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
+                        map.put("lat",""+lat);
+                        map.put("lng",""+lng);
+                        map.put("speed",""+speed);
+                        Call_firebase_service(map);
+
+                        MarkerOptions marker3 = null;
+                        Accept_this_booking=false;
+                        if (update_marker2==0){
+                            marker3 = new MarkerOptions().position(new LatLng(lat, lng));
+                            marker3.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                            mMap.addMarker(marker3);
+                            update_marker2 = 1;
+                            mMap.addCircle(new CircleOptions()
+                                    .center(new LatLng(lat,lng))
+                                    .radius(500)
+                                    .strokeColor(Color.YELLOW)
+                                    .fillColor(Color.TRANSPARENT));
+                        }
+
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        });
+    }
+
+    private void Show_dialog_box(final Location location) {
+        AlertDialog.Builder dialog=new AlertDialog.Builder(Home.this);
+        dialog.setTitle(getResources().getString(R.string.app_name));
+        dialog.setMessage("Accept this booking");
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        dialog.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                lat=location.getLatitude();
+                lng=location.getLongitude();
+                double speed=location.getSpeed();
+                Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
+                String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+                HashMap<String,String> map=new HashMap<>();
+                map.put("driver_ID",""+driver_id);
+                map.put("name", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+                map.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
+                map.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
+                map.put("lat",""+lat);
+                map.put("lng",""+lng);
+                map.put("speed",""+speed);
+                Call_firebase_service(map);
+
+                MarkerOptions marker3 = null;
+                Accept_this_booking=false;
+                if (update_marker2==0){
+                    marker3 = new MarkerOptions().position(new LatLng(lat, lng));
+                    marker3.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                    mMap.addMarker(marker3);
+                    update_marker2 = 1;
+                    mMap.addCircle(new CircleOptions()
+                            .center(new LatLng(lat,lng))
+                            .radius(500)
+                            .strokeColor(Color.YELLOW)
+                            .fillColor(Color.TRANSPARENT));
+                }
+            }
+        });
+        dialog.show();
 
     }
 
@@ -232,7 +354,6 @@ public class Home extends AppCompatActivity
 
     private void addstart_end_icontrip(String from_add,String to_address,double from_lat,double from_lng,double to_lat,double to_lng)
     {
-
 
         try {
 
@@ -458,29 +579,9 @@ public class Home extends AppCompatActivity
                 {
 
                 }else{
-                    if (booked_id.equalsIgnoreCase("1"))
-                    {
-                        lat=location.getLatitude();
-                        lng=location.getLongitude();
-                        double speed=location.getSpeed();
-                        Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
-                        String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-                        HashMap<String,String> map=new HashMap<>();
-                        map.put("driver_ID",""+driver_id);
-                        map.put("name", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
-                        map.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
-                        map.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
-                        map.put("lat",""+lat);
-                        map.put("lng",""+lng);
-                        map.put("speed",""+speed);
-                        Call_firebase_service(map);
-
-
-
-
-                    }
-
+                    Check_driver_booking(location);
                 }
+
             }
         });
     }
