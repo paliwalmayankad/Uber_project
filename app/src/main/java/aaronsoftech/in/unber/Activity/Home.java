@@ -36,6 +36,7 @@ import com.akexorcist.googledirection.constant.TransportMode;
 import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -67,6 +68,7 @@ import aaronsoftech.in.unber.POJO.Customwindow_const;
 import aaronsoftech.in.unber.POJO.Response_Booking;
 import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Utils.SP_Utils;
+import io.fabric.sdk.android.Fabric;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback{
@@ -91,65 +93,67 @@ public class Home extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
+        Fabric.with(this, new Crashlytics());
         try{
-            booked_id=getIntent().getExtras().getString("book_id","");
-        }catch (Exception e){e.printStackTrace();}
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+
+            try{
+                booked_id= String.valueOf(getIntent().getExtras().get("book_id"));
+            }catch (Exception e){e.printStackTrace();}
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        try{
-
-            Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"")+"\n\n"+"Driver ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""), Toast.LENGTH_SHORT).show();
-        }catch (Exception e){e.printStackTrace();}
-
-        coordinatorLayout=findViewById(R.id.layout_linear);
-        LinearLayout get_loaction=findViewById(R.id.location_layout);
-        get_loaction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,"").equalsIgnoreCase("")
-                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,"").equalsIgnoreCase(""))
-                {
-                    Toast.makeText(Home.this, "Please Complite your profile", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(Home.this,Acc_edit.class));
-                }else
-                {
-                  //  startActivity(new Intent(Home.this,Contacts.class));
-                   startActivity(new Intent(Home.this,From_Location.class));
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
                 }
-            }
-        });
+            });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+            try{
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        View headerView = navigationView.getHeaderView(0);
+                Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"")+"\n\n"+"Driver ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""), Toast.LENGTH_SHORT).show();
+            }catch (Exception e){e.printStackTrace();}
 
-        TextView btn_driver_login=headerView.findViewById(R.id.textView_driver);
-        btn_driver_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,"").equalsIgnoreCase("")
-                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,"").equalsIgnoreCase(""))
-                {
-                    Toast.makeText(Home.this, "Please Complite your profile", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(Home.this,Acc_edit.class));
-                }else
+            coordinatorLayout=findViewById(R.id.layout_linear);
+            LinearLayout get_loaction=findViewById(R.id.location_layout);
+            get_loaction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,"").equalsIgnoreCase("")
+                            || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,"").equalsIgnoreCase(""))
+                    {
+                        Toast.makeText(Home.this, "Please Complite your profile", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(Home.this,Acc_edit.class));
+                    }else
+                    {
+                        //  startActivity(new Intent(Home.this,Contacts.class));
+                        startActivity(new Intent(Home.this,From_Location.class));
+                    }
+                }
+            });
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawer.addDrawerListener(toggle);
+            toggle.syncState();
+
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            View headerView = navigationView.getHeaderView(0);
+
+            TextView btn_driver_login=headerView.findViewById(R.id.textView_driver);
+            btn_driver_login.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,"").equalsIgnoreCase("")
+                            || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,"").equalsIgnoreCase(""))
+                    {
+                        Toast.makeText(Home.this, "Please Complite your profile", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(Home.this,Acc_edit.class));
+                    }else
                     {
                         if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
                                 || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
@@ -161,27 +165,31 @@ public class Home extends AppCompatActivity
                         }
                     }
 
-            }
-        });
+                }
+            });
 
-        image_header = (ImageView) headerView.findViewById(R.id.imageView);
-        header_name = (TextView) headerView.findViewById(R.id.textView_name);
-        set_Header_value();
-        image_header.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(Home.this,Acc_edit.class));
-            }
-        });
-        navigationView.setNavigationItemSelectedListener(this);
+            image_header = (ImageView) headerView.findViewById(R.id.imageView);
+            header_name = (TextView) headerView.findViewById(R.id.textView_name);
+            set_Header_value();
+            image_header.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(Home.this,Acc_edit.class));
+                }
+            });
+            navigationView.setNavigationItemSelectedListener(this);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        Give_Permission();
+            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+            Give_Permission();
 
-        Check_User_Id_on_firebase();
+            Check_User_Id_on_firebase();
+        }catch (Exception e){
+            e.printStackTrace();
+            Crashlytics.logException(e);}
+
 
     }
 

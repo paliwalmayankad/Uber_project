@@ -38,7 +38,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
-
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
         <activity android:name="aaronsoftech.in.unber.Activity.Splash" android:theme="@style/AppTheme_one">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
