@@ -30,13 +30,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.constant.TransportMode;
+import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Route;
+import com.akexorcist.googledirection.util.DirectionConverter;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -51,8 +60,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import aaronsoftech.in.unber.Adapter.CustomInfoWindowAdapter;
 import aaronsoftech.in.unber.App_Conteroller;
 import aaronsoftech.in.unber.Model.FB_Driver_res;
+import aaronsoftech.in.unber.POJO.Customwindow_const;
 import aaronsoftech.in.unber.POJO.Response_Booking;
 import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Utils.SP_Utils;
@@ -60,9 +71,12 @@ import aaronsoftech.in.unber.Utils.SP_Utils;
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback{
     private GoogleMap mMap;
+    CustomInfoWindowAdapter wind_adaptet;
+    ArrayList<String> google_map_list = new ArrayList<String>();
     ImageView image_header;
     TextView header_name;
     String TAG="Home";
+    int update_marker = 0;
     String[] locationPermissionsl = {"android.permission.ACCESS_COARSE_LOCATION","android.permission.ACCESS_FINE_LOCATION"};
     private static int REQUEST_CODE_LOCATIONl = 102;
     private DatabaseReference mDatabase;
@@ -71,7 +85,8 @@ public class Home extends AppCompatActivity
     boolean setCurrentLocation=true;
     List<FB_Driver_res >get_driver_loc=new ArrayList<>();
     String booked_id="";
-
+    RelativeLayout coordinatorLayout;
+    double oldlat,oldlong;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,7 +113,7 @@ public class Home extends AppCompatActivity
             Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"")+"\n\n"+"Driver ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""), Toast.LENGTH_SHORT).show();
         }catch (Exception e){e.printStackTrace();}
 
-
+        coordinatorLayout=findViewById(R.id.layout_linear);
         LinearLayout get_loaction=findViewById(R.id.location_layout);
         get_loaction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,7 +183,6 @@ public class Home extends AppCompatActivity
 
         Check_User_Id_on_firebase();
 
-
     }
 
     private void Check_User_Id_on_firebase() {
@@ -188,8 +202,11 @@ public class Home extends AppCompatActivity
                     if (message.getUser_id().equalsIgnoreCase(UserID))
                     {
                         String driver_id=message.getDriver_id();
+                        LatLng from_latlng=new LatLng(Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()));
+                        LatLng to_latlng=new LatLng(Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
+                        addstart_end_icontrip(message.getFrom_address(),message.getTo_address(),Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()),Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
+                        set_line_on_map(from_latlng,to_latlng);
                         Show_Driver_Location(driver_id);
-
                     }
 
                 }
@@ -205,6 +222,101 @@ public class Home extends AppCompatActivity
         });
     }
 
+    private void addstart_end_icontrip(String from_add,String to_address,double from_lat,double from_lng,double to_lat,double to_lng)
+    {
+
+
+        try {
+
+            final MarkerOptions marker2e = new MarkerOptions().position(
+                    new LatLng(from_lat, from_lng)).title("Pick up at:" + from_add);
+            marker2e.icon(BitmapDescriptorFactory.fromResource(R.drawable.greenpin));
+            final Customwindow_const infoew = new Customwindow_const();
+            infoew.setSnippet(from_add);
+            infoew.setTitle("Pick up at:");
+
+            wind_adaptet = new CustomInfoWindowAdapter(this);
+            mMap.setInfoWindowAdapter(wind_adaptet);
+
+            Marker m = mMap.addMarker(marker2e);
+            m.setTag(infoew);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+
+            try {
+                final MarkerOptions marker1e = new MarkerOptions().position(
+                        //"Drop off at:"+"\n"+
+                        new LatLng(to_lat, to_lng)).title("Drop off at: " + to_address);
+                marker1e.icon(BitmapDescriptorFactory.fromResource(R.drawable.redpin));
+                final Customwindow_const infoe = new Customwindow_const();
+                infoe.setSnippet(to_address);
+                infoe.setTitle("Drop off at:");
+                wind_adaptet = new CustomInfoWindowAdapter(this);
+                mMap.setInfoWindowAdapter(wind_adaptet);
+                Marker m = mMap.addMarker(marker1e);
+                m.setTag(infoe);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void set_line_on_map(LatLng from_latLng, LatLng to_latlng) {
+        google_map_list.clear();
+        GoogleDirection.withServerKey(getResources().getString(R.string.google_maps_key))
+                .from(from_latLng)
+                .to(to_latlng)
+                .transportMode(TransportMode.DRIVING).execute(new DirectionCallback() {
+            @Override
+            public void onDirectionSuccess(Direction direction, String rawBody) {
+                if (direction.isOK()) {
+                    try {
+                        Route route = direction.getRouteList().get(0);
+                        google_map_list.add(String.valueOf(direction.getRouteList().get(0)));
+                        try {
+                            ArrayList<LatLng> directionPositionList = route.getLegList().get(0).getDirectionPoint();
+                            mMap.addPolyline(DirectionConverter.createPolyline(Home.this, directionPositionList, 4, getResources().getColor(R.color.blue_700)));
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            setCameraWithCoordinationBounds(route);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        //  progressDialogmap.dismiss();
+                    } catch (Exception e) {
+                        //progressDialogmap.dismiss();
+                        e.printStackTrace();
+                    }
+                    //  btnRequestDirection.setVisibility(View.GONE);
+                } else {
+                    //  progressDialogmap.dismiss();
+                    Snackbar.make(coordinatorLayout, direction.getStatus(), Snackbar.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onDirectionFailure(Throwable t) {
+                Snackbar.make(coordinatorLayout, t.getMessage(), Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void setCameraWithCoordinationBounds(Route route)
+    {
+        LatLng southwest = route.getBound().getSouthwestCoordination().getCoordination();
+        LatLng northeast = route.getBound().getNortheastCoordination().getCoordination();
+        LatLngBounds bounds = new LatLngBounds(southwest, northeast);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+        //  mapFragment.getMapAsync(this);
+    }
 
     private void set_Header_value() {
         try{
@@ -344,7 +456,6 @@ public class Home extends AppCompatActivity
                         lng=location.getLongitude();
                         double speed=location.getSpeed();
                         Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
-
                         String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
                         HashMap<String,String> map=new HashMap<>();
                         map.put("driver_ID",""+driver_id);
@@ -355,6 +466,10 @@ public class Home extends AppCompatActivity
                         map.put("lng",""+lng);
                         map.put("speed",""+speed);
                         Call_firebase_service(map);
+
+
+
+
                     }
 
                 }
@@ -380,6 +495,7 @@ public class Home extends AppCompatActivity
                     String lng = String.valueOf(dataSnapshot.child("lng").getValue());
                     String speed = String.valueOf(dataSnapshot.child("speed").getValue());
                     get_driver_loc.add(new FB_Driver_res(driver_ID,name,photo,contactno,lat,lng,speed));
+                MarkerOptions marker2 = null;
 
             try{
                 if (get_driver_loc.size()!=0)
@@ -387,19 +503,45 @@ public class Home extends AppCompatActivity
                     for (int i=0;i<get_driver_loc.size();i++)
                     {
 
-                        String  get_driverid= get_driver_loc.get(i).getDriver_ID();
-                        String nameq=get_driver_loc.get(i).getName();
-                        Toast.makeText(Home.this, "name "+nameq+"\n"+"get_driverid "+get_driverid, Toast.LENGTH_SHORT).show();
+                    String  get_driverid= get_driver_loc.get(i).getDriver_ID();
+                    String nameq=get_driver_loc.get(i).getName();
+                    Toast.makeText(Home.this, "name "+nameq+"\n"+"get_driverid "+get_driverid, Toast.LENGTH_SHORT).show();
                     double get_lat= Double.valueOf(get_driver_loc.get(i).getLat());
                     double get_lng=Double.valueOf(get_driver_loc.get(i).getLng());
-                    LatLng sydney = new LatLng(get_lat, get_lng);
-                    mMap.addMarker(new MarkerOptions().position(sydney).title(nameq));
 
+
+                        Location prevLoc = new Location("service Provider");
+                        prevLoc.setLatitude(oldlat);
+                        prevLoc.setLongitude(oldlong);
+                        Location newLoc = new Location("service Provider");
+                        newLoc.setLatitude(get_lat);
+                        newLoc.setLongitude(get_lng);
+                        float bearing = prevLoc.bearingTo(newLoc);
+
+                        if (update_marker == 0)
+                        {
+                            marker2 = new MarkerOptions().position(new LatLng(get_lat, get_lng));
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.car));
+                            marker2.anchor(0.5f, 0.5f);
+                            marker2.rotation(bearing);
+                            marker2.flat(true);
+                            mMap.addMarker(marker2);
+                            update_marker = 1;
+                        }
+                        else
+                        {
+                            //   marker2 = new MarkerOptions().position(new LatLng(sokit_long, sokit_lan));
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.car));
+                            marker2.anchor(0.5f, 0.5f);
+                            marker2.rotation(bearing);
+                            marker2.flat(true);
+                            mMap.addMarker(marker2);
+                        }
+                        oldlat=get_lat;
+                        oldlong=get_lng;
                     }
                 }
             }catch (Exception e){e.printStackTrace();}
-
-
             }
 
             @Override

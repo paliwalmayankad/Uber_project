@@ -419,45 +419,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
     {
         if ((FROM_LAT!="") && (FROM_LNG!="") && (TO_LAT!="") && (TO_LNG!=""))
             {
-            GoogleDirection.withServerKey(getResources().getString(R.string.google_maps_key))
-                    .from(FROM_latLng)
-                    .to(TO_latlng)
-                    .transportMode(TransportMode.DRIVING).execute(new DirectionCallback() {
-                @Override
-                public void onDirectionSuccess(Direction direction, String rawBody) {
-                    if (direction.isOK()) {
-                        try {
-                            Route route = direction.getRouteList().get(0);
-                            google_map_list.add(String.valueOf(direction.getRouteList().get(0)));
-                            try {
-                                ArrayList<LatLng> directionPositionList = route.getLegList().get(0).getDirectionPoint();
-                                googleMap.addPolyline(DirectionConverter.createPolyline(From_Location.this, directionPositionList, 4, getResources().getColor(R.color.light_green_700)));
 
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            try {
-                                setCameraWithCoordinationBounds(route);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            //  progressDialogmap.dismiss();
-                        } catch (Exception e) {
-                            //progressDialogmap.dismiss();
-                            e.printStackTrace();
-                        }
-                        //  btnRequestDirection.setVisibility(View.GONE);
-                    } else {
-                        //  progressDialogmap.dismiss();
-                        Snackbar.make(coordinatorLayout, direction.getStatus(), Snackbar.LENGTH_SHORT).show();
-                    }
-                }
+            set_line_on_map(FROM_latLng,TO_latlng);
 
-                @Override
-                public void onDirectionFailure(Throwable t) {
-                    Snackbar.make(coordinatorLayout, t.getMessage(), Snackbar.LENGTH_SHORT).show();
-                }
-            });
             btn_done.setText("Distance in km: "+String.valueOf(distance(Double.valueOf(FROM_LAT),Double.valueOf(FROM_LNG),Double.valueOf(TO_LAT),Double.valueOf(TO_LNG))));
             Call_Vihicle_Api();
 
@@ -467,6 +431,50 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
 
     }
+
+    private void set_line_on_map(LatLng from_latLng, LatLng to_latlng) {
+        GoogleDirection.withServerKey(getResources().getString(R.string.google_maps_key))
+                .from(from_latLng)
+                .to(to_latlng)
+                .transportMode(TransportMode.DRIVING).execute(new DirectionCallback() {
+            @Override
+            public void onDirectionSuccess(Direction direction, String rawBody) {
+                if (direction.isOK()) {
+                    try {
+                        Route route = direction.getRouteList().get(0);
+                        google_map_list.add(String.valueOf(direction.getRouteList().get(0)));
+                        try {
+                            ArrayList<LatLng> directionPositionList = route.getLegList().get(0).getDirectionPoint();
+                            googleMap.addPolyline(DirectionConverter.createPolyline(From_Location.this, directionPositionList, 4, getResources().getColor(R.color.light_green_700)));
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            setCameraWithCoordinationBounds(route);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        //  progressDialogmap.dismiss();
+                    } catch (Exception e) {
+                        //progressDialogmap.dismiss();
+                        e.printStackTrace();
+                    }
+                    //  btnRequestDirection.setVisibility(View.GONE);
+                } else {
+                    //  progressDialogmap.dismiss();
+                    Snackbar.make(coordinatorLayout, direction.getStatus(), Snackbar.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onDirectionFailure(Throwable t) {
+                Snackbar.make(coordinatorLayout, t.getMessage(), Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 
     private double distance(double lat1, double lng1, double lat2, double lng2)
     {

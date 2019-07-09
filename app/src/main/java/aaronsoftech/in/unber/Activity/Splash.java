@@ -13,7 +13,7 @@ import aaronsoftech.in.unber.Utils.SP_Utils;
 
 public class Splash extends AppCompatActivity {
     String userid="";
-    String book_id="";
+    String book_id="1";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
