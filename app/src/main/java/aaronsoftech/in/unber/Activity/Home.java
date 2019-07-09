@@ -6,7 +6,9 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -36,6 +38,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,6 +53,7 @@ import java.util.List;
 
 import aaronsoftech.in.unber.App_Conteroller;
 import aaronsoftech.in.unber.Model.FB_Driver_res;
+import aaronsoftech.in.unber.POJO.Response_Booking;
 import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Utils.SP_Utils;
 
@@ -66,12 +70,19 @@ public class Home extends AppCompatActivity
     double lng= 0.0;
     boolean setCurrentLocation=true;
     List<FB_Driver_res >get_driver_loc=new ArrayList<>();
+    String booked_id="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        try{
+            booked_id=getIntent().getExtras().getString("book_id","");
+        }catch (Exception e){e.printStackTrace();}
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -154,10 +165,45 @@ public class Home extends AppCompatActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         Give_Permission();
-        Show_Driver_Location();
+
+        Check_User_Id_on_firebase();
+
 
     }
 
+    private void Check_User_Id_on_firebase() {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Query myTopPostsQuery = mDatabase.child("Booking_ID");
+        // My top posts by number of stars
+        myTopPostsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String UserID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
+                // Get the data as Message objects
+                Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    // Extract a Message object from the DataSnapshot
+                    Response_Booking message = child.getValue(Response_Booking.class);
+
+                    if (message.getUser_id().equalsIgnoreCase(UserID))
+                    {
+                        String driver_id=message.getDriver_id();
+                        Show_Driver_Location(driver_id);
+
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        });
+    }
 
 
     private void set_Header_value() {
@@ -170,8 +216,8 @@ public class Home extends AppCompatActivity
                     .error(R.drawable.ic_user)
                     .into(image_header);
         }catch (Exception e){e.printStackTrace();}
-
     }
+
 
     @Override
     protected void onResume() {
@@ -292,30 +338,33 @@ public class Home extends AppCompatActivity
                 {
 
                 }else{
+                    if (booked_id.equalsIgnoreCase("1"))
+                    {
+                        lat=location.getLatitude();
+                        lng=location.getLongitude();
+                        double speed=location.getSpeed();
+                        Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
 
-                    lat=location.getLatitude();
-                    lng=location.getLongitude();
-                    double speed=location.getSpeed();
-                    Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
+                        String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+                        HashMap<String,String> map=new HashMap<>();
+                        map.put("driver_ID",""+driver_id);
+                        map.put("name", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+                        map.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
+                        map.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
+                        map.put("lat",""+lat);
+                        map.put("lng",""+lng);
+                        map.put("speed",""+speed);
+                        Call_firebase_service(map);
+                    }
 
-                    String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-                    HashMap<String,String> map=new HashMap<>();
-                    map.put("driver_ID",""+driver_id);
-                    map.put("name", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
-                    map.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
-                    map.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
-                    map.put("lat",""+lat);
-                    map.put("lng",""+lng);
-                    map.put("speed",""+speed);
-                    Call_firebase_service(map);
                 }
             }
         });
     }
 
-    private void Show_Driver_Location() {
+    private void Show_Driver_Location(String driver_id) {
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        Query myTopPostsQuery = mDatabase.child("Driver_ID").child("24");
+        Query myTopPostsQuery = mDatabase.child("Driver_ID").child(driver_id);
 
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
@@ -332,11 +381,9 @@ public class Home extends AppCompatActivity
                     String speed = String.valueOf(dataSnapshot.child("speed").getValue());
                     get_driver_loc.add(new FB_Driver_res(driver_ID,name,photo,contactno,lat,lng,speed));
 
-
             try{
                 if (get_driver_loc.size()!=0)
                 {
-
                     for (int i=0;i<get_driver_loc.size();i++)
                     {
 

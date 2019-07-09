@@ -146,7 +146,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
 
         // Initialize Places.
-        Places.initialize(getApplicationContext(), "AIzaSyAK3tlcPCVzkHcJcK-J_DdBJf-wO6LYyok");
+        Places.initialize(getApplicationContext(), "AIzaSyAOyyZ58Mo8y0aaMVG1PevZNiMz-i62q3c");
         // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(this);
         // Initialize the AutocompleteSupportFragment.
@@ -160,7 +160,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             public void onPlaceSelected(Place place) {
                  //   et_location.selectAll();
                     et_location.setTextIsSelectable(true);
-                    et_location.setText(place.getName()+","+place.getId());
+                    et_location.setText(place.getAddress()+","+place.getName());
                     LatLng get_latlong=place.getLatLng();
                     set_location_list(get_latlong);
                     autocompleteFragment.onDestroy();  }
@@ -182,7 +182,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             public void onPlaceSelected(Place place) {
            //     et_location2.selectAll();
                 et_location2.setTextIsSelectable(true);
-                et_location2.setText(place.getName()+","+place.getId());
+                et_location2.setText(place.getAddress()+","+place.getName());
                 LatLng get_latlong=place.getLatLng();
                 set_location_list(get_latlong);
                 autocompleteFragment2.onDestroy();  }

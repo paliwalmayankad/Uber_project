@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -259,5 +260,12 @@ public class Acc_edit extends AppCompatActivity {
         ed_state=findViewById(R.id.e_state);
         ed_country=findViewById(R.id.e_country);
         ed_email=findViewById(R.id.e_email);
+        ImageView backbtn=findViewById(R.id.btn_back);
+        backbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 }

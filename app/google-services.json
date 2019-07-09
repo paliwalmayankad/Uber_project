@@ -13,10 +13,19 @@
           "package_name": "aaronsoftech.in.unber"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "775563072716-kt2g5dc4k9irk70dksgn674vb4tmrjb4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "aaronsoftech.in.unber",
+            "certificate_hash": "7257124de0ddea7f025d67b8737fc42f35feeac4"
+          }
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyC8HjRFfogPNxek-ujtUPlxeaXnRwbo2d8"
+          "current_key": "AIzaSyCqCMwK87jtK1SN61Wi33Wf6r1Ln23L_9g"
         }
       ],
       "services": {

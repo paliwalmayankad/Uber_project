@@ -75,7 +75,7 @@ public class MyNotificationManager {
                     .setContentTitle(mCtx.getResources().getString(R.string.app_name))
                     .setSubText(message)
                     .setContentText(title)
-                    .setPriority(Notification.PRIORITY_MAX)
+                    .setPriority(Notification.PRIORITY_HIGH)
                     .setSmallIcon(R.drawable.logo1)
                     .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.drawable.logo1))
                     .setContentIntent(pendingIntent);

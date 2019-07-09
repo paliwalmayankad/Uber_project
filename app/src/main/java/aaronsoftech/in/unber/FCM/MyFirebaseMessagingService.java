@@ -57,9 +57,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendNotification(String from, String title) {
         try {
-            Intent intent = new Intent(getApplication(),Splash.class);
-            //  intent.putExtra("intentnotif","1");
 
+
+            Intent intent = new Intent(getApplicationContext(), Splash.class).putExtra("book_id","1");
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */,intent,
                     PendingIntent.FLAG_ONE_SHOT);
@@ -99,7 +99,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //parsing json data
             String title = data.getString("title");
             String message = data.getString("message");
-            Intent moveIntent = new Intent(getApplicationContext(), Splash.class);
+            Intent moveIntent = new Intent(getApplicationContext(), Splash.class).putExtra("book_id","1");
             MyNotificationManager mNotificationManager = new MyNotificationManager(getApplicationContext());
             mNotificationManager.showSmallNotification(title, message, moveIntent);
 
