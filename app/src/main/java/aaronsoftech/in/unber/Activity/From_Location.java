@@ -61,6 +61,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -68,11 +69,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import aaronsoftech.in.unber.Adapter.Adapter_Vehicle;
 import aaronsoftech.in.unber.Adapter.Adapter_vehicle_type;
 import aaronsoftech.in.unber.App_Conteroller;
+import aaronsoftech.in.unber.Model.FB_Token_res;
 import aaronsoftech.in.unber.POJO.Response_All_Vehicle;
+import aaronsoftech.in.unber.POJO.Response_Booking;
 import aaronsoftech.in.unber.POJO.Response_Login;
 import aaronsoftech.in.unber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.unber.POJO.Response_register;
@@ -130,7 +134,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     List<Response_All_Vehicle.Data_Vehicle_List> get_vehicle_select_list=new ArrayList<>();
     RecyclerView recyclerView_vehicle_type,recy_vehicle_list;
     private DatabaseReference mDatabase;
-
+    boolean Call_driver_book_api=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,9 +202,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 Log.i(TAG, "An error occurred: " + status);
             }
         });
-
-
-
 
 
         get_to_Address_btn.setOnClickListener(new View.OnClickListener() {
@@ -849,14 +850,18 @@ public class From_Location extends AppCompatActivity implements LocationListener
         String vehicle_no=vehicle_id.getVehicle_number();
         String vehicle_image=vehicle_id.getVehicle_photo();
         String refreshtoken=vehicle_id.getToken_no();
-        Call_Api_book_ride(vehicleid,amount,Driver_ID,vehicle_no,vehicle_image,refreshtoken);
+
+        get_driver_token(vehicleid,amount,Driver_ID,vehicle_no,vehicle_image,refreshtoken);
+
     }
 
     public void Call_Api_book_ride(final String vehicleid, String pricc, final String driver_ID, final String vehicle_no, final String vehicle_image, String refreshtoken){
+
         progressDialog=new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
+
         Date date=new Date();
         final HashMap<String,String> map=new HashMap<>();
         String userid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
@@ -924,6 +929,41 @@ public class From_Location extends AppCompatActivity implements LocationListener
             Toast.makeText(From_Location.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void get_driver_token(final String vehicleid, final String amount, final String driver_ID, final String vehicle_no, final String vehicle_image, final String refreshtoken) {
+        Call_driver_book_api=true;
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Map<String,String> map=new HashMap<>();
+      //  map.put("token_id",refreshedToken);
+        map.put("driver_id",driver_ID);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Query myTopPostsQuery = mDatabase.child("Driver_Token_ID");
+        // My top posts by number of stars
+        myTopPostsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
+
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    if   (Call_driver_book_api)
+                    {    Call_driver_book_api=false;
+                        // Extract a Message object from the DataSnapshot
+                        FB_Token_res message = child.getValue(FB_Token_res.class);
+                        String new_token=message.getToken_id();
+                        Call_Api_book_ride(vehicleid,amount,driver_ID,vehicle_no,vehicle_image,new_token);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        });
     }
 
     @Override

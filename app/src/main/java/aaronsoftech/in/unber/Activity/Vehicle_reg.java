@@ -69,6 +69,7 @@ public class Vehicle_reg extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vehicle_reg);
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.i(TAG,"Token ID : onstart "+refreshedToken);
         Init();
 
         btn_permit.setOnClickListener(new View.OnClickListener() {
@@ -133,6 +134,7 @@ public class Vehicle_reg extends AppCompatActivity {
                     ed_no.setError("Enter vehicle no.");
                     ed_no.requestFocus();
                 }else{
+
                     Call_Api();
                 }
 
@@ -204,45 +206,49 @@ public class Vehicle_reg extends AppCompatActivity {
 
 
     private void Call_Api() {
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
+      if (isNetworkAvailable(Vehicle_reg.this))
+      {
 
-        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-        Date date = new Date();
-        String new_date=dateFormat.format(date);
-
-        progressDialog=new ProgressDialog(Vehicle_reg.this);
-        progressDialog.setMessage("Loading...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
-        File file_permit = new File(PATH_PERMIT);
-        File file_vehicle = new File(PATH_VEHICLE);
-        File file_rc = new File(PATH_RC);
-        File file_other_doc = new File(PATH_OTHER_DOC);
-        File file_insurense = new File(PATH_INSURENSE);
-
-        RequestBody request_file_permit = RequestBody.create(MediaType.parse("multipart/form-data"), file_permit);
-        RequestBody request_file_vehicle = RequestBody.create(MediaType.parse("multipart/form-data"), file_vehicle);
-        RequestBody request_file_rc = RequestBody.create(MediaType.parse("multipart/form-data"), file_rc);
-        RequestBody request_file_other_doc = RequestBody.create(MediaType.parse("multipart/form-data"), file_other_doc);
-        RequestBody request_file_insurense = RequestBody.create(MediaType.parse("multipart/form-data"), file_insurense);
+          Log.i(TAG,"Token ID : call api "+refreshedToken);
 
 
-        MultipartBody.Part body_request_permit = MultipartBody.Part.createFormData("permit", file_permit.getName(), request_file_permit);
-        MultipartBody.Part body_request_vehicle = MultipartBody.Part.createFormData("vehicle_photo", file_vehicle.getName(), request_file_vehicle);
-        MultipartBody.Part body_request_rc = MultipartBody.Part.createFormData("vehicle_rc", file_rc.getName(), request_file_rc);
-        MultipartBody.Part body_request_other_doc = MultipartBody.Part.createFormData("vehicle_other_doc", file_other_doc.getName(), request_file_other_doc);
-        MultipartBody.Part body_request_insurense = MultipartBody.Part.createFormData("vehicle_insurance_id", file_insurense.getName(), request_file_insurense);
-        String Driver_ID="";
-        try{ Driver_ID= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+            DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            Date date = new Date();
+            String new_date=dateFormat.format(date);
+
+            progressDialog=new ProgressDialog(Vehicle_reg.this);
+            progressDialog.setMessage("Loading...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+            File file_permit = new File(PATH_PERMIT);
+            File file_vehicle = new File(PATH_VEHICLE);
+            File file_rc = new File(PATH_RC);
+            File file_other_doc = new File(PATH_OTHER_DOC);
+            File file_insurense = new File(PATH_INSURENSE);
+
+            RequestBody request_file_permit = RequestBody.create(MediaType.parse("multipart/form-data"), file_permit);
+            RequestBody request_file_vehicle = RequestBody.create(MediaType.parse("multipart/form-data"), file_vehicle);
+            RequestBody request_file_rc = RequestBody.create(MediaType.parse("multipart/form-data"), file_rc);
+            RequestBody request_file_other_doc = RequestBody.create(MediaType.parse("multipart/form-data"), file_other_doc);
+            RequestBody request_file_insurense = RequestBody.create(MediaType.parse("multipart/form-data"), file_insurense);
+
+
+            MultipartBody.Part body_request_permit = MultipartBody.Part.createFormData("permit", file_permit.getName(), request_file_permit);
+            MultipartBody.Part body_request_vehicle = MultipartBody.Part.createFormData("vehicle_photo", file_vehicle.getName(), request_file_vehicle);
+            MultipartBody.Part body_request_rc = MultipartBody.Part.createFormData("vehicle_rc", file_rc.getName(), request_file_rc);
+            MultipartBody.Part body_request_other_doc = MultipartBody.Part.createFormData("vehicle_other_doc", file_other_doc.getName(), request_file_other_doc);
+            MultipartBody.Part body_request_insurense = MultipartBody.Part.createFormData("vehicle_insurance_id", file_insurense.getName(), request_file_insurense);
+            String Driver_ID="";
+            try{ Driver_ID= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
             }catch (Exception e){e.printStackTrace();}
-        RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+Driver_ID);
+            RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+Driver_ID);
 
-        RequestBody body_type_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+get_Vehicle_id);
-        RequestBody body_tokene =RequestBody.create(okhttp3.MultipartBody.FORM, ""+refreshedToken);
-        RequestBody body_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_no.getText().toString().trim());
+            RequestBody body_type_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+get_Vehicle_id);
+            RequestBody body_tokene =RequestBody.create(okhttp3.MultipartBody.FORM, ""+refreshedToken);
+            RequestBody body_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_no.getText().toString().trim());
 
-        if (isNetworkAvailable(Vehicle_reg.this))
-        {
             Call<Response_vehicle> call= APIClient.getWebServiceMethod().vehicle_register(body_tokene,body_driver_id,body_type_id,body_number,
                     body_request_permit,body_request_vehicle,body_request_rc,body_request_other_doc,body_request_insurense);
 
@@ -277,7 +283,8 @@ public class Vehicle_reg extends AppCompatActivity {
                 }
 
             });
-        }else{
+
+      }else{
             Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
 

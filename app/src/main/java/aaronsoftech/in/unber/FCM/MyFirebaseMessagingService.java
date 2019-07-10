@@ -41,11 +41,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         {
 
 
-            Log.e(TAG, "Data Payload: " + remoteMessage.getData().toString());
+          //  Log.e(TAG, "Data Payload: " + remoteMessage.getData().toString());
             try
             {
-                JSONObject json = new JSONObject(remoteMessage.getData().toString());
-                sendPushNotification(json);
+               // JSONObject json = new JSONObject(remoteMessage.getData().toString());
+                sendPushNotification();
             }
             catch (Exception e)
             {
@@ -54,7 +54,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }else{
             sendNotification(from,title);
 
-        }
+       }
     }
 
     private void sendNotification(String from, String title) {
@@ -88,19 +88,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     //this method will display the notification
     //We are passing the JSONObject that is received from
     //firebase cloud messaging
-    private void sendPushNotification(JSONObject json)
+    private void sendPushNotification()
     {
         //optionally we can display the json into log
-        Log.e(TAG, "Notification JSON " + json.toString());
+       // Log.e(TAG, "Notification JSON " + json.toString());
         try
         {
             //getting the json data
-            JSONObject data = json.getJSONObject("data");
+         //   JSONObject data = json.getJSONObject("data");
 
             //parsing json data
-            String title = data.getString("title");
-            String message = data.getString("message");
-            String imageUrl = data.getString("image");
+            String title = "You have new booking";
+            String message = "Accept this booking";
+
 
             if(title!=null && !title.equalsIgnoreCase("null") && title.equals("Logout"))
             {
@@ -124,7 +124,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 if(getCurrentPackage().equals(this.getPackageName().toString()))
                 {
 
-                    if(getCurrentPackageCurrentActivity().equals("com.agnitio.app.tasaheeldriverapp.activity.d_notification_new_fragment"))
+                    if(getCurrentPackageCurrentActivity().equals("aaronsoftech.in.unber.Activity.Home"))
                     {
                         Log.v(TAG, "onMessage Current package is app package");
                         moveIntent = new Intent();
@@ -144,18 +144,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     moveIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 }
 
-                //if there is no image
-                if(imageUrl.equals("null"))
-                {
-                    //displaying small notification
                     mNotificationManager.showSmallNotification(title, message, moveIntent);
-                }
-                else
-                {
-                    //if there is an image
-                    //displaying a big notification
-                    mNotificationManager.showBigImageNotification(title, message, imageUrl, moveIntent);
-                }
+
             }
         }
         catch (Exception e)

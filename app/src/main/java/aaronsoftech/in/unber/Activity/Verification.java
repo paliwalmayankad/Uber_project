@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -31,6 +32,8 @@ public class Verification extends AppCompatActivity {
     public static String Longt="0.0";
     String mobileno,refreshedToken;
     ProgressDialog progressDialog;
+    String TAG="Verification";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +65,7 @@ public class Verification extends AppCompatActivity {
         register_map.put("token_id",""+refreshedToken);
         register_map.put("name","");
         register_map.put("email","");
-
+        Log.i(TAG,"Token ID : "+refreshedToken);
         Api_Social_login(login_map,register_map);
 
     }

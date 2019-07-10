@@ -103,7 +103,7 @@ public class MyNotificationManager {
             notification.defaults |= Notification.DEFAULT_VIBRATE;
             notification.defaults |= Notification.DEFAULT_SOUND;
 
-            mNotificationManager.notify(0, notification);
+            mNotificationManager.notify(1, notification);
         }
         catch (Exception e)
         {

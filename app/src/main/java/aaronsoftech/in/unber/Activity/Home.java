@@ -1,11 +1,16 @@
 package aaronsoftech.in.unber.Activity;
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -59,11 +65,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import aaronsoftech.in.unber.Adapter.CustomInfoWindowAdapter;
 import aaronsoftech.in.unber.App_Conteroller;
@@ -94,13 +102,15 @@ public class Home extends AppCompatActivity
     String booked_id="";
     RelativeLayout coordinatorLayout;
     double oldlat,oldlong;
-    Boolean Accept_this_booking=true;
-
+    int Accept_this_booking=0;
+    String refreshedToken;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Fabric.with(this, new Crashlytics());
+
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
         try{
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
@@ -129,6 +139,7 @@ public class Home extends AppCompatActivity
             get_loaction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,"").equalsIgnoreCase("")
                             || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,"").equalsIgnoreCase(""))
                     {
@@ -204,7 +215,38 @@ public class Home extends AppCompatActivity
 
     }
 
+    private void Save_Token_on_firebase() {
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        if (refreshedToken.equals(null) || refreshedToken=="")
+        {
+            Save_Token_on_firebase();
+        }else{
+            String id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+            mDatabase = FirebaseDatabase.getInstance().getReference();
+            Map<String,String> map=new HashMap<>();
+            map.put("token_id",refreshedToken);
+            map.put("driver_id",id);
+            mDatabase.child("Driver_Token_ID").child(id).setValue(map);
+            mDatabase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+        }
+
+    }
+
     private void Check_driver_booking(final Location location) {
+        Save_Token_on_firebase();
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
         Query myTopPostsQuery = mDatabase.child("Booking_ID");
         // My top posts by number of stars
@@ -218,11 +260,13 @@ public class Home extends AppCompatActivity
                     // Extract a Message object from the DataSnapshot
                     Response_Booking message = child.getValue(Response_Booking.class);
 
-                    if (message.getDriver_id().equalsIgnoreCase(Driver_ID) && Accept_this_booking )
+                    if (message.getDriver_id().equalsIgnoreCase(Driver_ID) && (Accept_this_booking==0) )
                     {
+                        Accept_this_booking=11;
+                        addNotification();
                         Show_dialog_box(location);
 
-                    }else if (message.getDriver_id().equalsIgnoreCase(Driver_ID))
+                    }else if (message.getDriver_id().equalsIgnoreCase(Driver_ID) && (Accept_this_booking==22))
                     {
                         lat=location.getLatitude();
                         lng=location.getLongitude();
@@ -238,9 +282,9 @@ public class Home extends AppCompatActivity
                         map.put("lng",""+lng);
                         map.put("speed",""+speed);
                         Call_firebase_service(map);
-
+                        Accept_this_booking=22;
                         MarkerOptions marker3 = null;
-                        Accept_this_booking=false;
+
                         if (update_marker2==0){
                             marker3 = new MarkerOptions().position(new LatLng(lat, lng));
                             marker3.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
@@ -248,7 +292,7 @@ public class Home extends AppCompatActivity
                             update_marker2 = 1;
                             mMap.addCircle(new CircleOptions()
                                     .center(new LatLng(lat,lng))
-                                    .radius(500)
+                                    .radius(10)
                                     .strokeColor(Color.YELLOW)
                                     .fillColor(Color.TRANSPARENT));
                         }
@@ -272,10 +316,11 @@ public class Home extends AppCompatActivity
         AlertDialog.Builder dialog=new AlertDialog.Builder(Home.this);
         dialog.setTitle(getResources().getString(R.string.app_name));
         dialog.setMessage("Accept this booking");
+        dialog.setCancelable(false);
         dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                Accept_this_booking=0;
             }
         });
         dialog.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
@@ -297,7 +342,7 @@ public class Home extends AppCompatActivity
                 Call_firebase_service(map);
 
                 MarkerOptions marker3 = null;
-                Accept_this_booking=false;
+
                 if (update_marker2==0){
                     marker3 = new MarkerOptions().position(new LatLng(lat, lng));
                     marker3.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
@@ -322,24 +367,27 @@ public class Home extends AppCompatActivity
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String UserID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
-                // Get the data as Message objects
-                Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    // Extract a Message object from the DataSnapshot
-                    Response_Booking message = child.getValue(Response_Booking.class);
 
-                    if (message.getUser_id().equalsIgnoreCase(UserID))
-                    {
-                        String driver_id=message.getDriver_id();
-                        LatLng from_latlng=new LatLng(Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()));
-                        LatLng to_latlng=new LatLng(Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
-                        addstart_end_icontrip(message.getFrom_address(),message.getTo_address(),Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()),Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
-                        set_line_on_map(from_latlng,to_latlng);
-                        Show_Driver_Location(driver_id);
+                try{
+                    String UserID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
+                    // Get the data as Message objects
+                    Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        // Extract a Message object from the DataSnapshot
+                        Response_Booking message = child.getValue(Response_Booking.class);
+
+                        if (message.getUser_id().equalsIgnoreCase(UserID))
+                        {
+                            String driver_id=message.getDriver_id();
+                            LatLng from_latlng=new LatLng(Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()));
+                            LatLng to_latlng=new LatLng(Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
+                            addstart_end_icontrip(message.getFrom_address(),message.getTo_address(),Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()),Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
+                            set_line_on_map(from_latlng,to_latlng);
+                            Show_Driver_Location(driver_id);
+                        }
+
                     }
-
-                }
+                }catch (Exception e){e.printStackTrace();}
 
             }
 
@@ -438,6 +486,7 @@ public class Home extends AppCompatActivity
             }
         });
     }
+
     private void setCameraWithCoordinationBounds(Route route)
     {
         LatLng southwest = route.getBound().getSouthwestCoordination().getCoordination();
@@ -573,14 +622,17 @@ public class Home extends AppCompatActivity
                     setCurrentLocation=false;
                 }
 
-                if (       App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
-                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
-                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
-                {
+                try{
+                    if (  App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
+                            || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
+                            || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
+                    {
 
-                }else{
-                    Check_driver_booking(location);
-                }
+                    }else{
+                        Check_driver_booking(location);
+                    }
+                }catch (Exception e){e.printStackTrace();}
+
 
             }
         });
@@ -617,7 +669,6 @@ public class Home extends AppCompatActivity
                     Toast.makeText(Home.this, "name "+nameq+"\n"+"get_driverid "+get_driverid, Toast.LENGTH_SHORT).show();
                     double get_lat= Double.valueOf(get_driver_loc.get(i).getLat());
                     double get_lng=Double.valueOf(get_driver_loc.get(i).getLng());
-
 
                         Location prevLoc = new Location("service Provider");
                         prevLoc.setLatitude(oldlat);
@@ -724,5 +775,43 @@ public class Home extends AppCompatActivity
             }
         });
     }
+
+    public void addNotification() {
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.drawable.nber_logo);
+        Intent intent = new Intent(this, Home.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        builder.setContentIntent(pendingIntent);
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.nber_logo));
+        builder.setContentTitle("You have new booking");
+        builder.setContentText("Accept this book ride");
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // Will display the notification in the notification bar
+        notificationManager.notify(1, builder.build());
+    }
+    /*private void addNotification() {
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.nber_logo) //set icon for notification
+                        .setContentTitle("You have new booking") //set title of notification
+                        .setContentText("Accept this book ride")//this is notification message
+                        .setAutoCancel(true) // makes auto cancel of notification
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT); //set priority of notification
+
+        Intent notificationIntent = new Intent(this, Home.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //notification message will get at NotificationView
+        notificationIntent.putExtra("message", "This is a notification message");
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
+    }*/
 
 }

@@ -35,7 +35,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.Show_Vehicle"></activity>
+        <activity android:name=".Activity.Show_Vehicle" android:theme="@style/AppTheme_one"></activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -134,7 +134,11 @@
         <activity
             android:name=".Activity.Home"
             android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme_one" />
+            android:theme="@style/AppTheme_one" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activity.Home"/>
+        </activity>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
