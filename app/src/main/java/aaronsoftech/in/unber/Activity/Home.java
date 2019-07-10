@@ -3,6 +3,7 @@ package aaronsoftech.in.unber.Activity;
 import android.Manifest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,11 +17,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -70,20 +75,33 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import aaronsoftech.in.unber.Adapter.Adapter_Driver_vehicle;
+import aaronsoftech.in.unber.Adapter.Adapter_user_list;
 import aaronsoftech.in.unber.Adapter.CustomInfoWindowAdapter;
 import aaronsoftech.in.unber.App_Conteroller;
 import aaronsoftech.in.unber.Model.FB_Driver_res;
 import aaronsoftech.in.unber.POJO.Customwindow_const;
+import aaronsoftech.in.unber.POJO.Response_All_Vehicle;
 import aaronsoftech.in.unber.POJO.Response_Booking;
+import aaronsoftech.in.unber.POJO.Response_Booking_List;
+import aaronsoftech.in.unber.POJO.Response_Driver_vehicle;
 import aaronsoftech.in.unber.R;
+import aaronsoftech.in.unber.Service.APIClient;
 import aaronsoftech.in.unber.Utils.SP_Utils;
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.fabric.sdk.android.Fabric;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback{
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,Adapter_user_list.Vehicle_Item_listner{
     private GoogleMap mMap;
     CustomInfoWindowAdapter wind_adaptet;
     ArrayList<String> google_map_list = new ArrayList<String>();
@@ -104,11 +122,58 @@ public class Home extends AppCompatActivity
     double oldlat,oldlong;
     int Accept_this_booking=0;
     String refreshedToken;
+    CircleImageView driver_image;
+    TextView driver_name,driver_contect;
+    LinearLayout get_loaction,driver_info,user_list_show_layout;
+    RecyclerView user_list_recycle;
+    List<Response_Booking> get_Booking_list=new ArrayList<>();
+    BottomSheetDialog bottomSheetDialog;
+    ProgressDialog progressDialog;
+    List<Response_Booking_List.User_List> get_Booking_List=new ArrayList<>();
+    public void Init()
+    {
+
+        driver_info=findViewById(R.id.show_driver_profile);
+        coordinatorLayout=findViewById(R.id.layout_linear);
+        get_loaction=findViewById(R.id.location_layout);
+        driver_image=findViewById(R.id.driver_img);
+        driver_name=findViewById(R.id.txt_name);
+        driver_contect=findViewById(R.id.txt_mobile);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+    }
+
+    private void ShowBottomSheet(List<Response_Booking_List.User_List> list) {
+
+        View view = getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
+        user_list_recycle=view.findViewById(R.id.user_list_view);
+        StaggeredGridLayoutManager staggeredGridLayoutManager2 = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
+        user_list_recycle.setLayoutManager(staggeredGridLayoutManager2); // set LayoutManager to RecyclerView
+
+        Adapter_user_list aa=new Adapter_user_list(Home.this,list,Home.this);
+        user_list_recycle.setAdapter(aa);
+
+        bottomSheetDialog = new BottomSheetDialog(this);
+        bottomSheetDialog.setContentView(view);
+        bottomSheetDialog.show();
+
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Fabric.with(this, new Crashlytics());
+
+        Init();
 
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         try{
@@ -121,21 +186,11 @@ public class Home extends AppCompatActivity
 
 
 
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-            });
-
             try{
                 Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"")+"\n\n"+"Driver ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""), Toast.LENGTH_SHORT).show();
             }catch (Exception e){e.printStackTrace();}
 
-            coordinatorLayout=findViewById(R.id.layout_linear);
-            LinearLayout get_loaction=findViewById(R.id.location_layout);
+
             get_loaction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -186,7 +241,6 @@ public class Home extends AppCompatActivity
                             startActivity(new Intent(Home.this,Vehicle_reg.class));
                         }
                     }
-
                 }
             });
 
@@ -247,9 +301,13 @@ public class Home extends AppCompatActivity
     private void Check_driver_booking(final Location location) {
         Save_Token_on_firebase();
 
+       final List<Integer> get_User_ID=new ArrayList<>();
+        get_User_ID.clear();
+        get_Booking_list.clear();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         Query myTopPostsQuery = mDatabase.child("Booking_ID");
         // My top posts by number of stars
+
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -295,10 +353,17 @@ public class Home extends AppCompatActivity
                                     .radius(10)
                                     .strokeColor(Color.YELLOW)
                                     .fillColor(Color.TRANSPARENT));
+
                         }
-
                     }
-
+                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+                            String driverid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+                            Call_driver_book_Api(driverid);
+                            return false;
+                        }
+                    });
                 }
 
             }
@@ -310,7 +375,57 @@ public class Home extends AppCompatActivity
                 // ...
             }
         });
+
     }
+
+
+    private void Call_driver_book_Api(String driver_ID) {
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+        get_Booking_List.clear();
+        HashMap map= new HashMap<>();
+        map.put("driver_id",driver_ID);
+        if (isNetworkAvailable(Home.this))
+        {
+            Call<Response_Booking_List> call= APIClient.getWebServiceMethod().get_Driver_Booking(map);
+            call.enqueue(new Callback<Response_Booking_List>() {
+                @Override
+                public void onResponse(Call<Response_Booking_List> call, Response<Response_Booking_List> response) {
+                    progressDialog.dismiss();
+                    try{
+                        String status=response.body().getApi_status();
+                        String msg=response.body().getApi_message();
+                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                        {
+                            List<Response_Booking_List.User_List> list=new ArrayList<>();
+                            list=response.body().getData();
+                            ShowBottomSheet(list);
+                            get_Booking_List=response.body().getData();
+
+
+                        }else{
+
+                            Toast.makeText(Home.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                        }
+                    }catch (Exception e){
+                        Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();}
+                }
+
+                @Override
+                public void onFailure(Call<Response_Booking_List> call, Throwable t) {
+                    Toast.makeText(Home.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(Home.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+
 
     private void Show_dialog_box(final Location location) {
         AlertDialog.Builder dialog=new AlertDialog.Builder(Home.this);
@@ -361,6 +476,7 @@ public class Home extends AppCompatActivity
     }
 
     private void Check_User_Id_on_firebase() {
+        get_Booking_list.clear();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         Query myTopPostsQuery = mDatabase.child("Booking_ID");
         // My top posts by number of stars
@@ -378,15 +494,17 @@ public class Home extends AppCompatActivity
 
                         if (message.getUser_id().equalsIgnoreCase(UserID))
                         {
+
                             String driver_id=message.getDriver_id();
                             LatLng from_latlng=new LatLng(Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()));
                             LatLng to_latlng=new LatLng(Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
                             addstart_end_icontrip(message.getFrom_address(),message.getTo_address(),Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()),Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
                             set_line_on_map(from_latlng,to_latlng);
                             Show_Driver_Location(driver_id);
-                        }
 
+                        }
                     }
+
                 }catch (Exception e){e.printStackTrace();}
 
             }
@@ -395,7 +513,6 @@ public class Home extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
             }
         });
     }
@@ -630,6 +747,7 @@ public class Home extends AppCompatActivity
 
                     }else{
                         Check_driver_booking(location);
+
                     }
                 }catch (Exception e){e.printStackTrace();}
 
@@ -697,6 +815,29 @@ public class Home extends AppCompatActivity
                             marker2.flat(true);
                             mMap.addMarker(marker2);
                         }
+                        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                            @Override
+                            public boolean onMarkerClick(Marker marker) {
+                                driver_info.setVisibility(View.VISIBLE);
+                                driver_name.setText("Driver name :"+get_driver_loc.get(0).getName());
+                                driver_contect.setText("Driver mobile no. :"+get_driver_loc.get(0).getContact_number());
+                                final String txt_contect=get_driver_loc.get(0).getContact_number();
+                                driver_contect.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(Intent.ACTION_DIAL);
+                                        intent.setData(Uri.parse("tel:"+txt_contect));
+                                        startActivity(intent);
+                                    }
+                                });
+                                String imguri=get_driver_loc.get(0).getPhoto().toString();
+                                try{
+                                    Picasso.with(Home.this).load(imguri).error(R.drawable.ic_user).into(driver_image);
+                                }catch (Exception e){e.printStackTrace();}
+
+                                return false;
+                            }
+                        });
                         oldlat=get_lat;
                         oldlong=get_lng;
                     }
@@ -755,7 +896,6 @@ public class Home extends AppCompatActivity
         return true;
     }
 
-
     private void Call_firebase_service(HashMap<String, String> map) {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
@@ -791,27 +931,10 @@ public class Home extends AppCompatActivity
         // Will display the notification in the notification bar
         notificationManager.notify(1, builder.build());
     }
-    /*private void addNotification() {
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.nber_logo) //set icon for notification
-                        .setContentTitle("You have new booking") //set title of notification
-                        .setContentText("Accept this book ride")//this is notification message
-                        .setAutoCancel(true) // makes auto cancel of notification
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT); //set priority of notification
 
-        Intent notificationIntent = new Intent(this, Home.class);
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //notification message will get at NotificationView
-        notificationIntent.putExtra("message", "This is a notification message");
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(pendingIntent);
+    @Override
+    public void OnClick_item(Response_Booking_List.User_List user_list) {
 
-        // Add as notification
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(0, builder.build());
-    }*/
-
+    }
 }

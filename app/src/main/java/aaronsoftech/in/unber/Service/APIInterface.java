@@ -3,6 +3,8 @@ package aaronsoftech.in.unber.Service;
 import java.util.Map;
 
 import aaronsoftech.in.unber.POJO.Response_All_Vehicle;
+import aaronsoftech.in.unber.POJO.Response_Booking;
+import aaronsoftech.in.unber.POJO.Response_Booking_List;
 import aaronsoftech.in.unber.POJO.Response_Driver_vehicle;
 import aaronsoftech.in.unber.POJO.Response_Login;
 import aaronsoftech.in.unber.POJO.Response_Vehicle_type;
@@ -46,6 +48,11 @@ public interface APIInterface {
     @FormUrlEncoded
     @POST("user_profile")
     public Call<Response_Login> getUpdate_Profile(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("get_driver_book_ride")
+    public Call<Response_Booking_List> get_Driver_Booking(@FieldMap Map<String, String> map);
+
 
     @FormUrlEncoded
     @POST("get_driver_vehicle")

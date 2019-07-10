@@ -2,15 +2,80 @@ package aaronsoftech.in.unber.POJO;
 
 public class Response_Booking {
 
+
+    String vehicle_image;
     String user_id;
-    String driver_id;
+    String vehicle_id;
+    String booked_date_time;
     String from_lat;
     String from_lng;
+    String from_address;
+    String to_address;
     String to_lat;
     String to_lng;
-    String to_address;
-    String from_address;
-    String vehicle_image;
+    String stoppage_date_time;
+    String payment_status;
+    String amount;
+    String pickup;
+    String status;
+    String driver_id;
+
+
+    public String getVehicle_id() {
+        return vehicle_id;
+    }
+
+    public void setVehicle_id(String vehicle_id) {
+        this.vehicle_id = vehicle_id;
+    }
+
+    public String getBooked_date_time() {
+        return booked_date_time;
+    }
+
+    public void setBooked_date_time(String booked_date_time) {
+        this.booked_date_time = booked_date_time;
+    }
+
+    public String getStoppage_date_time() {
+        return stoppage_date_time;
+    }
+
+    public void setStoppage_date_time(String stoppage_date_time) {
+        this.stoppage_date_time = stoppage_date_time;
+    }
+
+    public String getPayment_status() {
+        return payment_status;
+    }
+
+    public void setPayment_status(String payment_status) {
+        this.payment_status = payment_status;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public String getPickup() {
+        return pickup;
+    }
+
+    public void setPickup(String pickup) {
+        this.pickup = pickup;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getVehicle_image() {
         return vehicle_image;
