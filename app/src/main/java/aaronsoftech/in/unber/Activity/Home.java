@@ -409,16 +409,23 @@ public class Home extends AppCompatActivity
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     // Extract a Message object from the DataSnapshot
                     Response_Booking message = child.getValue(Response_Booking.class);
-                    if (message.getStatus().toString().equalsIgnoreCase("Active"))
+                    if (message.getStatus().toString().equalsIgnoreCase("Active") || message.getStatus().toString().equalsIgnoreCase("Running"))
                     {
                         if (message.getDriver_id().equalsIgnoreCase(Driver_ID) && (Accept_this_booking==0) )
                         {
                             Accept_this_booking=11;
-                            addNotification();
 
+                                if (message.getStatus().toString().equalsIgnoreCase("Running"))
+                                {
+                                    Set_running_value(message.getBook_id(), location,message.getVehicle_image(),message.getVehicle_type_id(),
+                                            message.getVehicle_no(),message.getAmount(),message.getUser_contact(),message.getUser_image(),message.getUser_name());
+                                }else{
+                                    addNotification();
+                                    Show_dialog_box(message.getBook_id(), location,message.getVehicle_image(),message.getVehicle_type_id(),
+                                            message.getVehicle_no(),message.getAmount(),message.getUser_contact(),message.getUser_image(),message.getUser_name());
+                                }
                         //    Toast.makeText(Home.this, "key---  "+dataSnapshot.getKey()+"\n"+"value   "+dataSnapshot.getValue(), Toast.LENGTH_SHORT).show();
-                            Show_dialog_box(message.getBook_id(), location,message.getVehicle_image(),message.getVehicle_type_id(),
-                                    message.getVehicle_no(),message.getAmount(),message.getUser_contact(),message.getUser_image(),message.getUser_name());
+
 
                         }else if (message.getDriver_id().equalsIgnoreCase(Driver_ID) && (Accept_this_booking==22))
                         {
@@ -480,6 +487,50 @@ public class Home extends AppCompatActivity
         });
 
     }
+
+    private void Set_running_value(final String book_id, final Location location, final String veh_img, final String veh_type_id, final String veh_no, final String amount, final String contact, final String img, final String name) {
+        String driverid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+        Call_driver_book_Api(driverid,contact,img,name,book_id);
+
+        lat=location.getLatitude();
+        lng=location.getLongitude();
+        double speed=location.getSpeed();
+        Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
+        String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+        HashMap<String,String> mapw=new HashMap<>();
+        mapw.put("driver_ID",""+driver_id);
+        mapw.put("name", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+        mapw.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
+        mapw.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
+        mapw.put("lat",""+lat);
+        mapw.put("lng",""+lng);
+        mapw.put("vehicle_no",veh_no);
+        mapw.put("vehicle_type_id",veh_type_id);
+        mapw.put("vehicle_image",veh_img);
+        mapw.put("speed",""+speed);
+        mapw.put("email", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
+        mapw.put("address", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ADDRESS,""));
+        mapw.put("city", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CITY,""));
+        mapw.put("state", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_STATUS,""));
+        mapw.put("country", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_COUNTER,""));
+
+        Call_firebase_service(mapw);
+
+        MarkerOptions marker3 = null;
+
+        if (update_marker2==0){
+            marker3 = new MarkerOptions().position(new LatLng(lat, lng));
+            marker3.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            mMap.addMarker(marker3);
+            update_marker2 = 1;
+            mMap.addCircle(new CircleOptions()
+                    .center(new LatLng(lat,lng))
+                    .radius(500)
+                    .strokeColor(Color.YELLOW)
+                    .fillColor(Color.TRANSPARENT));
+        }
+    }
+
 
 
     private void Call_driver_book_Api(String driver_ID, final String contact, final String img, final String name, final String bookid) {
