@@ -11,8 +11,16 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.TaskExecutors;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.util.concurrent.TimeUnit;
 
 import aaronsoftech.in.unber.R;
 
@@ -22,11 +30,21 @@ public class login_mobile extends AppCompatActivity {
     private static int REQUEST_CODE_LOCATIONl = 102;
     String refreshedToken;
     String TAG="login_mobile";
+    //These are the objects needed
+    //It is the verification id that will be sent to the user
+    public static String mVerificationId;
+
+    //firebase auth object
+    public static FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_mobile);
+
+        //initializing objects
+        mAuth = FirebaseAuth.getInstance();
+
         final TextView social_login=findViewById(R.id.social_login);
         ed_mobile=findViewById(R.id.t_mobile);
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
@@ -42,14 +60,13 @@ public class login_mobile extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Call_Intent();
-
-
             }
         });
         Give_Permission();
     }
 
     private void Call_Intent() {
+
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.i(TAG,"Token ID :  "+refreshedToken);
 
@@ -57,27 +74,67 @@ public class login_mobile extends AppCompatActivity {
             {
                 ed_mobile.setError("Enter mobile no.");
                 ed_mobile.requestFocus();
-            }else{
-                startActivity(new Intent(login_mobile.this,Verification.class)
-                        .putExtra("mobile",ed_mobile.getText().toString().trim()));
-            }
-
-    }
-
-    private void Give_Permission() {
-        Handler handler  = new Handler();
-        Runnable runnable = new Runnable()
-        {
-            @Override
-            public void run()
+            }else if (ed_mobile.getText().toString().length()!=10)
             {
-
-                if (ActivityCompat.checkSelfPermission(getApplication(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplication(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        )                    {
-                    ActivityCompat.requestPermissions(login_mobile.this, locationPermissionsl, REQUEST_CODE_LOCATIONl);
-                }
+                ed_mobile.setError("Invalid mobile no.");
+                ed_mobile.requestFocus();
+            }else{
+                sendVerificationCode(ed_mobile.getText().toString().trim());
             }
-        };
-        handler.postDelayed(runnable, 1000);
+
     }
-}
+
+    private void sendVerificationCode(String mobile) {
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                "+91" + mobile,
+                60,
+                TimeUnit.SECONDS,
+                TaskExecutors.MAIN_THREAD,
+                mCallbacks);
+        //the callback to detect the verification status
+    }
+
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+
+            //Getting the code sent by SMS
+            String code = phoneAuthCredential.getSmsCode();
+
+            //sometime the code is not detected automatically
+            //in this case the code will be null
+            //so user has to manually enter the code
+            if (code != null) {
+                startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp",code));
+            }
+
+        }
+
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            Toast.makeText(login_mobile.this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            super.onCodeSent(s, forceResendingToken);
+            startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp","no"));
+            mVerificationId = s;
+        }
+    };
+
+        private void Give_Permission() {
+            Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+
+                    if (ActivityCompat.checkSelfPermission(getApplication(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplication(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        ActivityCompat.requestPermissions(login_mobile.this, locationPermissionsl, REQUEST_CODE_LOCATIONl);
+                    }
+                }
+            };
+            handler.postDelayed(runnable, 1000);
+        }
+    }

@@ -26,7 +26,15 @@ public class Response_Booking {
     String user_name;
     String user_image;
     String user_contact;
+    String book_id;
 
+    public String getBook_id() {
+        return book_id;
+    }
+
+    public void setBook_id(String book_id) {
+        this.book_id = book_id;
+    }
 
     public String getVehicle_image() {
         return vehicle_image;

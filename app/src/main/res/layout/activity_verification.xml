@@ -133,6 +133,46 @@
                     android:maxLength="1"
                     android:id="@+id/ed_four"
                     android:maxLines="1"
+                    android:nextFocusDown="@id/ed_five"
+                    android:hint="0"
+                    android:singleLine="true"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:theme="@style/EditText.Grey" />
+                <View
+                    android:layout_width="15dp"
+                    android:layout_height="0dp" />
+
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:id="@+id/ed_five"
+                    android:nextFocusDown="@id/ed_six"
+                    android:maxLines="1"
+                    android:hint="0"
+                    android:singleLine="true"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:theme="@style/EditText.Grey" />
+                <View
+                    android:layout_width="15dp"
+                    android:layout_height="0dp" />
+
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:id="@+id/ed_six"
+                    android:maxLines="1"
                     android:hint="0"
                     android:singleLine="true"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"

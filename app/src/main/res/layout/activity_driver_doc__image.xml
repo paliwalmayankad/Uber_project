@@ -34,10 +34,11 @@
     <EditText
         android:layout_width="match_parent"
         android:id="@+id/txt_value"
+        android:layout_margin="22dp"
         android:singleLine="true"
-        android:visibility="gone"
+       android:background="@drawable/border_black_line"
         android:textColor="@android:color/black"
-        android:layout_height="wrap_content" />
+        android:layout_height="55dp" />
     <TextView
         android:layout_width="match_parent"
         android:text="TAP TO ADD"

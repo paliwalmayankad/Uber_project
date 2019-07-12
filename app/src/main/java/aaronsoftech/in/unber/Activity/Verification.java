@@ -3,6 +3,9 @@ package aaronsoftech.in.unber.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,9 +13,18 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import aaronsoftech.in.unber.App_Conteroller;
@@ -25,31 +37,118 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static aaronsoftech.in.unber.Activity.login_mobile.mAuth;
+import static aaronsoftech.in.unber.Activity.login_mobile.mVerificationId;
 import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 public class Verification extends AppCompatActivity {
     public static String Lat="0.0";
     public static String Longt="0.0";
-    String mobileno,refreshedToken;
+    String mobileno,otp;
+    String refreshedToken;
     ProgressDialog progressDialog;
     String TAG="Verification";
+    TextInputEditText txt_one,txt_two,txt_three,txt_four,txt_five,txt_six;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verification);
+
+        txt_one=findViewById(R.id.ed_one);
+        txt_two=findViewById(R.id.ed_two);
+        txt_three=findViewById(R.id.ed_three);
+        txt_four=findViewById(R.id.ed_four);
+        txt_five=findViewById(R.id.ed_five);
+        txt_six=findViewById(R.id.ed_six);
+
         ImageView btn_next=findViewById(R.id.next_button);
+
         mobileno=getIntent().getExtras().getString("mobile");
+        otp=getIntent().getExtras().getString("otp");
+        if (otp.equalsIgnoreCase("no"))
+        {
+
+        }else{
+          try{
+            txt_one.setText(String.valueOf(mobileno.charAt(0)));
+            txt_two.setText(String.valueOf(mobileno.charAt(1)));
+            txt_three.setText(String.valueOf(mobileno.charAt(2)));
+            txt_four.setText(String.valueOf(mobileno.charAt(3)));
+            txt_five.setText(String.valueOf(mobileno.charAt(4)));
+            txt_six.setText(String.valueOf(mobileno.charAt(5)));
+           }catch (Exception e){e.printStackTrace();}
+        }
+
+
+
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Call_Api_contact(mobileno);
+                String otp=txt_one.getText().toString().trim()+txt_two.getText().toString().trim()+txt_three.getText().toString().trim()+
+                        txt_four.getText().toString().trim()+txt_five.getText().toString().trim()+txt_six.getText().toString().trim();
+                if (otp.length()!=6)
+                {
+                    Toast.makeText(Verification.this, "Enter OTP", Toast.LENGTH_SHORT).show();
+                }else{
+                    progressDialog=new ProgressDialog(Verification.this);
+                    progressDialog.setCancelable(false);
+                    progressDialog.setMessage("Loading...");
+                    progressDialog.show();
+                    verifyVerificationCode(otp);
+                }
+
+
             }
         });
 
     }
+
+
+    private void verifyVerificationCode(String code) {
+
+        //creating the credential
+       PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
+
+        //signing the user
+       signInWithPhoneAuthCredential(credential);
+    }
+
+    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(Verification.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            //verification successful we will start the profile activity
+
+                            Call_Api_contact(mobileno);
+                        } else {
+
+                            //verification unsuccessful.. display an error message
+                            progressDialog.dismiss();
+                            String message = "Somthing is wrong, we will fix it soon...";
+
+                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                message = "Invalid code entered...";
+                            }
+
+                            Snackbar snackbar = Snackbar.make(findViewById(R.id.parent), message, Snackbar.LENGTH_LONG);
+                            snackbar.setAction("Dismiss", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                }
+                            });
+                            snackbar.show();
+                        }
+                    }
+                });
+    }
+
+
 
     private void Call_Api_contact(String mobileno) {
         HashMap<String,String> login_map=new HashMap<>();
@@ -223,10 +322,7 @@ public class Verification extends AppCompatActivity {
     }
 
     private void Api_Social_login(HashMap<String, String> login_map, final HashMap<String, String> register_map) {
-        progressDialog=new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Loading...");
-        progressDialog.show();
+
         if (isNetworkAvailable(Verification.this))
         {
             Call<Response_Login> call= APIClient.getWebServiceMethod().getContect_Login(login_map);
@@ -323,7 +419,8 @@ public class Verification extends AppCompatActivity {
 
                             App_Conteroller. editor.commit();
                             Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(Verification.this, Home.class));
+                            Intent intent = new Intent(Verification.this, Home.class);
+                            startActivity(intent);
                             finish();
                         }
                     }else{

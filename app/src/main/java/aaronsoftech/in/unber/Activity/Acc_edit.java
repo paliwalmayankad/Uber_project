@@ -35,7 +35,7 @@ import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 public class Acc_edit extends AppCompatActivity {
     TextView t_name,t_mobile,t_email,btn_save,t_status;
     RadioButton rb_btn_male,rb_btn_female;
-    String gender="";
+    String gender="Male";
     public static String Lat="0.0";
     public static String Longt="0.0";
     ProgressDialog progressDialog;
@@ -67,7 +67,7 @@ public class Acc_edit extends AppCompatActivity {
                 {
                     gender="Female";
                 }else{
-                    gender="male";
+                    gender="Male";
                 }
 
                 if (ed_name.getText().toString().isEmpty())

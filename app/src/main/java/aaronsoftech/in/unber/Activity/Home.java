@@ -152,16 +152,17 @@ public class Home extends AppCompatActivity
         });
     }
 
-    private void ShowBottomSheet(final List<Response_Booking_List.User_List> list) {
+    private void ShowBottomSheet(final List<Response_Booking_List.User_List> list, final String bookid) {
         layout_user_profile_list.setVisibility(View.VISIBLE);
         user_list_recycle=findViewById(R.id.user_list_view);
         StaggeredGridLayoutManager staggeredGridLayoutManager2 = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
         user_list_recycle.setLayoutManager(staggeredGridLayoutManager2); // set LayoutManager to RecyclerView
         Adapter_user_list aa=new Adapter_user_list(Home.this,list,Home.this);
+
         btn_finish_ride.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id());
+                Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
             }
         });
         user_list_recycle.setAdapter(aa);
@@ -170,7 +171,7 @@ public class Home extends AppCompatActivity
 
 
 
-    private void Change_ride_status(String bookID,final String vehicleid) {
+    private void Change_ride_status(String bookID, final String vehicleid, final String getbookid) {
         if (isNetworkAvailable(Home.this))
         {
             Map<String,String> map=new HashMap<>();
@@ -188,7 +189,7 @@ public class Home extends AppCompatActivity
                         if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                         {
                             Toast.makeText(Home.this, "Complite your ride", Toast.LENGTH_SHORT).show();
-                            Change_vehicle_status(vehicleid);
+                            Change_vehicle_status(vehicleid,getbookid);
                         }else{
 
                             Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
@@ -211,7 +212,7 @@ public class Home extends AppCompatActivity
         }
     }
 
-    private void Change_vehicle_status(String vehicleid) {
+    private void Change_vehicle_status(String vehicleid, final String getbook_id) {
         if (isNetworkAvailable(Home.this))
         {
             Map<String,String> map=new HashMap<>();
@@ -230,6 +231,8 @@ public class Home extends AppCompatActivity
                         {
                             //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
                             Toast.makeText(Home.this, "status change", Toast.LENGTH_SHORT).show();
+                            String id=response.body().getId();
+
 
                         }else{
 
@@ -238,12 +241,14 @@ public class Home extends AppCompatActivity
                     }catch (Exception e){
                         Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
-                    String id=response.body().getId();
 
                     mDatabase = FirebaseDatabase.getInstance().getReference();
-                    Map<String,String> hashmap=new HashMap<>();
-                    hashmap.put("status","Dactive");
-                    mDatabase.child("Booking_ID").child(id).setValue(hashmap);
+                    try {
+                        mDatabase.child("Booking_ID").child(getbook_id).child("status").setValue("Deactive");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     Save_data_on_firebase(mDatabase);
 
                 }
@@ -412,7 +417,7 @@ public class Home extends AppCompatActivity
                             addNotification();
 
                         //    Toast.makeText(Home.this, "key---  "+dataSnapshot.getKey()+"\n"+"value   "+dataSnapshot.getValue(), Toast.LENGTH_SHORT).show();
-                            Show_dialog_box(location,message.getVehicle_image(),message.getVehicle_type_id(),
+                            Show_dialog_box(message.getBook_id(), location,message.getVehicle_image(),message.getVehicle_type_id(),
                                     message.getVehicle_no(),message.getAmount(),message.getUser_contact(),message.getUser_image(),message.getUser_name());
 
                         }else if (message.getDriver_id().equalsIgnoreCase(Driver_ID) && (Accept_this_booking==22))
@@ -477,7 +482,7 @@ public class Home extends AppCompatActivity
     }
 
 
-    private void Call_driver_book_Api(String driver_ID,final String contact,final String img,final String name) {
+    private void Call_driver_book_Api(String driver_ID, final String contact, final String img, final String name, final String bookid) {
         progressDialog=new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
@@ -507,7 +512,7 @@ public class Home extends AppCompatActivity
                                     get_list.add(list.get(i));
                                 }
                             }
-                            ShowBottomSheet(get_list);
+                            ShowBottomSheet(get_list,bookid);
                             get_Booking_List=get_list;
 
                         }else{
@@ -531,7 +536,7 @@ public class Home extends AppCompatActivity
 
 
 
-    private void Show_dialog_box(final Location location, final String veh_img, final String veh_type_id, final String veh_no,final String amount,final String contact,final String img,final String name) {
+    private void Show_dialog_box(final String book_id, final Location location, final String veh_img, final String veh_type_id, final String veh_no, final String amount, final String contact, final String img, final String name) {
         AlertDialog.Builder dialog=new AlertDialog.Builder(Home.this);
         dialog.setTitle(getResources().getString(R.string.app_name));
         dialog.setMessage("Accept this booking");
@@ -546,9 +551,17 @@ public class Home extends AppCompatActivity
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                try {
+                    mDatabase.child("Booking_ID").child(book_id).child("status").setValue("Running");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                Save_data_on_firebase(mDatabase);
 
                 String driverid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-                Call_driver_book_Api(driverid,contact,img,name);
+                Call_driver_book_Api(driverid,contact,img,name,book_id);
 
                 /*Map<String,String> map=new HashMap<>();
                 //  map.put("token_id",refreshedToken);

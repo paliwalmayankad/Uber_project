@@ -916,6 +916,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         {
                             String id=response.body().getId();
                             mDatabase = FirebaseDatabase.getInstance().getReference();
+                            map.put("book_id",""+id);
                             map.put("user_name",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
                             map.put("user_image",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
                             map.put("user_contact",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
