@@ -30,6 +30,10 @@ public interface APIInterface {
     public Call<Response_register> getRegister(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
+    @POST("change_vehicle_status")
+    public Call<Response_register> update_change_vehicle_status(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
     @POST("social_login")
     public Call<Response_Login> getSocial_Login(@FieldMap Map<String, String> map);
 
@@ -49,10 +53,15 @@ public interface APIInterface {
     @POST("user_profile")
     public Call<Response_Login> getUpdate_Profile(@FieldMap Map<String, String> map);
 
-    @FormUrlEncoded
-    @POST("get_driver_book_ride")
-    public Call<Response_Booking_List> get_Driver_Booking(@FieldMap Map<String, String> map);
 
+    @FormUrlEncoded
+    @POST("change_booking_status")
+    public Call<Response_register> get_booking_status_change(@FieldMap Map<String, String> map);
+
+
+    @FormUrlEncoded
+    @POST("get_driver_ride_book")
+    public Call<Response_Booking_List> get_Driver_Booking(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
     @POST("get_driver_vehicle")
@@ -67,12 +76,13 @@ public interface APIInterface {
     public Call<Response_All_Vehicle> get_All_select_vehicle(@FieldMap Map<String, String> map);
 
     @Multipart
-    @POST("vehicle_reg")
+    @POST("vehicle_registration")
     Call<Response_vehicle> vehicle_register(
             @Part("token_no") RequestBody token_no,
             @Part("driver_id") RequestBody driver_id,
             @Part("vehicle_type_id") RequestBody vehicle_type_id,
             @Part("vehicle_number") RequestBody number,
+            @Part("status") RequestBody status,
             @Part MultipartBody.Part permit_file,
             @Part MultipartBody.Part vehicle_file,
             @Part MultipartBody.Part driver_rc_file,

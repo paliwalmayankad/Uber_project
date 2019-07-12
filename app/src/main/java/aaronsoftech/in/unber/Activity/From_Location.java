@@ -310,7 +310,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         get_vehicle_type_list=response.body().getData();
                         recyclerView_vehicle_type.setAdapter(adapter_past);
 
-
                     }else{
                         progressDialog.dismiss();
                         Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
@@ -350,15 +349,27 @@ public class From_Location extends AppCompatActivity implements LocationListener
                     String msg=response.body().getApi_message();
                     if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                     {
-
+                        get_vehicle_select_list.clear();
                         Log.i(TAG,"Log driver price :"+vehicle_price);
                         double price_pkm= Double.valueOf(vehicle_price);
-                        get_vehicle_select_list=response.body().getData();
+
+                        List<Response_All_Vehicle.Data_Vehicle_List> get_select_list=new ArrayList<>();
+
+                        get_select_list=response.body().getData();
+                        for (int m=0;m<get_select_list.size();m++)
+                        {
+                            if (get_select_list.get(m).getStatus().toString().equalsIgnoreCase("Active"))
+                            {
+                                get_vehicle_select_list.add(get_select_list.get(m));
+                            }
+                        }
+
                         for (int i=0;i<get_vehicle_select_list.size();i++)
                         {
-                            double price=Total_distanse*price_pkm;
-                            get_vehicle_select_list.get(i).setVehicle_price(String.valueOf(price));
+                                double price=Total_distanse*price_pkm;
+                                get_vehicle_select_list.get(i).setVehicle_price(String.valueOf(price));
                         }
+
                         Adapter_Vehicle adapter_past=new Adapter_Vehicle(From_Location.this,get_vehicle_select_list,From_Location.this);
                         recy_vehicle_list.setAdapter(adapter_past);
 
@@ -850,12 +861,12 @@ public class From_Location extends AppCompatActivity implements LocationListener
         String vehicle_no=vehicle_id.getVehicle_number();
         String vehicle_image=vehicle_id.getVehicle_photo();
         String refreshtoken=vehicle_id.getToken_no();
-
-        get_driver_token(vehicleid,amount,Driver_ID,vehicle_no,vehicle_image,refreshtoken);
+        String vehicle_type_id=vehicle_id.getVehicle_type_id();
+        get_driver_token(vehicleid,amount,Driver_ID,vehicle_no,vehicle_image,refreshtoken,vehicle_type_id);
 
     }
 
-    public void Call_Api_book_ride(final String vehicleid, String pricc, final String driver_ID, final String vehicle_no, final String vehicle_image, String refreshtoken){
+    public void Call_Api_book_ride(final String vehicleid, String pricc, final String driver_ID, final String vehicle_no, final String vehicle_image, String refreshtoken,final String vehicla_type_id){
 
         progressDialog=new ProgressDialog(this);
         progressDialog.setCancelable(false);
@@ -865,6 +876,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         Date date=new Date();
         final HashMap<String,String> map=new HashMap<>();
         String userid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
+
         map.put("user_id",""+userid);
         map.put("vehicle_id",""+vehicleid);
         map.put("booked_date_time",""+date);
@@ -879,6 +891,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
         map.put("payment_id","2342687624");
         map.put("amount",""+pricc);
         map.put("pickup","now");
+        map.put("uname",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+        map.put("ucontact",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
+        map.put("uimage",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
         map.put("status","Active");
         map.put("mac_id","121212");
         map.put("remark","yes");
@@ -901,10 +916,15 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         {
                             String id=response.body().getId();
                             mDatabase = FirebaseDatabase.getInstance().getReference();
+                            map.put("user_name",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+                            map.put("user_image",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
+                            map.put("user_contact",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
                             map.put("vehicle_no",vehicle_no);
+                            map.put("vehicle_type_id",vehicla_type_id);
                             map.put("vehicle_image",vehicle_image);
                             mDatabase.child("Booking_ID").child(id).setValue(map);
                             Save_data_on_firebase(mDatabase);
+                            Change_vehicle_status(vehicleid);
                             finish();
                             //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
                             Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
@@ -931,7 +951,48 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     }
 
-    private void get_driver_token(final String vehicleid, final String amount, final String driver_ID, final String vehicle_no, final String vehicle_image, final String refreshtoken) {
+    private void Change_vehicle_status(String vehicleid) {
+        if (isNetworkAvailable(From_Location.this))
+        {
+            Map<String,String> map=new HashMap<>();
+            map.put("vehicle_type_id",vehicleid);
+            map.put("status","Deactive");
+            Call<Response_register> call= APIClient.getWebServiceMethod().update_change_vehicle_status(map);
+            call.enqueue(new Callback<Response_register>() {
+                @Override
+                public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+                    progressDialog.dismiss();
+                    try{
+                        String status=response.body().getApi_status();
+                        String msg=response.body().getApi_message();
+
+                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                        {
+                            //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(From_Location.this, "status change", Toast.LENGTH_SHORT).show();
+                        }else{
+
+                            Toast.makeText(From_Location.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
+                        }
+                    }catch (Exception e){
+                        Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();}
+
+                }
+
+                @Override
+                public void onFailure(Call<Response_register> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(From_Location.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        }else{
+            Toast.makeText(From_Location.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void get_driver_token(final String vehicleid, final String amount, final String driver_ID, final String vehicle_no, final String vehicle_image, final String refreshtoken,final String vehicle_type_id) {
         Call_driver_book_api=true;
         mDatabase = FirebaseDatabase.getInstance().getReference();
         Map<String,String> map=new HashMap<>();
@@ -951,7 +1012,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         // Extract a Message object from the DataSnapshot
                         FB_Token_res message = child.getValue(FB_Token_res.class);
                         String new_token=message.getToken_id();
-                        Call_Api_book_ride(vehicleid,amount,driver_ID,vehicle_no,vehicle_image,new_token);
+                        Call_Api_book_ride(vehicleid,amount,driver_ID,vehicle_no,vehicle_image,new_token,vehicle_type_id);
                     }
                 }
 

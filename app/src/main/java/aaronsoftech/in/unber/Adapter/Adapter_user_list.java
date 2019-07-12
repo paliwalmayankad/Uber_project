@@ -35,19 +35,26 @@ public class Adapter_user_list extends RecyclerView.Adapter<Adapter_user_list.My
 
     @Override
     public Adapter_user_list.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_vehicle, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_user_info, parent, false);
         return new Adapter_user_list.MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(Adapter_user_list.MyViewHolder holder, final int position) {
         try {
+            holder.txt_contact.setText("Contact :"+get_list.get(position).getUcontact());
+            DecimalFormat df2=new DecimalFormat("#.##");
+            if (get_list.get(position).getAmount()!=null)
+            {
+                holder.txt_price.setText(df2.format(Double.valueOf(get_list.get(position).getAmount())));
+            }else{
+                holder.txt_price.setText("0.00");
+            }
 
-
-            holder.txt_price.setText(get_list.get(position).getFrom_address());
-            holder.img_icon.setVisibility(View.GONE);
-            holder.txt_no.setText(String.valueOf(get_list.get(position).getVehicle_id().toString()));
-            String img_url = String.valueOf(get_list.get(position).getVehicle_image().toString());
+            holder.txt_add_from.setText("From :"+get_list.get(position).getFrom_address());
+            holder.txt_add_to.setText("To :"+get_list.get(position).getTo_address());
+            holder.txt_no.setText("Name :"+String.valueOf(get_list.get(position).getUname()));
+            String img_url = String.valueOf(get_list.get(position).getUimage().toString());
             Picasso.with(con).load(img_url).fit().centerCrop()
                     .placeholder(R.drawable.ic_user)
                     .error(R.drawable.ic_user)
@@ -71,10 +78,13 @@ public class Adapter_user_list extends RecyclerView.Adapter<Adapter_user_list.My
     public class MyViewHolder extends RecyclerView.ViewHolder {
         CircleImageView img;
         LinearLayout llayout;
-        TextView txt_no, txt_price,img_icon;
+        TextView txt_no, txt_price,img_icon,txt_contact,txt_add_from,txt_add_to;
 
         public MyViewHolder(View itemView) {
             super(itemView);
+            txt_add_from=itemView.findViewById(R.id.txt_from);
+            txt_add_to=itemView.findViewById(R.id.txt_to);
+            txt_contact=itemView.findViewById(R.id.txt_contact);
             img_icon=itemView.findViewById(R.id.price);
             llayout = itemView.findViewById(R.id.layout);
             img = itemView.findViewById(R.id.vehicle_type_img);

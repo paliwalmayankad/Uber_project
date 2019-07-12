@@ -12,7 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import aaronsoftech.in.unber.Adapter.Adapter_Driver_vehicle;
 import aaronsoftech.in.unber.Adapter.Adapter_vehicle_type;
@@ -84,8 +86,16 @@ public class Show_Vehicle extends AppCompatActivity implements Adapter_Driver_ve
                         String msg=response.body().getApi_message();
                         if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                         {
+                            List< Response_Driver_vehicle.Vehicle_Info> getlist=new ArrayList<>();
+                            for(int k=0;k<response.body().getData().size();k++)
+                            {
+                                if (response.body().getData().get(k).getStatus().equalsIgnoreCase("Active"))
+                                {
+                                    getlist.add(response.body().getData().get(k));
+                                }
+                            }
 
-                            Adapter_Driver_vehicle adapter_past=new Adapter_Driver_vehicle(Show_Vehicle.this,response.body().getData(),Show_Vehicle.this);
+                            Adapter_Driver_vehicle adapter_past=new Adapter_Driver_vehicle(Show_Vehicle.this,getlist,Show_Vehicle.this);
                             recy_vehicle_list.setAdapter(adapter_past);
 
                         }else{

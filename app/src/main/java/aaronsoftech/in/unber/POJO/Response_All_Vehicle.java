@@ -74,6 +74,17 @@ public class Response_All_Vehicle {
         @Expose
         private String token_no="";
 
+        @SerializedName("status")
+        @Expose
+        private String status="";
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
 
         public String getToken_no() {
             return token_no;

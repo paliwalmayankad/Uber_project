@@ -18,6 +18,11 @@ public class Response_Booking_List {
 
     public class User_List
     {
+
+        @SerializedName("id")
+        @Expose
+        private String id="";
+
         @SerializedName("vehicle_image")
         @Expose
         private String vehicle_image="";
@@ -76,6 +81,51 @@ public class Response_Booking_List {
         @SerializedName("driver_id")
         @Expose
         private String driver_id="";
+
+        @SerializedName("ucontact")
+        @Expose
+        private String ucontact="";
+
+        @SerializedName("uimage")
+        @Expose
+        private String uimage="";
+
+        @SerializedName("uname")
+        @Expose
+        private String uname="";
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+
+        public String getUcontact() {
+            return ucontact;
+        }
+
+        public void setUcontact(String ucontact) {
+            this.ucontact = ucontact;
+        }
+
+        public String getUimage() {
+            return uimage;
+        }
+
+        public void setUimage(String uimage) {
+            this.uimage = uimage;
+        }
+
+        public String getUname() {
+            return uname;
+        }
+
+        public void setUname(String uname) {
+            this.uname = uname;
+        }
 
         public String getVehicle_image() {
             return vehicle_image;

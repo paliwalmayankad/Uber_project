@@ -64,6 +64,7 @@ public class Vehicle_reg extends AppCompatActivity {
     List<Response_Vehicle_type.Data_List> get_vehicle_type_list=new ArrayList<>();
     String get_Vehicle_id="";
     String refreshedToken;
+    String Driver_ID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +72,9 @@ public class Vehicle_reg extends AppCompatActivity {
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.i(TAG,"Token ID : onstart "+refreshedToken);
         Init();
+     //   Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
 
+     //   Toast.makeText(this, "Driver_ID :"+Driver_ID, Toast.LENGTH_SHORT).show();
         btn_permit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -206,6 +209,8 @@ public class Vehicle_reg extends AppCompatActivity {
 
 
     private void Call_Api() {
+
+
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
       if (isNetworkAvailable(Vehicle_reg.this))
       {
@@ -221,8 +226,15 @@ public class Vehicle_reg extends AppCompatActivity {
             progressDialog.setMessage("Loading...");
             progressDialog.setCancelable(false);
             progressDialog.show();
+          String driverid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+          RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+driverid);
+          RequestBody body_status =RequestBody.create(okhttp3.MultipartBody.FORM, "Active");
+          RequestBody body_type_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+get_Vehicle_id);
+          RequestBody body_tokene =RequestBody.create(okhttp3.MultipartBody.FORM, ""+refreshedToken);
+          RequestBody body_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_no.getText().toString().trim());
 
-            File file_permit = new File(PATH_PERMIT);
+
+          File file_permit = new File(PATH_PERMIT);
             File file_vehicle = new File(PATH_VEHICLE);
             File file_rc = new File(PATH_RC);
             File file_other_doc = new File(PATH_OTHER_DOC);
@@ -240,51 +252,47 @@ public class Vehicle_reg extends AppCompatActivity {
             MultipartBody.Part body_request_rc = MultipartBody.Part.createFormData("vehicle_rc", file_rc.getName(), request_file_rc);
             MultipartBody.Part body_request_other_doc = MultipartBody.Part.createFormData("vehicle_other_doc", file_other_doc.getName(), request_file_other_doc);
             MultipartBody.Part body_request_insurense = MultipartBody.Part.createFormData("vehicle_insurance_id", file_insurense.getName(), request_file_insurense);
-            String Driver_ID="";
-            try{ Driver_ID= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-            }catch (Exception e){e.printStackTrace();}
-            RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+Driver_ID);
 
-            RequestBody body_type_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+get_Vehicle_id);
-            RequestBody body_tokene =RequestBody.create(okhttp3.MultipartBody.FORM, ""+refreshedToken);
-            RequestBody body_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_no.getText().toString().trim());
 
-            Call<Response_vehicle> call= APIClient.getWebServiceMethod().vehicle_register(body_tokene,body_driver_id,body_type_id,body_number,
-                    body_request_permit,body_request_vehicle,body_request_rc,body_request_other_doc,body_request_insurense);
 
-            call.enqueue(new Callback<Response_vehicle>() {
-                @Override
-                public void onResponse(Call<Response_vehicle> call, Response<Response_vehicle> response) {
-                    progressDialog.dismiss();
+                Call<Response_vehicle> call= APIClient.getWebServiceMethod().vehicle_register(body_tokene,body_driver_id,body_type_id,body_number,body_status,
+                        body_request_permit,body_request_vehicle,body_request_rc,body_request_other_doc,body_request_insurense);
 
-                    try{
-                        String status=response.body().getApi_status();
-                        String msg=response.body().getApi_message();
+                call.enqueue(new Callback<Response_vehicle>() {
+                    @Override
+                    public void onResponse(Call<Response_vehicle> call, Response<Response_vehicle> response) {
+                        progressDialog.dismiss();
 
-                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                        {
+                        try{
+                            String status=response.body().getApi_status();
+                            String msg=response.body().getApi_message();
 
-                            Toast.makeText(Vehicle_reg.this, "successfully Add Your Vehicle", Toast.LENGTH_SHORT).show();
-                        }else{
+                            if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                            {
 
-                            Toast.makeText(Vehicle_reg.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
-                        }
+                                Toast.makeText(Vehicle_reg.this, "successfully Add Your Vehicle", Toast.LENGTH_SHORT).show();
+                            }else{
 
-                    }catch (Exception e){
-                        Toast.makeText(Vehicle_reg.this, "Please retry..", Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();}
+                                Toast.makeText(Vehicle_reg.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+                            }
 
-                }
+                        }catch (Exception e){
+                            Toast.makeText(Vehicle_reg.this, "Please retry..", Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();}
 
-                @Override
-                public void onFailure(Call<Response_vehicle> call, Throwable t) {
-                    progressDialog.dismiss();
-                    Toast.makeText(Vehicle_reg.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
-                }
+                    }
 
-            });
+                    @Override
+                    public void onFailure(Call<Response_vehicle> call, Throwable t) {
+                        progressDialog.dismiss();
+                        Toast.makeText(Vehicle_reg.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
+                    }
+
+                });
+
 
       }else{
+
             Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
 

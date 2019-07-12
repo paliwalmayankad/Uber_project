@@ -11,16 +11,104 @@ public class FB_Driver_res {
     private String contact_number;
     private String lat;
     private String lng;
-    private String speed;
+    private String address;
+    private String city;
+    private String country;
+    private String email;
+    private String state;
+    private String veh_type_id;
+    private String veh_no;
+    private String veh_img;
+    private String amount;
 
-    public FB_Driver_res(String driver_ID, String name, String photo, String contact_number, String lat, String lng, String speed) {
+    public FB_Driver_res(String driver_ID, String name, String photo, String contact_number, String lat, String lng, String address, String city, String country, String email, String state, String veh_type_id, String veh_no, String veh_img, String amount) {
         this.driver_ID = driver_ID;
         this.name = name;
         this.photo = photo;
         this.contact_number = contact_number;
         this.lat = lat;
         this.lng = lng;
-        this.speed = speed;
+        this.address = address;
+        this.city = city;
+        this.country = country;
+        this.email = email;
+        this.state = state;
+        this.veh_type_id = veh_type_id;
+        this.veh_no = veh_no;
+        this.veh_img = veh_img;
+        this.amount = amount;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public String getVeh_type_id() {
+        return veh_type_id;
+    }
+
+    public void setVeh_type_id(String veh_type_id) {
+        this.veh_type_id = veh_type_id;
+    }
+
+    public String getVeh_no() {
+        return veh_no;
+    }
+
+    public void setVeh_no(String veh_no) {
+        this.veh_no = veh_no;
+    }
+
+    public String getVeh_img() {
+        return veh_img;
+    }
+
+    public void setVeh_img(String veh_img) {
+        this.veh_img = veh_img;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getDriver_ID() {
@@ -71,11 +159,4 @@ public class FB_Driver_res {
         this.lng = lng;
     }
 
-    public String getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(String speed) {
-        this.speed = speed;
-    }
 }

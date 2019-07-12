@@ -45,57 +45,43 @@
             android:src="@drawable/ic_parking_time"/>
     </LinearLayout>
 
-
-
-     <LinearLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/layout_bottomsheet_list"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+        <include layout="@layout/layout_bottom_sheet"></include>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:background="@color/grey_20"
+            android:layout_alignParentBottom="true"
+            android:layout_height="wrap_content">
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_alignParentBottom="true"
+                android:text="COMPLITE YOUR RIDE"
+                android:textSize="22dp"
+                android:id="@+id/txt_finish_ride"
+                android:textStyle="bold"
+                android:layout_margin="11dp"
+                android:layout_gravity="center"
                 android:gravity="center"
-                android:visibility="gone"
-                android:id="@+id/show_driver_profile"
-                android:layout_margin="22dp"
-                android:orientation="vertical"
-                android:layout_height="wrap_content">
-                <android.support.v7.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="11dp"
-                    app:cardCornerRadius="6dp"
-                    app:cardElevation="11dp">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:layout_margin="21dp"
-                        android:layout_height="wrap_content">
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="111dp"
-                            android:id="@+id/driver_img"
-                            android:src="@drawable/default_user_profile_img"
-                            android:layout_height="111dp" />
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:hint="Driver name"
-                            android:layout_marginTop="11dp"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:id="@+id/txt_name"
-                            android:textColor="@color/grey_600"
-                            android:layout_height="wrap_content" />
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:hint="Driver Mobile no"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:id="@+id/txt_mobile"
-                            android:textColor="@color/grey_600"
-                            android:layout_height="wrap_content" />
+                android:padding="11dp"
+                android:background="@android:color/black"
+                android:textColor="@android:color/white"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
 
-                    </LinearLayout>
-                </android.support.v7.widget.CardView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:id="@+id/layout_bottomsheet_user_info"
+        android:layout_height="wrap_content">
+    <include layout="@layout/layout_bottomsheet_driver_profile"></include>
 
-            </LinearLayout>
-
-
-
+    </LinearLayout>
 </RelativeLayout>
