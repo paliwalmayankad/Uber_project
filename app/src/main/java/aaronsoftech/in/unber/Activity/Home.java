@@ -163,6 +163,20 @@ public class Home extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
+
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                mDatabase.child("Driver_ID").child(list.get(0).getDriver_id()).child("status").child("Deactive");
+                mDatabase.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
         user_list_recycle.setAdapter(aa);
@@ -451,7 +465,7 @@ public class Home extends AppCompatActivity
                             map.put("city", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CITY,""));
                             map.put("state", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_STATUS,""));
                             map.put("country", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_COUNTER,""));
-
+                            map.put("status","Active");
                             Call_firebase_service(map);
                             Accept_this_booking=22;
                             MarkerOptions marker3 = null;
@@ -513,7 +527,7 @@ public class Home extends AppCompatActivity
         mapw.put("city", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CITY,""));
         mapw.put("state", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_STATUS,""));
         mapw.put("country", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_COUNTER,""));
-
+        mapw.put("status","Active");
         Call_firebase_service(mapw);
 
         MarkerOptions marker3 = null;
@@ -563,6 +577,7 @@ public class Home extends AppCompatActivity
                                     get_list.add(list.get(i));
                                 }
                             }
+
                             ShowBottomSheet(get_list,bookid);
                             get_Booking_List=get_list;
 
@@ -641,7 +656,7 @@ public class Home extends AppCompatActivity
                 mapw.put("city", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CITY,""));
                 mapw.put("state", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_STATUS,""));
                 mapw.put("country", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_COUNTER,""));
-
+                mapw.put("status","Active");
                 Call_firebase_service(mapw);
 
                 MarkerOptions marker3 = null;
@@ -680,7 +695,7 @@ public class Home extends AppCompatActivity
                         // Extract a Message object from the DataSnapshot
                         Response_Booking message = child.getValue(Response_Booking.class);
 
-                        if (message.getUser_id().equalsIgnoreCase(UserID))
+                        if (message.getUser_id().equalsIgnoreCase(UserID) && (!(message.getStatus().equalsIgnoreCase("Deactive"))))
                         {
 
                             String driver_id=message.getDriver_id();
@@ -690,6 +705,8 @@ public class Home extends AppCompatActivity
                             set_line_on_map(from_latlng,to_latlng);
                             Show_Driver_Location(driver_id,message);
 
+                        }else{
+                            layout_user_info.setVisibility(View.GONE);
                         }
                     }
 
