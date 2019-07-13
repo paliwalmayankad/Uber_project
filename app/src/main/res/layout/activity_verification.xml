@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/layout_rel"
     android:layout_height="match_parent"
     tools:context="aaronsoftech.in.unber.Activity.Verification">
 
@@ -41,29 +42,27 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_margin="66dp"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:padding="22dp"
-            android:background="@drawable/border_black_line"
+            android:padding="11dp"
+            android:layout_margin="22dp"
             android:orientation="vertical"
             android:id="@+id/linearLayout2">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="15dp"
                 android:layout_marginTop="15dp"
+                android:paddingLeft="11dp"
+                android:paddingRight="11dp"
                 android:orientation="horizontal">
 
-                <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
 
                 <android.support.design.widget.TextInputEditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:inputType="number"
@@ -71,47 +70,48 @@
                     android:focusable="true"
                     android:maxLines="1"
                     android:hint="0"
+                    android:layout_marginRight="11dp"
                     android:nextFocusDown="@id/ed_two"
                     android:id="@+id/ed_one"
                     android:singleLine="true"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                    android:background="@drawable/border_line_yellow"
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
-                    android:theme="@style/EditText.Grey" />
+                  />
 
-                <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
+
 
                 <android.support.design.widget.TextInputEditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:inputType="number"
                     android:nextFocusDown="@id/ed_three"
                     android:maxLength="1"
                     android:hint="0"
+                    android:layout_marginRight="11dp"
+                    android:background="@drawable/border_line_grey"
                     android:id="@+id/ed_two"
                     android:maxLines="1"
                     android:singleLine="true"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
-                    android:theme="@style/EditText.Grey" />
+                    />
 
-                <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
+
 
                 <android.support.design.widget.TextInputEditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:inputType="number"
                     android:maxLength="1"
                     android:hint="0"
+                    android:layout_marginRight="11dp"
+                    android:background="@drawable/border_line_grey"
                     android:nextFocusDown="@id/ed_four"
                     android:id="@+id/ed_three"
                     android:maxLines="1"
@@ -119,16 +119,16 @@
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
-                    android:theme="@style/EditText.Grey" />
-                <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
+                    />
+
 
                 <android.support.design.widget.TextInputEditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:layout_marginRight="11dp"
+                    android:background="@drawable/border_line_grey"
                     android:inputType="number"
                     android:maxLength="1"
                     android:id="@+id/ed_four"
@@ -139,17 +139,17 @@
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
-                    android:theme="@style/EditText.Grey" />
-                <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
+                    />
+
 
                 <android.support.design.widget.TextInputEditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:inputType="number"
+                    android:layout_marginRight="11dp"
+                    android:background="@drawable/border_line_grey"
                     android:maxLength="1"
                     android:id="@+id/ed_five"
                     android:nextFocusDown="@id/ed_six"
@@ -159,26 +159,26 @@
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
-                    android:theme="@style/EditText.Grey" />
-                <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
+                     />
+
 
                 <android.support.design.widget.TextInputEditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:inputType="number"
                     android:maxLength="1"
                     android:id="@+id/ed_six"
                     android:maxLines="1"
+                    android:layout_marginRight="11dp"
                     android:hint="0"
+                    android:background="@drawable/border_line_grey"
                     android:singleLine="true"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
-                    android:theme="@style/EditText.Grey" />
+                     />
 
             </LinearLayout>
 

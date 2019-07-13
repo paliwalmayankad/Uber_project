@@ -120,6 +120,7 @@ public class Home extends AppCompatActivity
     double lng= 0.0;
     boolean setCurrentLocation=true;
     List<FB_Driver_res >get_driver_loc=new ArrayList<>();
+    List<FB_Driver_res >get_driver_vehicle=new ArrayList<>();
     String booked_id="";
     RelativeLayout coordinatorLayout;
     double oldlat,oldlong;
@@ -133,10 +134,13 @@ public class Home extends AppCompatActivity
     ProgressDialog progressDialog;
     List<Response_Booking_List.User_List> get_Booking_List=new ArrayList<>();
     LinearLayout layout_user_info,layout_user_profile_list;
-    TextView btn_finish_ride;
+    TextView btn_finish_ride,btn_finish_ride_user;
+
     public void Init()
     {
         btn_finish_ride=findViewById(R.id.txt_finish_ride);
+        btn_finish_ride_user=findViewById(R.id.txt_finish_ride2);
+
         layout_user_profile_list=findViewById(R.id.layout_bottomsheet_list);
         layout_user_info=findViewById(R.id.layout_bottomsheet_user_info);
         coordinatorLayout=findViewById(R.id.layout_linear);
@@ -163,7 +167,6 @@ public class Home extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
-
                 mDatabase = FirebaseDatabase.getInstance().getReference();
                 mDatabase.child("Driver_ID").child(list.get(0).getDriver_id()).child("status").child("Deactive");
                 mDatabase.addValueEventListener(new ValueEventListener() {
@@ -417,7 +420,7 @@ public class Home extends AppCompatActivity
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+
 
                 Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
@@ -425,20 +428,21 @@ public class Home extends AppCompatActivity
                     Response_Booking message = child.getValue(Response_Booking.class);
                     if (message.getStatus().toString().equalsIgnoreCase("Active") || message.getStatus().toString().equalsIgnoreCase("Running"))
                     {
+                        String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
                         if (message.getDriver_id().equalsIgnoreCase(Driver_ID) && (Accept_this_booking==0) )
                         {
-                            Accept_this_booking=11;
+                                 Accept_this_booking=11;
 
                                 if (message.getStatus().toString().equalsIgnoreCase("Running"))
                                 {
                                     Set_running_value(message.getBook_id(), location,message.getVehicle_image(),message.getVehicle_type_id(),
                                             message.getVehicle_no(),message.getAmount(),message.getUser_contact(),message.getUser_image(),message.getUser_name());
                                 }else{
-                                    addNotification();
+
                                     Show_dialog_box(message.getBook_id(), location,message.getVehicle_image(),message.getVehicle_type_id(),
                                             message.getVehicle_no(),message.getAmount(),message.getUser_contact(),message.getUser_image(),message.getUser_name());
+                                    addNotification();
                                 }
-                        //    Toast.makeText(Home.this, "key---  "+dataSnapshot.getKey()+"\n"+"value   "+dataSnapshot.getValue(), Toast.LENGTH_SHORT).show();
 
 
                         }else if (message.getDriver_id().equalsIgnoreCase(Driver_ID) && (Accept_this_booking==22))
@@ -451,6 +455,8 @@ public class Home extends AppCompatActivity
                             String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
                             HashMap<String,String> map=new HashMap<>();
                             map.put("driver_ID",""+driver_id);
+                            map.put("book_ID",""+message.getBook_id());
+                            map.put("vehical_ID",""+message.getVehicle_id());
                             map.put("name", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
                             map.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
                             map.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
@@ -680,6 +686,7 @@ public class Home extends AppCompatActivity
 
     private void Check_User_Id_on_firebase() {
         get_Booking_list.clear();
+        Show_all_driver_vehicle();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         Query myTopPostsQuery = mDatabase.child("Booking_ID");
         // My top posts by number of stars
@@ -720,6 +727,106 @@ public class Home extends AppCompatActivity
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
+    }
+
+    private void Show_all_driver_vehicle() {
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Query myTopPostsQuery = mDatabase.child("Driver_ID");
+
+        myTopPostsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                get_driver_vehicle.clear();
+                String lat = String.valueOf(dataSnapshot.child("lat").getValue());
+                String lng = String.valueOf(dataSnapshot.child("lng").getValue());
+                String veh_type_id = String.valueOf(dataSnapshot.child("vehicle_type_id").getValue());
+                String state = String.valueOf(dataSnapshot.child("state").getValue());
+                get_driver_vehicle.add(new FB_Driver_res(lat,lng,veh_type_id));
+                MarkerOptions marker2 = null;
+                try{
+                    if (get_driver_vehicle.size()!=0)
+                    {
+                        for (int i=0;i<get_driver_vehicle.size();i++)
+                        {
+                            double get_lat= Double.valueOf(get_driver_vehicle.get(i).getLat());
+                            double get_lng=Double.valueOf(get_driver_vehicle.get(i).getLng());
+                            Location prevLoc = new Location("service Provider");
+                            prevLoc.setLatitude(oldlat);
+                            prevLoc.setLongitude(oldlong);
+                            Location newLoc = new Location("service Provider");
+                            newLoc.setLatitude(get_lat);
+                            newLoc.setLongitude(get_lng);
+                            float bearing = prevLoc.bearingTo(newLoc);
+                            if (update_marker == 0)
+                            {
+                                marker2 = new MarkerOptions().position(new LatLng(get_lat, get_lng));
+                                if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("8"))
+                                {
+                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
+                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("7"))
+                                {
+                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
+                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("6"))
+                                {
+                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
+                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("5"))
+                                {
+                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
+                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("4"))
+                                {
+                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
+                                }
+                                marker2.anchor(0.5f, 0.5f);
+                                marker2.rotation(bearing);
+                                marker2.flat(true);
+                                mMap.addMarker(marker2);
+                                update_marker = 1;
+                            }
+                            else
+                            {
+                                if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("8"))
+                                {
+                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
+                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("7"))
+                                {
+                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
+                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("6"))
+                                {
+                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
+                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("5"))
+                                {
+                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
+                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("4"))
+                                {
+                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
+                                }
+                                marker2.anchor(0.5f, 0.5f);
+                                marker2.rotation(bearing);
+                                marker2.flat(true);
+                                mMap.addMarker(marker2);
+                            }
+                            show_driver_profile(get_driver_vehicle);
+                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker) {
+
+                                    return false;
+                                }
+                            });
+                            oldlat=get_lat;
+                            oldlong=get_lng;
+                        }
+                    }
+                }catch (Exception e){e.printStackTrace();}
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void addstart_end_icontrip(String from_add,String to_address,double from_lat,double from_lng,double to_lat,double to_lng)
@@ -907,11 +1014,11 @@ public class Home extends AppCompatActivity
                             RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) view.getLayoutParams();
                             // position on right bottom
                             rlp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
-                            rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+                            rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
                             rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                            rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                            rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
                             rlp.rightMargin = 25;
-                            rlp.bottomMargin = 25;
+                            rlp.topMargin = 200;
                             view.requestLayout();
                         }
                     } catch (Exception ex) {
@@ -937,9 +1044,9 @@ public class Home extends AppCompatActivity
                     // Construct a CameraPosition focusing on Mountain View and animate the camera to that position.
                     CameraPosition cameraPosition = new CameraPosition.Builder()
                             .target(sydney)      // Sets the center of the map to Mountain View
-                            .zoom(17)                   // Sets the zoom
+                            .zoom(15)                   // Sets the zoom
                             .bearing(90)                // Sets the orientation of the camera to east
-                            .tilt(30)                   // Sets the tilt of the camera to 30 degrees
+                            .tilt(90)                   // Sets the tilt of the camera to 30 degrees
                             .build();                   // Creates a CameraPosition from the builder
                     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                     setCurrentLocation=false;
@@ -960,6 +1067,7 @@ public class Home extends AppCompatActivity
             }
         });
     }
+
 
     private void Save_data_on_firebase(DatabaseReference mDatabase) {
         // Read from the database
@@ -1000,9 +1108,14 @@ public class Home extends AppCompatActivity
                     String veh_no =  String.valueOf(message.getVehicle_no());
                     String amount =  String.valueOf(message.getAmount());
                     String veh_img =  String.valueOf(message.getVehicle_image());
+                    String vehicle_id=String.valueOf(message.getVehicle_id());
+                    String book_id=String.valueOf(message.getBook_id());
+
                     String state = String.valueOf(dataSnapshot.child("state").getValue());
-                    get_driver_loc.add(new FB_Driver_res(driver_ID,name,photo,contactno,lat,lng,address,city,email,email,state,veh_type_id,veh_no,veh_img,amount));
-                MarkerOptions marker2 = null;
+
+                    get_driver_loc.add(new FB_Driver_res(driver_ID,name,photo,contactno,lat,lng,address,city,email,email,state,veh_type_id,veh_no,veh_img,amount,vehicle_id,book_id));
+
+                    MarkerOptions marker2 = null;
 
             try{
                 if (get_driver_loc.size()!=0)
@@ -1032,7 +1145,7 @@ public class Home extends AppCompatActivity
                                 marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
                             }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("7"))
                             {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
+                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
                             }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("6"))
                             {
                                 marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
@@ -1057,7 +1170,7 @@ public class Home extends AppCompatActivity
                                 marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
                             }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("7"))
                             {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
+                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
                             }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("6"))
                             {
                                 marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
@@ -1073,6 +1186,18 @@ public class Home extends AppCompatActivity
                             marker2.flat(true);
                             mMap.addMarker(marker2);
                         }
+
+                        LatLng sydney = new LatLng(get_lat, get_lng);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(sydney)      // Sets the center of the map to Mountain View
+                                .zoom(29)                   // Sets the zoom
+                                .bearing(90)                // Sets the orientation of the camera to east
+                                .tilt(30)                   // Sets the tilt of the camera to 30 degrees
+                                .build();                   // Creates a CameraPosition from the builder
+                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
                         show_driver_profile(get_driver_loc);
                         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                             @Override
@@ -1095,7 +1220,7 @@ public class Home extends AppCompatActivity
         });
     }
 
-    private void show_driver_profile(List<FB_Driver_res> get_driver_loc_2) {
+    private void show_driver_profile(final List<FB_Driver_res> get_driver_loc_2) {
       //  View view = getLayoutInflater().inflate(R.layout.layout_bottomsheet_driver_profile, null);
         layout_user_info.setVisibility(View.VISIBLE);
         CircleImageView driver_image=findViewById(R.id.driver_img);
@@ -1122,10 +1247,32 @@ public class Home extends AppCompatActivity
             Picasso.with(Home.this).load(imguri).error(R.drawable.ic_user).into(driver_image);
         }catch (Exception e){e.printStackTrace();}
 
-       /* bottomSheetDialog = new BottomSheetDialog(this);
-        bottomSheetDialog.setContentView(view);
-        bottomSheetDialog.setCancelable(true);
-        bottomSheetDialog.show();*/
+        btn_finish_ride_user.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressDialog=new ProgressDialog(Home.this);
+                progressDialog.setCancelable(false);
+                progressDialog.setMessage("Loading...");
+                progressDialog.show();
+
+                get_Booking_List.clear();
+
+                Change_ride_status(get_driver_loc_2.get(0).getBook_ID(),get_driver_loc_2.get(0).getVehical_ID(),get_driver_loc_2.get(0).getBook_ID());
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                mDatabase.child("Driver_ID").child(get_driver_loc_2.get(0).getDriver_ID()).child("status").child("Deactive");
+                mDatabase.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
     }
 
     @Override

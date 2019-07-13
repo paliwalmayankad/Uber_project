@@ -60,7 +60,7 @@
             android:layout_height="wrap_content">
             <TextView
                 android:layout_width="match_parent"
-                android:text="COMPLITE YOUR RIDE"
+                android:text="Complete your ride"
                 android:textSize="22dp"
                 android:id="@+id/txt_finish_ride"
                 android:textStyle="bold"
@@ -82,6 +82,24 @@
         android:id="@+id/layout_bottomsheet_user_info"
         android:layout_height="wrap_content">
     <include layout="@layout/layout_bottomsheet_driver_profile"></include>
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:background="@color/grey_20"
+            android:layout_alignParentBottom="true"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:text="Complete your ride"
+                android:textSize="22dp"
+                android:id="@+id/txt_finish_ride2"
+                android:textStyle="bold"
+                android:layout_margin="11dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="11dp"
+                android:background="@android:color/black"
+                android:textColor="@android:color/white"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

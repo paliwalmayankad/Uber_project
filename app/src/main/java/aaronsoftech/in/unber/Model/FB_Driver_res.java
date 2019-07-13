@@ -20,8 +20,16 @@ public class FB_Driver_res {
     private String veh_no;
     private String veh_img;
     private String amount;
+    private String book_ID;
+    private String vehical_ID;
 
-    public FB_Driver_res(String driver_ID, String name, String photo, String contact_number, String lat, String lng, String address, String city, String country, String email, String state, String veh_type_id, String veh_no, String veh_img, String amount) {
+    public FB_Driver_res(String lat, String lng, String veh_type_id) {
+        this.lat = lat;
+        this.lng = lng;
+        this.veh_type_id = veh_type_id;
+    }
+
+    public FB_Driver_res(String driver_ID, String name, String photo, String contact_number, String lat, String lng, String address, String city, String country, String email, String state, String veh_type_id, String veh_no, String veh_img, String amount, String book_ID, String vehical_ID) {
         this.driver_ID = driver_ID;
         this.name = name;
         this.photo = photo;
@@ -37,6 +45,25 @@ public class FB_Driver_res {
         this.veh_no = veh_no;
         this.veh_img = veh_img;
         this.amount = amount;
+        this.book_ID = book_ID;
+        this.vehical_ID = vehical_ID;
+    }
+
+
+    public String getBook_ID() {
+        return book_ID;
+    }
+
+    public void setBook_ID(String book_ID) {
+        this.book_ID = book_ID;
+    }
+
+    public String getVehical_ID() {
+        return vehical_ID;
+    }
+
+    public void setVehical_ID(String vehical_ID) {
+        this.vehical_ID = vehical_ID;
     }
 
     public String getAmount() {

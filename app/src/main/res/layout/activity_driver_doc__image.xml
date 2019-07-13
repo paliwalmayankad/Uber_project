@@ -31,14 +31,16 @@
         android:id="@+id/image"
         android:src="@drawable/ic_driving_license"
         android:layout_height="wrap_content" />
+
     <EditText
-        android:layout_width="match_parent"
         android:id="@+id/txt_value"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
         android:layout_margin="22dp"
+        android:visibility="gone"
+        android:background="@drawable/border_black_line"
         android:singleLine="true"
-       android:background="@drawable/border_black_line"
-        android:textColor="@android:color/black"
-        android:layout_height="55dp" />
+        android:textColor="@android:color/black" />
     <TextView
         android:layout_width="match_parent"
         android:text="TAP TO ADD"

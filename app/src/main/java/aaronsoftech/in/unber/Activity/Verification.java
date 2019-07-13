@@ -8,9 +8,12 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,6 +51,7 @@ public class Verification extends AppCompatActivity {
     String refreshedToken;
     ProgressDialog progressDialog;
     String TAG="Verification";
+    RelativeLayout real_layout;
     TextInputEditText txt_one,txt_two,txt_three,txt_four,txt_five,txt_six;
 
     @Override
@@ -55,6 +59,7 @@ public class Verification extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verification);
 
+        real_layout=findViewById(R.id.layout_rel);
         txt_one=findViewById(R.id.ed_one);
         txt_two=findViewById(R.id.ed_two);
         txt_three=findViewById(R.id.ed_three);
@@ -70,15 +75,145 @@ public class Verification extends AppCompatActivity {
         {
 
         }else{
+
+            for (int i=0;i<6;i++)
+            {
+
+            }
+
+
           try{
-            txt_one.setText(String.valueOf(mobileno.charAt(0)));
-            txt_two.setText(String.valueOf(mobileno.charAt(1)));
-            txt_three.setText(String.valueOf(mobileno.charAt(2)));
-            txt_four.setText(String.valueOf(mobileno.charAt(3)));
-            txt_five.setText(String.valueOf(mobileno.charAt(4)));
-            txt_six.setText(String.valueOf(mobileno.charAt(5)));
+            txt_one.setText(String.valueOf(otp.charAt(0)));
+            txt_two.setText(String.valueOf(otp.charAt(1)));
+            txt_three.setText(String.valueOf(otp.charAt(2)));
+            txt_four.setText(String.valueOf(otp.charAt(3)));
+            txt_five.setText(String.valueOf(otp.charAt(4)));
+            txt_six.setText(String.valueOf(otp.charAt(5)));
            }catch (Exception e){e.printStackTrace();}
         }
+
+        txt_one.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                txt_one.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
+                txt_two.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
+                txt_two.requestFocus();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+
+        });
+        txt_two.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                txt_two.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
+                txt_three.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
+                txt_three.requestFocus();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+
+        });
+        txt_three.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                txt_three.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
+                txt_four.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
+                txt_four.requestFocus();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+
+        });
+        txt_four.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                txt_four.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
+                txt_five.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
+                txt_five.requestFocus();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {          }
+        });
+
+        txt_five.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                txt_five.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
+                txt_six.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
+                txt_six.requestFocus();          }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+           }
+
+        });
+
+        txt_six.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String otp=txt_one.getText().toString().trim()+txt_two.getText().toString().trim()+txt_three.getText().toString().trim()+
+                        txt_four.getText().toString().trim()+txt_five.getText().toString().trim()+txt_six.getText().toString().trim();
+                if (otp.length()!=6)
+                {
+                    Toast.makeText(Verification.this, "Enter OTP", Toast.LENGTH_SHORT).show();
+                }else{
+                    progressDialog=new ProgressDialog(Verification.this);
+                    progressDialog.setCancelable(false);
+                    progressDialog.setMessage("Loading...");
+                    progressDialog.show();
+                    verifyVerificationCode(otp);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+
+        });
+
+
+
 
 
 
@@ -134,8 +269,13 @@ public class Verification extends AppCompatActivity {
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 message = "Invalid code entered...";
                             }
-
-                            Snackbar snackbar = Snackbar.make(findViewById(R.id.parent), message, Snackbar.LENGTH_LONG);
+                            txt_one.setText("");
+                            txt_two.setText("");
+                            txt_three.setText("");
+                            txt_four.setText("");
+                            txt_five.setText("");
+                            txt_six.setText("");
+                            Snackbar snackbar = Snackbar.make(real_layout, message, Snackbar.LENGTH_LONG);
                             snackbar.setAction("Dismiss", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -227,7 +367,6 @@ public class Verification extends AppCompatActivity {
                             progressDialog.dismiss();
                             App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
                             App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
-
 
                             App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
                             if (response.body().getData().get(0).getName()==null)
