@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Uber_project.iml" filepath="$PROJECT_DIR$/Uber_project.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/checkout-1.5.6/checkout-1.5.6.iml" filepath="$PROJECT_DIR$/checkout-1.5.6/checkout-1.5.6.iml" />
     </modules>
   </component>
 </project>

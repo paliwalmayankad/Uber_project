@@ -66,6 +66,7 @@
             android:text="Paytm"
             android:layout_marginLeft="22dp"
             android:textSize="22dp"
+            android:id="@+id/txt_online"
             android:gravity="center_vertical"
             android:textStyle="bold"
             android:layout_height="match_parent" />

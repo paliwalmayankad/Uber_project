@@ -46,7 +46,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
-
+        <!-- Add your API key here -->
+        <meta-data
+            android:name="com.razorpay.ApiKey"
+            android:value="rzp_live_ILgsfZCZoFIKMb"
+            />
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="false" /> <!-- start service for FCM -->
