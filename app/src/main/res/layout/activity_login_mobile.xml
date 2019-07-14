@@ -15,7 +15,7 @@
        android:layout_height="wrap_content">
        <ImageView
            android:layout_width="match_parent"
-           android:src="@drawable/nber_logo"
+           android:src="@drawable/splash_screen"
            android:layout_weight="111"
            android:scaleType="centerCrop"
            android:layout_height="match_parent" />

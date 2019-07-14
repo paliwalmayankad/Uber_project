@@ -58,6 +58,10 @@ public interface APIInterface {
     @POST("change_booking_status")
     public Call<Response_register> get_booking_status_change(@FieldMap Map<String, String> map);
 
+    @FormUrlEncoded
+    @POST("get_user_booking_list")
+    public Call<Response_Booking_List> get_User_Booking(@FieldMap Map<String, String> map);
+
 
     @FormUrlEncoded
     @POST("get_driver_ride_book")

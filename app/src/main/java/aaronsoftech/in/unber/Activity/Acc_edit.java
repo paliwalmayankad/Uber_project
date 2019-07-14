@@ -160,9 +160,6 @@ public class Acc_edit extends AppCompatActivity {
         map.put("gender", ""+gender);
         map.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
         map.put("email", ""+ed_email.getText().toString());
-    //   map.put("password", id);
-    //   map.put("id_cms_privileges", id);
-    //   map.put("status", id);
        map.put("contact_number", ""+tx_mobile.getText().toString().trim());
        map.put("address", ""+ed_address.getText().toString().trim());
        map.put("city", ""+ed_city.getText().toString().trim());

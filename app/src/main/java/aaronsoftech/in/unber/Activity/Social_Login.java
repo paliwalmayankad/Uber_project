@@ -57,6 +57,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static aaronsoftech.in.unber.Activity.login_mobile.activity_login_mobile;
 import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 public class Social_Login extends AppCompatActivity implements
@@ -79,6 +80,7 @@ public class Social_Login extends AppCompatActivity implements
     private TextView mStatusTextView;
     Context con;
     private GoogleSignInClient mGoogleSignInClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -262,6 +264,7 @@ public class Social_Login extends AppCompatActivity implements
                             App_Conteroller. editor.commit();
                             Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
                             startActivity(new Intent(Social_Login.this, Home.class));
+                            activity_login_mobile.finish();
                             finish();
                         }
                     }else{
@@ -619,6 +622,7 @@ public class Social_Login extends AppCompatActivity implements
                             App_Conteroller. editor.commit();
                             Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
                             startActivity(new Intent(Social_Login.this, Home.class));
+                            activity_login_mobile.finish();
                             finish();
                         }
                     }else{

@@ -6,18 +6,23 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_payment"
+            android:icon="@drawable/ic_nav_credit_card"
             android:title="Payment" />
         <item
             android:id="@+id/nav_your_trips"
+            android:icon="@drawable/ic_nav_travel"
             android:title="Your Trips" />
         <item
             android:id="@+id/nav_help"
+            android:icon="@drawable/ic_nav_help"
             android:title="Help" />
         <item
             android:id="@+id/nav_free_trips"
+            android:icon="@drawable/ic_nav_travel"
             android:title="Free Trips" />
         <item
             android:id="@+id/nav_setting"
+            android:icon="@drawable/ic_nav_repairing_service"
             android:title="Setting" />
     </group>
 

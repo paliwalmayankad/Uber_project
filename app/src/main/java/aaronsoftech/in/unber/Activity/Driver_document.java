@@ -281,7 +281,7 @@ public class Driver_document extends AppCompatActivity {
                             Toast.makeText(Driver_document.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-                        Toast.makeText(Driver_document.this, "Server error", Toast.LENGTH_SHORT).show();
+           //             Toast.makeText(Driver_document.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
                 }

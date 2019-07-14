@@ -934,7 +934,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             Toast.makeText(From_Location.this, "status "+status+"\n"+" msg "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-                        Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
+  //                      Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
                 }
@@ -976,7 +976,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             Toast.makeText(From_Location.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-                        Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
+   //                     Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
                 }

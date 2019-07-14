@@ -1,10 +1,10 @@
 package aaronsoftech.in.unber.Activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,11 +14,8 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -45,7 +42,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
 import com.akexorcist.googledirection.constant.TransportMode;
@@ -53,7 +49,6 @@ import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -65,7 +60,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -73,24 +67,25 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.razorpay.Checkout;
+import com.razorpay.PaymentResultListener;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import aaronsoftech.in.unber.Adapter.Adapter_Driver_vehicle;
 import aaronsoftech.in.unber.Adapter.Adapter_user_list;
 import aaronsoftech.in.unber.Adapter.CustomInfoWindowAdapter;
 import aaronsoftech.in.unber.App_Conteroller;
 import aaronsoftech.in.unber.Model.FB_Driver_res;
 import aaronsoftech.in.unber.POJO.Customwindow_const;
-import aaronsoftech.in.unber.POJO.Response_All_Vehicle;
 import aaronsoftech.in.unber.POJO.Response_Booking;
 import aaronsoftech.in.unber.POJO.Response_Booking_List;
-import aaronsoftech.in.unber.POJO.Response_Driver_vehicle;
 import aaronsoftech.in.unber.POJO.Response_register;
 import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Service.APIClient;
@@ -104,7 +99,7 @@ import retrofit2.Response;
 import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,Adapter_user_list.Vehicle_Item_listner{
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,Adapter_user_list.Vehicle_Item_listner, PaymentResultListener {
     private GoogleMap mMap;
     CustomInfoWindowAdapter wind_adaptet;
     ArrayList<String> google_map_list = new ArrayList<String>();
@@ -134,13 +129,12 @@ public class Home extends AppCompatActivity
     ProgressDialog progressDialog;
     List<Response_Booking_List.User_List> get_Booking_List=new ArrayList<>();
     LinearLayout layout_user_info,layout_user_profile_list;
-    TextView btn_finish_ride,btn_finish_ride_user;
+    TextView btn_finish_ride_driver,btn_finish_ride_user;
 
     public void Init()
     {
-        btn_finish_ride=findViewById(R.id.txt_finish_ride);
+        btn_finish_ride_driver =findViewById(R.id.txt_finish_ride);
         btn_finish_ride_user=findViewById(R.id.txt_finish_ride2);
-
         layout_user_profile_list=findViewById(R.id.layout_bottomsheet_list);
         layout_user_info=findViewById(R.id.layout_bottomsheet_user_info);
         coordinatorLayout=findViewById(R.id.layout_linear);
@@ -162,10 +156,11 @@ public class Home extends AppCompatActivity
         StaggeredGridLayoutManager staggeredGridLayoutManager2 = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
         user_list_recycle.setLayoutManager(staggeredGridLayoutManager2); // set LayoutManager to RecyclerView
         Adapter_user_list aa=new Adapter_user_list(Home.this,list,Home.this);
-
-        btn_finish_ride.setOnClickListener(new View.OnClickListener() {
+        btn_finish_ride_driver.setVisibility(View.GONE);
+        btn_finish_ride_driver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                add_payment_gatway(list);
                 Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
                 mDatabase = FirebaseDatabase.getInstance().getReference();
                 mDatabase.child("Driver_ID").child(list.get(0).getDriver_id()).child("status").child("Deactive");
@@ -174,7 +169,6 @@ public class Home extends AppCompatActivity
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -186,9 +180,79 @@ public class Home extends AppCompatActivity
 
     }
 
+    private void add_payment_gatway(List<Response_Booking_List.User_List> list) {
+        final Activity activity = this;
+        final Checkout co = new Checkout();
+        try {
+            JSONObject options = new JSONObject();
+            options.put("name", list.get(0).getUname());
+            options.put("description", "Ride booking charges"+"\n"+"From :"+list.get(0).getFrom_address()+"\n"+"To :"+list.get(0).getTo_address());
+            //You can omit the image option to fetch the image from dashboard
+            options.put("image", list.get(0).getUimage());
+            options.put("currency", "INR");
+            DecimalFormat df2=new DecimalFormat("#.##");
 
+            double price= (Double.parseDouble(list.get(0).getAmount()));
 
-    private void Change_ride_status(String bookID, final String vehicleid, final String getbookid) {
+            String priceee=df2.format(price);
+            String   pricee = priceee.substring(0, priceee.length() - 3);
+            options.put("amount", String.valueOf(pricee+"00"));
+
+            JSONObject preFill = new JSONObject();
+       //     preFill.put("email", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
+            preFill.put("contact", list.get(0).getUcontact());
+
+            options.put("prefill", preFill);
+
+            co.open(activity, options);
+        } catch (Exception e) {
+            btn_finish_ride_user.setVisibility(View.GONE);
+            btn_finish_ride_driver.setVisibility(View.GONE);
+            Log.i(TAG, "Error in payment: " +e.getMessage());
+            Toast.makeText(activity, "Error in payment: " + e.getMessage(), Toast.LENGTH_LONG
+            )
+                    .show();
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * The name of the function has to be
+     * onPaymentSuccess
+     * Wrap your code in try catch, as shown, to ensure that this method runs correctly
+     */
+    @SuppressWarnings("unused")
+    @Override
+    public void onPaymentSuccess(String razorpayPaymentID) {
+        try {
+            Toast.makeText(this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
+            btn_finish_ride_user.setVisibility(View.GONE);
+            btn_finish_ride_driver.setVisibility(View.GONE);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in onPaymentSuccess", e);
+        }
+    }
+
+    /**
+     * The name of the function has to be
+     * onPaymentError
+     * Wrap your code in try catch, as shown, to ensure that this method runs correctly
+     */
+
+    @SuppressWarnings("unused")
+    @Override
+    public void onPaymentError(int code, String response) {
+        try {
+            btn_finish_ride_user.setVisibility(View.GONE);
+            btn_finish_ride_driver.setVisibility(View.GONE);
+            Log.i(TAG, "Exception in onPaymentError  Payment failed: " + code + " " + response);
+            Toast.makeText(this, "Payment failed: " + code + " " + response, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in onPaymentError", e);
+        }
+    }
+
+    private void Change_ride_status(final String bookID, final String vehicleid, final String getbookid) {
         if (isNetworkAvailable(Home.this))
         {
             Map<String,String> map=new HashMap<>();
@@ -206,13 +270,14 @@ public class Home extends AppCompatActivity
                         if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                         {
                             Toast.makeText(Home.this, "Complite your ride", Toast.LENGTH_SHORT).show();
-                            Change_vehicle_status(vehicleid,getbookid);
+                            Change_vehicle_status(vehicleid,bookID);
                         }else{
 
                             Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-                        Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
+                        Log.i(TAG,"Exception : || Home || Change_ride_status "+e.toString());
+      //                  Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
                 }
@@ -256,7 +321,7 @@ public class Home extends AppCompatActivity
                             Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-                        Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
+   //                     Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
                     mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -289,6 +354,7 @@ public class Home extends AppCompatActivity
         Fabric.with(this, new Crashlytics());
 
         Init();
+        Checkout.preload(getApplicationContext());
 
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         try{
@@ -428,8 +494,8 @@ public class Home extends AppCompatActivity
                     Response_Booking message = child.getValue(Response_Booking.class);
                     if (message.getStatus().toString().equalsIgnoreCase("Active") || message.getStatus().toString().equalsIgnoreCase("Running"))
                     {
-                        String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-                        if (message.getDriver_id().equalsIgnoreCase(Driver_ID) && (Accept_this_booking==0) )
+                      //  String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+                        if (message.getDriver_id().equalsIgnoreCase(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"")) && (Accept_this_booking==0) )
                         {
                                  Accept_this_booking=11;
 
@@ -444,8 +510,13 @@ public class Home extends AppCompatActivity
                                     addNotification();
                                 }
 
+                                LatLng from_latlng=new LatLng(Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()));
+                                LatLng to_latlng=new LatLng(Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
+                                addstart_end_icontrip(message.getFrom_address(),message.getTo_address(),Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()),Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
+                                set_line_on_map(from_latlng,to_latlng);
 
-                        }else if (message.getDriver_id().equalsIgnoreCase(Driver_ID) && (Accept_this_booking==22))
+
+                        }else if (message.getDriver_id().equalsIgnoreCase(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"")) && (Accept_this_booking==22))
                         {
                             lat=location.getLatitude();
                             lng=location.getLongitude();
@@ -592,7 +663,8 @@ public class Home extends AppCompatActivity
                             Toast.makeText(Home.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                         }
                     }catch (Exception e){
-                        Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
+                        Log.i(TAG,"Exception : || Home || Call_driver_book_Api "+e.toString());
+//                        Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
                 }
 
@@ -609,31 +681,33 @@ public class Home extends AppCompatActivity
 
 
     private void Show_dialog_box(final String book_id, final Location location, final String veh_img, final String veh_type_id, final String veh_no, final String amount, final String contact, final String img, final String name) {
-        AlertDialog.Builder dialog=new AlertDialog.Builder(Home.this);
-        dialog.setTitle(getResources().getString(R.string.app_name));
-        dialog.setMessage("Accept this booking");
-        dialog.setCancelable(true);
-        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Accept_this_booking=0;
-            }
-        });
-        dialog.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+        try{
+            AlertDialog.Builder dialog=new AlertDialog.Builder(Home.this);
+            dialog.setTitle(getResources().getString(R.string.app_name));
+            dialog.setMessage("Accept this booking");
+            dialog.setCancelable(true);
 
-                mDatabase = FirebaseDatabase.getInstance().getReference();
-                try {
-                    mDatabase.child("Booking_ID").child(book_id).child("status").setValue("Running");
-                } catch (Exception e) {
-                    e.printStackTrace();
+            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Accept_this_booking=0;
                 }
+            });
+            dialog.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
 
-                Save_data_on_firebase(mDatabase);
+                    mDatabase = FirebaseDatabase.getInstance().getReference();
+                    try {
+                        mDatabase.child("Booking_ID").child(book_id).child("status").setValue("Running");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
-                String driverid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-                Call_driver_book_Api(driverid,contact,img,name,book_id);
+                    Save_data_on_firebase(mDatabase);
+
+                    String driverid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+                    Call_driver_book_Api(driverid,contact,img,name,book_id);
 
                 /*Map<String,String> map=new HashMap<>();
                 //  map.put("token_id",refreshedToken);
@@ -641,46 +715,51 @@ public class Home extends AppCompatActivity
                 mDatabase = FirebaseDatabase.getInstance().getReference();
                 Query myTopPostsQuery = mDatabase.child("Driver_Token_ID");*/
 
-                lat=location.getLatitude();
-                lng=location.getLongitude();
-                double speed=location.getSpeed();
-                Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
-                String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-                HashMap<String,String> mapw=new HashMap<>();
-                mapw.put("driver_ID",""+driver_id);
-                mapw.put("name", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
-                mapw.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
-                mapw.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
-                mapw.put("lat",""+lat);
-                mapw.put("lng",""+lng);
-                mapw.put("vehicle_no",veh_no);
-                mapw.put("vehicle_type_id",veh_type_id);
-                mapw.put("vehicle_image",veh_img);
-                mapw.put("speed",""+speed);
-                mapw.put("email", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
-                mapw.put("address", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ADDRESS,""));
-                mapw.put("city", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CITY,""));
-                mapw.put("state", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_STATUS,""));
-                mapw.put("country", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_COUNTER,""));
-                mapw.put("status","Active");
-                Call_firebase_service(mapw);
+                    lat=location.getLatitude();
+                    lng=location.getLongitude();
+                    double speed=location.getSpeed();
+                    Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
+                    String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+                    HashMap<String,String> mapw=new HashMap<>();
+                    mapw.put("driver_ID",""+driver_id);
+                    mapw.put("name", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+                    mapw.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
+                    mapw.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
+                    mapw.put("lat",""+lat);
+                    mapw.put("lng",""+lng);
+                    mapw.put("vehicle_no",veh_no);
+                    mapw.put("vehicle_type_id",veh_type_id);
+                    mapw.put("vehicle_image",veh_img);
+                    mapw.put("speed",""+speed);
+                    mapw.put("email", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
+                    mapw.put("address", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ADDRESS,""));
+                    mapw.put("city", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CITY,""));
+                    mapw.put("state", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_STATUS,""));
+                    mapw.put("country", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_COUNTER,""));
+                    mapw.put("status","Active");
+                    Call_firebase_service(mapw);
 
-                MarkerOptions marker3 = null;
+                    MarkerOptions marker3 = null;
 
-                if (update_marker2==0){
-                    marker3 = new MarkerOptions().position(new LatLng(lat, lng));
-                    marker3.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                    mMap.addMarker(marker3);
-                    update_marker2 = 1;
-                    mMap.addCircle(new CircleOptions()
-                            .center(new LatLng(lat,lng))
-                            .radius(500)
-                            .strokeColor(Color.YELLOW)
-                            .fillColor(Color.TRANSPARENT));
+                    if (update_marker2==0){
+                        marker3 = new MarkerOptions().position(new LatLng(lat, lng));
+                        marker3.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                        mMap.addMarker(marker3);
+                        update_marker2 = 1;
+                        mMap.addCircle(new CircleOptions()
+                                .center(new LatLng(lat,lng))
+                                .radius(500)
+                                .strokeColor(Color.YELLOW)
+                                .fillColor(Color.TRANSPARENT));
+                    }
                 }
-            }
-        });
-        dialog.show();
+            });
+            dialog.show();
+        }catch (Exception e){
+            Log.i(TAG,"Exception : || Home || Show_dialog_box "+e.toString());
+            e.printStackTrace();}
+
+
 
     }
 
@@ -704,7 +783,6 @@ public class Home extends AppCompatActivity
 
                         if (message.getUser_id().equalsIgnoreCase(UserID) && (!(message.getStatus().equalsIgnoreCase("Deactive"))))
                         {
-
                             String driver_id=message.getDriver_id();
                             LatLng from_latlng=new LatLng(Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()));
                             LatLng to_latlng=new LatLng(Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
@@ -806,11 +884,12 @@ public class Home extends AppCompatActivity
                                 marker2.flat(true);
                                 mMap.addMarker(marker2);
                             }
-                            show_driver_profile(get_driver_vehicle);
+
+                            Response_Booking message=new Response_Booking();
+                            show_driver_profile(get_driver_vehicle, message);
                             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                 @Override
                                 public boolean onMarkerClick(Marker marker) {
-
                                     return false;
                                 }
                             });
@@ -843,10 +922,20 @@ public class Home extends AppCompatActivity
 
             wind_adaptet = new CustomInfoWindowAdapter(this);
             mMap.setInfoWindowAdapter(wind_adaptet);
-
             Marker m = mMap.addMarker(marker2e);
             m.setTag(infoew);
 
+            LatLng sydney = new LatLng(from_lat, from_lng);
+            //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Udaipur"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            // Construct a CameraPosition focusing on Mountain View and animate the camera to that position.
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(sydney)      // Sets the center of the map to Mountain View
+                    .zoom(12)                   // Sets the zoom
+                    .bearing(90)                // Sets the orientation of the camera to east
+                    .tilt(90)                   // Sets the tilt of the camera to 30 degrees
+                    .build();                   // Creates a CameraPosition from the builder
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1033,7 +1122,7 @@ public class Home extends AppCompatActivity
         mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
             @Override
             public void onMyLocationChange(Location location) {
-
+            try{
                 if (setCurrentLocation){
 
                     lat=location.getLatitude();
@@ -1062,6 +1151,8 @@ public class Home extends AppCompatActivity
                         Check_driver_booking(location);
                     }
                 }catch (Exception e){e.printStackTrace();}
+
+            }catch (Exception e){e.printStackTrace();}
 
 
             }
@@ -1198,7 +1289,7 @@ public class Home extends AppCompatActivity
                         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
 
-                        show_driver_profile(get_driver_loc);
+                        show_driver_profile(get_driver_loc,message);
                         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                             @Override
                             public boolean onMarkerClick(Marker marker) {
@@ -1220,7 +1311,7 @@ public class Home extends AppCompatActivity
         });
     }
 
-    private void show_driver_profile(final List<FB_Driver_res> get_driver_loc_2) {
+    private void show_driver_profile(final List<FB_Driver_res> get_driver_loc_2, final Response_Booking message) {
       //  View view = getLayoutInflater().inflate(R.layout.layout_bottomsheet_driver_profile, null);
         layout_user_info.setVisibility(View.VISIBLE);
         CircleImageView driver_image=findViewById(R.id.driver_img);
@@ -1242,6 +1333,8 @@ public class Home extends AppCompatActivity
             }
         });
 
+
+
         String imguri= get_driver_loc_2.get(0).getPhoto().toString();
         try{
             Picasso.with(Home.this).load(imguri).error(R.drawable.ic_user).into(driver_image);
@@ -1256,8 +1349,9 @@ public class Home extends AppCompatActivity
                 progressDialog.show();
 
                 get_Booking_List.clear();
+                add_payment_gatway_user(message);
+                Change_ride_status(message.getBook_id(),message.getVehicle_id(),get_driver_loc_2.get(0).getBook_ID());
 
-                Change_ride_status(get_driver_loc_2.get(0).getBook_ID(),get_driver_loc_2.get(0).getVehical_ID(),get_driver_loc_2.get(0).getBook_ID());
                 mDatabase = FirebaseDatabase.getInstance().getReference();
                 mDatabase.child("Driver_ID").child(get_driver_loc_2.get(0).getDriver_ID()).child("status").child("Deactive");
                 mDatabase.addValueEventListener(new ValueEventListener() {
@@ -1265,7 +1359,6 @@ public class Home extends AppCompatActivity
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -1273,6 +1366,40 @@ public class Home extends AppCompatActivity
                 });
             }
         });
+    }
+
+    private void add_payment_gatway_user(Response_Booking get_booking) {
+        final Activity activity = this;
+        final Checkout co = new Checkout();
+        try {
+            JSONObject options = new JSONObject();
+            options.put("name", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+            options.put("description", "Ride booking charges"+"\n"+"From :"+get_booking.getFrom_address()+"\n"+"To :"+get_booking.getTo_address());
+            //You can omit the image option to fetch the image from dashboard
+            options.put("image", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
+            options.put("currency", "INR");
+            DecimalFormat df2=new DecimalFormat("#.##");
+
+            double price= (Double.parseDouble(get_booking.getAmount()));
+
+            String priceee=df2.format(price);
+            String   pricee = priceee.substring(0, priceee.length() - 3);
+            options.put("amount", String.valueOf(pricee+"00"));
+
+            JSONObject preFill = new JSONObject();
+            //     preFill.put("email", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
+            preFill.put("contact", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
+
+            options.put("prefill", preFill);
+
+            co.open(activity, options);
+        } catch (Exception e) {
+            Log.i(TAG, "Error in payment: " +e.getMessage());
+            Toast.makeText(activity, "Error in payment: " + e.getMessage(), Toast.LENGTH_LONG
+            )
+                    .show();
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -1350,7 +1477,6 @@ public class Home extends AppCompatActivity
         builder.setContentTitle("You have new booking");
         builder.setContentText("Accept this book ride");
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
         // Will display the notification in the notification bar
         notificationManager.notify(1, builder.build());
     }

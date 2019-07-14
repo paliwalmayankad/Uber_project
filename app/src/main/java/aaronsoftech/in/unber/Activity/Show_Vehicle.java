@@ -103,7 +103,7 @@ public class Show_Vehicle extends AppCompatActivity implements Adapter_Driver_ve
                             Toast.makeText(Show_Vehicle.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                         }
                     }catch (Exception e){
-                        Toast.makeText(Show_Vehicle.this, "Server error", Toast.LENGTH_SHORT).show();
+    //                    Toast.makeText(Show_Vehicle.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
 

@@ -40,6 +40,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static aaronsoftech.in.unber.Activity.login_mobile.activity_login_mobile;
 import static aaronsoftech.in.unber.Activity.login_mobile.mAuth;
 import static aaronsoftech.in.unber.Activity.login_mobile.mVerificationId;
 import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
@@ -53,6 +54,7 @@ public class Verification extends AppCompatActivity {
     String TAG="Verification";
     RelativeLayout real_layout;
     TextInputEditText txt_one,txt_two,txt_three,txt_four,txt_five,txt_six;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -438,6 +440,7 @@ public class Verification extends AppCompatActivity {
                             }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());                    }
 
                             App_Conteroller. editor.commit();
+                            activity_login_mobile.finish();
                             Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
                             startActivity(new Intent(Verification.this, Home.class));
                             finish();

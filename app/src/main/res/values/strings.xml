@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">nber</string>
+    <string name="app_name">Nuber</string>
     <string name="rupee_sign">\u20B9</string>
     <string name="msg">\u20B9 100.00</string>
     <string name="title_activity_home">Home</string>
