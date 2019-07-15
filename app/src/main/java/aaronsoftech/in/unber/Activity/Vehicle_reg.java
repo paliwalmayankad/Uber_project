@@ -207,7 +207,6 @@ public class Vehicle_reg extends AppCompatActivity {
 
 
 
-
     private void Call_Api() {
 
 

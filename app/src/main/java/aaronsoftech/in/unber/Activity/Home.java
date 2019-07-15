@@ -114,7 +114,7 @@ public class Home extends AppCompatActivity
     double lat= 0.0;
     double lng= 0.0;
     boolean setCurrentLocation=true;
-    List<FB_Driver_res >get_driver_loc=new ArrayList<>();
+
     List<FB_Driver_res >get_driver_vehicle=new ArrayList<>();
     String booked_id="";
     RelativeLayout coordinatorLayout;
@@ -131,221 +131,6 @@ public class Home extends AppCompatActivity
     LinearLayout layout_user_info,layout_user_profile_list;
     TextView btn_finish_ride_driver,btn_finish_ride_user;
 
-    public void Init()
-    {
-        btn_finish_ride_driver =findViewById(R.id.txt_finish_ride);
-        btn_finish_ride_user=findViewById(R.id.txt_finish_ride2);
-        layout_user_profile_list=findViewById(R.id.layout_bottomsheet_list);
-        layout_user_info=findViewById(R.id.layout_bottomsheet_user_info);
-        coordinatorLayout=findViewById(R.id.layout_linear);
-        get_loaction=findViewById(R.id.location_layout);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-    }
-
-    private void ShowBottomSheet(final List<Response_Booking_List.User_List> list, final String bookid) {
-        layout_user_profile_list.setVisibility(View.VISIBLE);
-        user_list_recycle=findViewById(R.id.user_list_view);
-        StaggeredGridLayoutManager staggeredGridLayoutManager2 = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
-        user_list_recycle.setLayoutManager(staggeredGridLayoutManager2); // set LayoutManager to RecyclerView
-        Adapter_user_list aa=new Adapter_user_list(Home.this,list,Home.this);
-        btn_finish_ride_driver.setVisibility(View.GONE);
-        btn_finish_ride_driver.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                add_payment_gatway(list);
-                Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
-                mDatabase = FirebaseDatabase.getInstance().getReference();
-                mDatabase.child("Driver_ID").child(list.get(0).getDriver_id()).child("status").child("Deactive");
-                mDatabase.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
-        });
-        user_list_recycle.setAdapter(aa);
-
-    }
-
-    private void add_payment_gatway(List<Response_Booking_List.User_List> list) {
-        final Activity activity = this;
-        final Checkout co = new Checkout();
-        try {
-            JSONObject options = new JSONObject();
-            options.put("name", list.get(0).getUname());
-            options.put("description", "Ride booking charges"+"\n"+"From :"+list.get(0).getFrom_address()+"\n"+"To :"+list.get(0).getTo_address());
-            //You can omit the image option to fetch the image from dashboard
-            options.put("image", list.get(0).getUimage());
-            options.put("currency", "INR");
-            DecimalFormat df2=new DecimalFormat("#.##");
-
-            double price= (Double.parseDouble(list.get(0).getAmount()));
-
-            String priceee=df2.format(price);
-            String   pricee = priceee.substring(0, priceee.length() - 3);
-            options.put("amount", String.valueOf(pricee+"00"));
-
-            JSONObject preFill = new JSONObject();
-       //     preFill.put("email", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
-            preFill.put("contact", list.get(0).getUcontact());
-
-            options.put("prefill", preFill);
-
-            co.open(activity, options);
-        } catch (Exception e) {
-            btn_finish_ride_user.setVisibility(View.GONE);
-            btn_finish_ride_driver.setVisibility(View.GONE);
-            Log.i(TAG, "Error in payment: " +e.getMessage());
-            Toast.makeText(activity, "Error in payment: " + e.getMessage(), Toast.LENGTH_LONG
-            )
-                    .show();
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * The name of the function has to be
-     * onPaymentSuccess
-     * Wrap your code in try catch, as shown, to ensure that this method runs correctly
-     */
-    @SuppressWarnings("unused")
-    @Override
-    public void onPaymentSuccess(String razorpayPaymentID) {
-        try {
-            Toast.makeText(this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
-            btn_finish_ride_user.setVisibility(View.GONE);
-            btn_finish_ride_driver.setVisibility(View.GONE);
-        } catch (Exception e) {
-            Log.e(TAG, "Exception in onPaymentSuccess", e);
-        }
-    }
-
-    /**
-     * The name of the function has to be
-     * onPaymentError
-     * Wrap your code in try catch, as shown, to ensure that this method runs correctly
-     */
-
-    @SuppressWarnings("unused")
-    @Override
-    public void onPaymentError(int code, String response) {
-        try {
-            btn_finish_ride_user.setVisibility(View.GONE);
-            btn_finish_ride_driver.setVisibility(View.GONE);
-            Log.i(TAG, "Exception in onPaymentError  Payment failed: " + code + " " + response);
-            Toast.makeText(this, "Payment failed: " + code + " " + response, Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Log.e(TAG, "Exception in onPaymentError", e);
-        }
-    }
-
-    private void Change_ride_status(final String bookID, final String vehicleid, final String getbookid) {
-        if (isNetworkAvailable(Home.this))
-        {
-            Map<String,String> map=new HashMap<>();
-            map.put("id",bookID);
-            map.put("status","Deactive");
-            Call<Response_register> call= APIClient.getWebServiceMethod().get_booking_status_change(map);
-            call.enqueue(new Callback<Response_register>() {
-                @Override
-                public void onResponse(Call<Response_register> call, Response<Response_register> response) {
-                    progressDialog.dismiss();
-                    try{
-                        String status=response.body().getApi_status();
-                        String msg=response.body().getApi_message();
-
-                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                        {
-                            Toast.makeText(Home.this, "Complite your ride", Toast.LENGTH_SHORT).show();
-                            Change_vehicle_status(vehicleid,bookID);
-                        }else{
-
-                            Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
-                        }
-                    }catch (Exception e){
-                        Log.i(TAG,"Exception : || Home || Change_ride_status "+e.toString());
-      //                  Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();}
-
-                }
-
-                @Override
-                public void onFailure(Call<Response_register> call, Throwable t) {
-                    progressDialog.dismiss();
-                    Toast.makeText(Home.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
-
-                }
-            });
-        }else{
-            Toast.makeText(Home.this, "No Internet", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void Change_vehicle_status(String vehicleid, final String getbook_id) {
-        if (isNetworkAvailable(Home.this))
-        {
-            Map<String,String> map=new HashMap<>();
-            map.put("vehicle_type_id",vehicleid);
-            map.put("status","Active");
-            Call<Response_register> call= APIClient.getWebServiceMethod().update_change_vehicle_status(map);
-            call.enqueue(new Callback<Response_register>() {
-                @Override
-                public void onResponse(Call<Response_register> call, Response<Response_register> response) {
-                    progressDialog.dismiss();
-                    try{
-                        String status=response.body().getApi_status();
-                        String msg=response.body().getApi_message();
-
-                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                        {
-                            //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
-                            Toast.makeText(Home.this, "status change", Toast.LENGTH_SHORT).show();
-                            String id=response.body().getId();
-
-
-                        }else{
-
-                            Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
-                        }
-                    }catch (Exception e){
-   //                     Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();}
-
-                    mDatabase = FirebaseDatabase.getInstance().getReference();
-                    try {
-                        mDatabase.child("Booking_ID").child(getbook_id).child("status").setValue("Deactive");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    Save_data_on_firebase(mDatabase);
-
-                }
-
-                @Override
-                public void onFailure(Call<Response_register> call, Throwable t) {
-                    progressDialog.dismiss();
-                    Toast.makeText(Home.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
-
-                }
-            });
-        }else{
-            Toast.makeText(Home.this, "No Internet", Toast.LENGTH_SHORT).show();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -446,6 +231,227 @@ public class Home extends AppCompatActivity
             Crashlytics.logException(e);}
 
     }
+
+
+
+    public void Init()
+    {
+        btn_finish_ride_driver =findViewById(R.id.txt_finish_ride);
+        btn_finish_ride_user=findViewById(R.id.txt_finish_ride2);
+        layout_user_profile_list=findViewById(R.id.layout_bottomsheet_list);
+        layout_user_info=findViewById(R.id.layout_bottomsheet_user_info);
+        coordinatorLayout=findViewById(R.id.layout_linear);
+        get_loaction=findViewById(R.id.location_layout);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+    }
+
+    private void ShowBottomSheet(final List<Response_Booking_List.User_List> list, final String bookid) {
+        layout_user_profile_list.setVisibility(View.VISIBLE);
+        user_list_recycle=findViewById(R.id.user_list_view);
+        StaggeredGridLayoutManager staggeredGridLayoutManager2 = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
+        user_list_recycle.setLayoutManager(staggeredGridLayoutManager2); // set LayoutManager to RecyclerView
+        Adapter_user_list aa=new Adapter_user_list(Home.this,list,Home.this);
+        btn_finish_ride_driver.setVisibility(View.GONE);
+        btn_finish_ride_driver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                add_payment_gatway(list);
+                Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                mDatabase.child("Driver_ID").child(list.get(0).getDriver_id()).child("status").child("Deactive");
+                mDatabase.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+        user_list_recycle.setAdapter(aa);
+
+    }
+
+    private void add_payment_gatway(List<Response_Booking_List.User_List> list) {
+        final Activity activity = this;
+        final Checkout co = new Checkout();
+        try {
+            JSONObject options = new JSONObject();
+            options.put("name", list.get(0).getUname());
+            options.put("description", "Ride booking charges"+"\n"+"From :"+list.get(0).getFrom_address()+"\n"+"To :"+list.get(0).getTo_address());
+            //You can omit the image option to fetch the image from dashboard
+            options.put("image", list.get(0).getUimage());
+            options.put("currency", "INR");
+            DecimalFormat df2=new DecimalFormat("#.##");
+
+            double price= (Double.parseDouble(list.get(0).getAmount()));
+
+            String priceee=df2.format(price);
+            String   pricee = priceee.substring(0, priceee.length() - 3);
+            options.put("amount", String.valueOf(pricee+"00"));
+
+            JSONObject preFill = new JSONObject();
+            //     preFill.put("email", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
+            preFill.put("contact", list.get(0).getUcontact());
+
+            options.put("prefill", preFill);
+
+            co.open(activity, options);
+        } catch (Exception e) {
+            btn_finish_ride_user.setVisibility(View.GONE);
+            btn_finish_ride_driver.setVisibility(View.GONE);
+            Log.i(TAG, "Error in payment: " +e.getMessage());
+            Toast.makeText(activity, "Error in payment: " + e.getMessage(), Toast.LENGTH_LONG
+            )
+                    .show();
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * The name of the function has to be
+     * onPaymentSuccess
+     * Wrap your code in try catch, as shown, to ensure that this method runs correctly
+     */
+    @SuppressWarnings("unused")
+    @Override
+    public void onPaymentSuccess(String razorpayPaymentID) {
+        try {
+            Toast.makeText(this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
+            btn_finish_ride_user.setVisibility(View.GONE);
+            btn_finish_ride_driver.setVisibility(View.GONE);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in onPaymentSuccess", e);
+        }
+    }
+
+    /**
+     * The name of the function has to be
+     * onPaymentError
+     * Wrap your code in try catch, as shown, to ensure that this method runs correctly
+     */
+
+    @SuppressWarnings("unused")
+    @Override
+    public void onPaymentError(int code, String response) {
+        try {
+            btn_finish_ride_user.setVisibility(View.GONE);
+            btn_finish_ride_driver.setVisibility(View.GONE);
+            Log.i(TAG, "Exception in onPaymentError  Payment failed: " + code + " " + response);
+            Toast.makeText(this, "Payment failed: " + code + " " + response, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in onPaymentError", e);
+        }
+    }
+
+    private void Change_ride_status(final String bookID, final String vehicleid, final String getbookid) {
+        if (isNetworkAvailable(Home.this))
+        {
+            Map<String,String> map=new HashMap<>();
+            map.put("id",bookID);
+            map.put("status","Deactive");
+            Call<Response_register> call= APIClient.getWebServiceMethod().get_booking_status_change(map);
+            call.enqueue(new Callback<Response_register>() {
+                @Override
+                public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+                    progressDialog.dismiss();
+                    try{
+                        String status=response.body().getApi_status();
+                        String msg=response.body().getApi_message();
+
+                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                        {
+                            Toast.makeText(Home.this, "Complite your ride", Toast.LENGTH_SHORT).show();
+                            Change_vehicle_status(vehicleid,bookID);
+                        }else{
+
+                            Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
+                        }
+                    }catch (Exception e){
+                        Log.i(TAG,"Exception : || Home || Change_ride_status "+e.toString());
+                        //                  Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();}
+
+                }
+
+                @Override
+                public void onFailure(Call<Response_register> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(Home.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        }else{
+            Toast.makeText(Home.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void Change_vehicle_status(String vehicleid, final String getbook_id) {
+        if (isNetworkAvailable(Home.this))
+        {
+            Map<String,String> map=new HashMap<>();
+            map.put("vehicle_type_id",vehicleid);
+            map.put("status","Active");
+            Call<Response_register> call= APIClient.getWebServiceMethod().update_change_vehicle_status(map);
+            call.enqueue(new Callback<Response_register>() {
+                @Override
+                public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+                    progressDialog.dismiss();
+                    try{
+                        String status=response.body().getApi_status();
+                        String msg=response.body().getApi_message();
+
+                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                        {
+                            //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Home.this, "status change", Toast.LENGTH_SHORT).show();
+                            String id=response.body().getId();
+
+
+                        }else{
+
+                            Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
+                        }
+                    }catch (Exception e){
+                        //                     Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();}
+
+                    mDatabase = FirebaseDatabase.getInstance().getReference();
+                    try {
+                        mDatabase.child("Booking_ID").child(getbook_id).child("status").setValue("Deactive");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    Save_data_on_firebase(mDatabase);
+
+                }
+
+                @Override
+                public void onFailure(Call<Response_register> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(Home.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        }else{
+            Toast.makeText(Home.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
 
     private void Save_Token_on_firebase() {
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
@@ -611,7 +617,26 @@ public class Home extends AppCompatActivity
 
         if (update_marker2==0){
             marker3 = new MarkerOptions().position(new LatLng(lat, lng));
-            marker3.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+
+
+
+            if (veh_type_id.toString().equalsIgnoreCase("8"))
+            {
+                marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
+            }else if (veh_type_id.toString().equalsIgnoreCase("7"))
+            {
+                marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
+            }else if (veh_type_id.toString().equalsIgnoreCase("6"))
+            {
+                marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
+            }else if (veh_type_id.toString().equalsIgnoreCase("5"))
+            {
+                marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
+            }else if (veh_type_id.toString().equalsIgnoreCase("4"))
+            {
+                marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
+            }
+
             mMap.addMarker(marker3);
             update_marker2 = 1;
             mMap.addCircle(new CircleOptions()
@@ -620,6 +645,9 @@ public class Home extends AppCompatActivity
                     .strokeColor(Color.YELLOW)
                     .fillColor(Color.TRANSPARENT));
         }
+
+
+
     }
 
 
@@ -743,7 +771,22 @@ public class Home extends AppCompatActivity
 
                     if (update_marker2==0){
                         marker3 = new MarkerOptions().position(new LatLng(lat, lng));
-                        marker3.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                        if (veh_type_id.toString().equalsIgnoreCase("8"))
+                        {
+                            marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("7"))
+                        {
+                            marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("6"))
+                        {
+                            marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("5"))
+                        {
+                            marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("4"))
+                        {
+                            marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
+                        }
                         mMap.addMarker(marker3);
                         update_marker2 = 1;
                         mMap.addCircle(new CircleOptions()
@@ -752,6 +795,11 @@ public class Home extends AppCompatActivity
                                 .strokeColor(Color.YELLOW)
                                 .fillColor(Color.TRANSPARENT));
                     }
+
+
+
+
+
                 }
             });
             dialog.show();
@@ -819,83 +867,34 @@ public class Home extends AppCompatActivity
                 String lat = String.valueOf(dataSnapshot.child("lat").getValue());
                 String lng = String.valueOf(dataSnapshot.child("lng").getValue());
                 String veh_type_id = String.valueOf(dataSnapshot.child("vehicle_type_id").getValue());
-                String state = String.valueOf(dataSnapshot.child("state").getValue());
-                get_driver_vehicle.add(new FB_Driver_res(lat,lng,veh_type_id));
                 MarkerOptions marker2 = null;
                 try{
-                    if (get_driver_vehicle.size()!=0)
-                    {
-                        for (int i=0;i<get_driver_vehicle.size();i++)
-                        {
-                            double get_lat= Double.valueOf(get_driver_vehicle.get(i).getLat());
-                            double get_lng=Double.valueOf(get_driver_vehicle.get(i).getLng());
-                            Location prevLoc = new Location("service Provider");
-                            prevLoc.setLatitude(oldlat);
-                            prevLoc.setLongitude(oldlong);
-                            Location newLoc = new Location("service Provider");
-                            newLoc.setLatitude(get_lat);
-                            newLoc.setLongitude(get_lng);
-                            float bearing = prevLoc.bearingTo(newLoc);
-                            if (update_marker == 0)
-                            {
-                                marker2 = new MarkerOptions().position(new LatLng(get_lat, get_lng));
-                                if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("8"))
-                                {
-                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
-                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("7"))
-                                {
-                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
-                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("6"))
-                                {
-                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
-                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("5"))
-                                {
-                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
-                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("4"))
-                                {
-                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
-                                }
-                                marker2.anchor(0.5f, 0.5f);
-                                marker2.rotation(bearing);
-                                marker2.flat(true);
-                                mMap.addMarker(marker2);
-                                update_marker = 1;
-                            }
-                            else
-                            {
-                                if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("8"))
-                                {
-                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
-                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("7"))
-                                {
-                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
-                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("6"))
-                                {
-                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
-                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("5"))
-                                {
-                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
-                                }else if (get_driver_vehicle.get(i).getVeh_type_id().toString().equalsIgnoreCase("4"))
-                                {
-                                    marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
-                                }
-                                marker2.anchor(0.5f, 0.5f);
-                                marker2.rotation(bearing);
-                                marker2.flat(true);
-                                mMap.addMarker(marker2);
-                            }
-
-                            Response_Booking message=new Response_Booking();
-                            show_driver_profile(get_driver_vehicle, message);
-                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                                @Override
-                                public boolean onMarkerClick(Marker marker) {
-                                    return false;
-                                }
-                            });
-                            oldlat=get_lat;
-                            oldlong=get_lng;
+                    double get_lat= Double.valueOf(lat);
+                    double get_lng=Double.valueOf(lng);
+                    Location prevLoc = new Location("service Provider");
+                    prevLoc.setLatitude(oldlat);
+                    prevLoc.setLongitude(oldlong);
+                    Location newLoc = new Location("service Provider");
+                    newLoc.setLatitude(get_lat);
+                    newLoc.setLongitude(get_lng);
+                    float bearing = prevLoc.bearingTo(newLoc);
+                    if (update_marker == 0) {
+                        marker2 = new MarkerOptions().position(new LatLng(get_lat, get_lng));
+                        if (veh_type_id.toString().equalsIgnoreCase("8")) {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
+                        } else if (veh_type_id.toString().equalsIgnoreCase("7")) {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
+                        } else if (veh_type_id.toString().equalsIgnoreCase("6")) {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
+                        } else if (veh_type_id.toString().equalsIgnoreCase("5")) {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
+                        } else if (veh_type_id.toString().equalsIgnoreCase("4")) {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
                         }
+                        marker2.anchor(0.5f, 0.5f);
+                        marker2.rotation(bearing);
+                        marker2.flat(true);
+                        mMap.addMarker(marker2);
                     }
                 }catch (Exception e){e.printStackTrace();}
             }
@@ -931,7 +930,7 @@ public class Home extends AppCompatActivity
             // Construct a CameraPosition focusing on Mountain View and animate the camera to that position.
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(sydney)      // Sets the center of the map to Mountain View
-                    .zoom(12)                   // Sets the zoom
+                    .zoom(2.0f)                   // Sets the zoom
                     .bearing(90)                // Sets the orientation of the camera to east
                     .tilt(90)                   // Sets the tilt of the camera to 30 degrees
                     .build();                   // Creates a CameraPosition from the builder
@@ -1183,7 +1182,9 @@ public class Home extends AppCompatActivity
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    get_driver_loc.clear();
+
+
+                try{
 
                     String id=dataSnapshot.getKey();
                     String contactno = String.valueOf(dataSnapshot.child("contact_number").getValue());
@@ -1203,105 +1204,89 @@ public class Home extends AppCompatActivity
                     String book_id=String.valueOf(message.getBook_id());
 
                     String state = String.valueOf(dataSnapshot.child("state").getValue());
-
-                    get_driver_loc.add(new FB_Driver_res(driver_ID,name,photo,contactno,lat,lng,address,city,email,email,state,veh_type_id,veh_no,veh_img,amount,vehicle_id,book_id));
-
                     MarkerOptions marker2 = null;
 
-            try{
-                if (get_driver_loc.size()!=0)
-                {
-                    for (int i=0;i<get_driver_loc.size();i++)
+                    show_driver_profile(message,contactno,driver_ID,name,photo,address,city,email,veh_type_id,veh_no,amount,veh_img,vehicle_id,book_id);
+
+                    Toast.makeText(Home.this, "name "+name+"\n"+"get_driverid "+driver_ID, Toast.LENGTH_SHORT).show();
+
+                    double get_lat= Double.valueOf(lat);
+                    double get_lng=Double.valueOf(lng);
+
+                    Location prevLoc = new Location("service Provider");
+                    prevLoc.setLatitude(oldlat);
+                    prevLoc.setLongitude(oldlong);
+                    Location newLoc = new Location("service Provider");
+                    newLoc.setLatitude(get_lat);
+                    newLoc.setLongitude(get_lng);
+                    float bearing = prevLoc.bearingTo(newLoc);
+                    marker2 = new MarkerOptions().position(new LatLng(get_lat, get_lng));
+                    if (update_marker == 0)
                     {
 
-                    String  get_driverid= get_driver_loc.get(i).getDriver_ID();
-                    String nameq=get_driver_loc.get(i).getName();
-                    Toast.makeText(Home.this, "name "+nameq+"\n"+"get_driverid "+get_driverid, Toast.LENGTH_SHORT).show();
-                    double get_lat= Double.valueOf(get_driver_loc.get(i).getLat());
-                    double get_lng=Double.valueOf(get_driver_loc.get(i).getLng());
-
-                        Location prevLoc = new Location("service Provider");
-                        prevLoc.setLatitude(oldlat);
-                        prevLoc.setLongitude(oldlong);
-                        Location newLoc = new Location("service Provider");
-                        newLoc.setLatitude(get_lat);
-                        newLoc.setLongitude(get_lng);
-                        float bearing = prevLoc.bearingTo(newLoc);
-
-                        if (update_marker == 0)
+                        if (veh_type_id.toString().equalsIgnoreCase("8"))
                         {
-                            marker2 = new MarkerOptions().position(new LatLng(get_lat, get_lng));
-                            if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("8"))
-                            {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
-                            }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("7"))
-                            {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
-                            }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("6"))
-                            {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
-                            }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("5"))
-                            {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
-                            }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("4"))
-                            {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
-                            }
-
-                            marker2.anchor(0.5f, 0.5f);
-                            marker2.rotation(bearing);
-                            marker2.flat(true);
-                            mMap.addMarker(marker2);
-                            update_marker = 1;
-                        }
-                        else
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("7"))
                         {
-                            if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("8"))
-                            {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
-                            }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("7"))
-                            {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
-                            }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("6"))
-                            {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
-                            }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("5"))
-                            {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
-                            }else if (get_driver_loc.get(i).getVeh_type_id().toString().equalsIgnoreCase("4"))
-                            {
-                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
-                            }
-                            marker2.anchor(0.5f, 0.5f);
-                            marker2.rotation(bearing);
-                            marker2.flat(true);
-                            mMap.addMarker(marker2);
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("6"))
+                        {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("5"))
+                        {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("4"))
+                        {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
                         }
 
-                        LatLng sydney = new LatLng(get_lat, get_lng);
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-                        CameraPosition cameraPosition = new CameraPosition.Builder()
-                                .target(sydney)      // Sets the center of the map to Mountain View
-                                .zoom(29)                   // Sets the zoom
-                                .bearing(90)                // Sets the orientation of the camera to east
-                                .tilt(30)                   // Sets the tilt of the camera to 30 degrees
-                                .build();                   // Creates a CameraPosition from the builder
-                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-
-                        show_driver_profile(get_driver_loc,message);
-                        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                            @Override
-                            public boolean onMarkerClick(Marker marker) {
-
-                                return false;
-                            }
-                        });
-                        oldlat=get_lat;
-                        oldlong=get_lng;
+                        marker2.anchor(0.5f, 0.5f);
+                        marker2.rotation(bearing);
+                        marker2.flat(true);
+                        mMap.addMarker(marker2);
+                        update_marker = 1;
                     }
-                }
-            }catch (Exception e){e.printStackTrace();}
+                    else
+                    {
+                        if (veh_type_id.toString().equalsIgnoreCase("8"))
+                        {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("7"))
+                        {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("6"))
+                        {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("5"))
+                        {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
+                        }else if (veh_type_id.toString().equalsIgnoreCase("4"))
+                        {
+                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
+                        }
+                        marker2.anchor(0.5f, 0.5f);
+                        marker2.rotation(bearing);
+                        marker2.flat(true);
+                        mMap.addMarker(marker2);
+                    }
+
+                    LatLng sydney = new LatLng(get_lat, get_lng);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(sydney)      // Sets the center of the map to Mountain View
+                            .zoom(29)                   // Sets the zoom
+                            .bearing(90)                // Sets the orientation of the camera to east
+                            .tilt(30)                   // Sets the tilt of the camera to 30 degrees
+                            .build();                   // Creates a CameraPosition from the builder
+                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                    oldlat=get_lat;
+                    oldlong=get_lng;
+
+
+                }catch (Exception e){e.printStackTrace();}
+
             }
 
             @Override
@@ -1311,33 +1296,48 @@ public class Home extends AppCompatActivity
         });
     }
 
-    private void show_driver_profile(final List<FB_Driver_res> get_driver_loc_2, final Response_Booking message) {
-      //  View view = getLayoutInflater().inflate(R.layout.layout_bottomsheet_driver_profile, null);
+    private void show_driver_profile(final Response_Booking message, final String contactno, final String driver_id,
+                                     String name, String photo, String address, String city, String email,
+                                     String veh_type_id, String veh_no, String amount, String veh_img, String vehicle_id, final String book_id) {
+
         layout_user_info.setVisibility(View.VISIBLE);
         CircleImageView driver_image=findViewById(R.id.driver_img);
+        CircleImageView driver_vehicle=findViewById(R.id.driver_veh);
         TextView driver_name=findViewById(R.id.txt_name);
         TextView driver_contect=findViewById(R.id.txt_mobile);
         TextView driver_veh_no=findViewById(R.id.txt_veh_no);
         TextView driver_amount=findViewById(R.id.txt_amount);
-        driver_amount.setText("Amount :"+ get_driver_loc_2.get(0).getAmount());
-        driver_veh_no.setText("Vehicle no :"+ get_driver_loc_2.get(0).getVeh_no());
-        driver_name.setText("Driver name :"+ get_driver_loc_2.get(0).getName());
-        driver_contect.setText("Driver mobile no. :"+ get_driver_loc_2.get(0).getContact_number());
-        final String txt_contect= get_driver_loc_2.get(0).getContact_number();
+
+
+        DecimalFormat df2=new DecimalFormat("#.##");
+        if (amount!=null)
+        {
+            driver_amount.setText(getResources().getString(R.string.rupee_sign)+" "+df2.format(Double.valueOf(amount)));
+        }else{
+            driver_amount.setText(getResources().getString(R.string.rupee_sign)+ " 0.00");
+        }
+
+
+        driver_veh_no.setText("Vehicle no :"+ veh_no);
+        driver_name.setText("Driver name :"+ name);
+        driver_contect.setText("Driver mobile no. :"+ contactno);
         driver_contect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:"+txt_contect));
+                intent.setData(Uri.parse("tel:"+contactno));
                 startActivity(intent);
             }
         });
 
 
-
-        String imguri= get_driver_loc_2.get(0).getPhoto().toString();
         try{
-            Picasso.with(Home.this).load(imguri).error(R.drawable.ic_user).into(driver_image);
+            Picasso.with(Home.this).load(veh_img).error(R.drawable.ic_user).into(driver_vehicle);
+        }catch (Exception e){e.printStackTrace();}
+
+
+        try{
+            Picasso.with(Home.this).load(photo).error(R.drawable.ic_user).into(driver_image);
         }catch (Exception e){e.printStackTrace();}
 
         btn_finish_ride_user.setOnClickListener(new View.OnClickListener() {
@@ -1350,10 +1350,10 @@ public class Home extends AppCompatActivity
 
                 get_Booking_List.clear();
                 add_payment_gatway_user(message);
-                Change_ride_status(message.getBook_id(),message.getVehicle_id(),get_driver_loc_2.get(0).getBook_ID());
+                Change_ride_status(message.getBook_id(),message.getVehicle_id(),book_id);
 
                 mDatabase = FirebaseDatabase.getInstance().getReference();
-                mDatabase.child("Driver_ID").child(get_driver_loc_2.get(0).getDriver_ID()).child("status").child("Deactive");
+                mDatabase.child("Driver_ID").child(driver_id).child("status").child("Deactive");
                 mDatabase.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -1366,7 +1366,10 @@ public class Home extends AppCompatActivity
                 });
             }
         });
+
     }
+
+
 
     private void add_payment_gatway_user(Response_Booking get_booking) {
         final Activity activity = this;

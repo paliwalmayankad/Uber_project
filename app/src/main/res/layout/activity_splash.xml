@@ -4,10 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-        android:background="@color/background_splash"
+        android:layout_gravity="center"
+    android:gravity="center"
     tools:context="aaronsoftech.in.unber.Activity.Splash">
 <ImageView
     android:layout_width="match_parent"
-    android:background="@drawable/splash_screen"
-    android:layout_height="match_parent" />
+    android:scaleType="centerInside"
+    android:src="@drawable/yellow_logo"
+    android:layout_height="wrap_content" />
 </RelativeLayout>

@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 import aaronsoftech.in.unber.R;
 
+import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
+
 public class login_mobile extends AppCompatActivity {
     EditText ed_mobile;
     String[] locationPermissionsl = {"android.permission.ACCESS_FINE_LOCATION","android.permission.ACCESS_COARSE_LOCATION"};
@@ -67,21 +69,22 @@ public class login_mobile extends AppCompatActivity {
     }
 
     private void Call_Intent() {
+        if (isNetworkAvailable(login_mobile.this)) {
+            refreshedToken = FirebaseInstanceId.getInstance().getToken();
+            Log.i(TAG, "Token ID :  " + refreshedToken);
 
-        refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.i(TAG,"Token ID :  "+refreshedToken);
-
-            if (ed_mobile.getText().toString().isEmpty())
-            {
+            if (ed_mobile.getText().toString().isEmpty()) {
                 ed_mobile.setError("Enter mobile no.");
                 ed_mobile.requestFocus();
-            }else if (ed_mobile.getText().toString().length()!=10)
-            {
+            } else if (ed_mobile.getText().toString().length() != 10) {
                 ed_mobile.setError("Invalid mobile no.");
                 ed_mobile.requestFocus();
-            }else{
+            } else {
                 sendVerificationCode(ed_mobile.getText().toString().trim());
             }
+        }else{
+            Toast.makeText(activity_login_mobile, "No internet Connection", Toast.LENGTH_SHORT).show();
+        }
 
     }
 

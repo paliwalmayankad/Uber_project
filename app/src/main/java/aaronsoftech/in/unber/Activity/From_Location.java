@@ -169,7 +169,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             public void onPlaceSelected(Place place) {
                  //   et_location.selectAll();
                     et_location.setTextIsSelectable(true);
-                    et_location.setText(place.getAddress()+","+place.getName());
+                    et_location.setText(place.getName());
                     LatLng get_latlong=place.getLatLng();
                     set_location_list(get_latlong);
                     autocompleteFragment.onDestroy();  }
@@ -191,7 +191,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             public void onPlaceSelected(Place place) {
            //     et_location2.selectAll();
                 et_location2.setTextIsSelectable(true);
-                et_location2.setText(place.getAddress()+","+place.getName());
+                et_location2.setText(place.getName());
                 LatLng get_latlong=place.getLatLng();
                 set_location_list(get_latlong);
                 autocompleteFragment2.onDestroy();  }
@@ -818,10 +818,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     }
 
     private void set_location_list(final LatLng location) {
-        progressDialog=new ProgressDialog(From_Location.this);
-        progressDialog.setMessage("Finding: "+location);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+
 
             try{
                 double Add_lat= location.latitude;
@@ -831,22 +828,27 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 {
                     FROM_LAT=String.valueOf(Add_lat);
                     FROM_LNG=String.valueOf(Add_long);
-                    progressDialog.dismiss();
-                    Address address = addressList.get(0);
-                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                    LatLng latLng = new LatLng(Add_lat, Add_long);
                     googleMap.addMarker(new MarkerOptions().position(latLng));
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 }else{
                     TO_LAT=String.valueOf(Add_lat);
                     TO_LNG=String.valueOf(Add_long);
-                    progressDialog.dismiss();
-                    Address address = addressList.get(0);
-                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                    LatLng latLng = new LatLng(Add_lat, Add_long);
                     googleMap.addMarker(new MarkerOptions().position(latLng));
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 }
+
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+                // Construct a CameraPosition focusing on Mountain View and animate the camera to that position.
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(location)      // Sets the center of the map to Mountain View
+                        .zoom(10)                   // Sets the zoom
+                        .bearing(90)                // Sets the orientation of the camera to east
+                        .tilt(90)                   // Sets the tilt of the camera to 30 degrees
+                        .build();                   // Creates a CameraPosition from the builder
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }catch (Exception e){
-                progressDialog.dismiss();
                 e.printStackTrace();}
 
 
@@ -995,26 +997,20 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     private void get_driver_token(final String vehicleid, final String amount, final String driver_ID, final String vehicle_no, final String vehicle_image, final String refreshtoken,final String vehicle_type_id) {
         Call_driver_book_api=true;
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        Map<String,String> map=new HashMap<>();
-      //  map.put("token_id",refreshedToken);
-        map.put("driver_id",driver_ID);
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        Query myTopPostsQuery = mDatabase.child("Driver_Token_ID");
+        Query myTopPostsQuery = mDatabase.child("Driver_Token_ID").child(driver_ID);
+
         // My top posts by number of stars
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
+                String token_no = String.valueOf(dataSnapshot.child("token_id").getValue());
+                if   (Call_driver_book_api)
+                {    Call_driver_book_api=false;
 
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    if   (Call_driver_book_api)
-                    {    Call_driver_book_api=false;
-                        // Extract a Message object from the DataSnapshot
-                        FB_Token_res message = child.getValue(FB_Token_res.class);
-                        String new_token=message.getToken_id();
-                        Call_Api_book_ride(vehicleid,amount,driver_ID,vehicle_no,vehicle_image,new_token,vehicle_type_id);
-                    }
+                     Call_Api_book_ride(vehicleid,amount,driver_ID,vehicle_no,vehicle_image,token_no,vehicle_type_id);
                 }
 
             }
