@@ -2,6 +2,7 @@ package aaronsoftech.in.unber.Activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
@@ -22,6 +23,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -36,6 +38,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -75,6 +79,7 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -328,6 +333,13 @@ public class Home extends AppCompatActivity
     @Override
     public void onPaymentSuccess(String razorpayPaymentID) {
         try {
+            if (  App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
+                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
+                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
+            {
+                Show_driver_rating_box();
+            }
+
             Toast.makeText(this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
             btn_finish_ride_user.setVisibility(View.GONE);
             btn_finish_ride_driver.setVisibility(View.GONE);
@@ -346,6 +358,14 @@ public class Home extends AppCompatActivity
     @Override
     public void onPaymentError(int code, String response) {
         try {
+
+            if (  App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
+                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
+                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
+            {
+                Show_driver_rating_box();
+            }
+
             btn_finish_ride_user.setVisibility(View.GONE);
             btn_finish_ride_driver.setVisibility(View.GONE);
             Log.i(TAG, "Exception in onPaymentError  Payment failed: " + code + " " + response);
@@ -1295,6 +1315,76 @@ public class Home extends AppCompatActivity
             }
         });
     }
+
+
+    public void Show_driver_rating_box(){
+        // Create custom dialog object
+        final Dialog dialog = new Dialog(Home.this);
+        // Include dialog.xml file
+        dialog.setContentView(R.layout.dialog_driver_rating);
+        AppCompatRatingBar ratingBar=findViewById(R.id.rating_bar);
+        EditText ed_review=findViewById(R.id.txt_review);
+        TextView btn_submit=findViewById(R.id.txt_submit_btn);
+        btn_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            //    Api_rating(driver_id,rating,review,remark);
+
+            }
+        });
+
+        dialog.show();
+    }
+
+
+    private void Api_rating(String driver_id,String rating,String review,String remark) {
+        if (isNetworkAvailable(Home.this))
+        {
+            Map<String,String> map=new HashMap<>();
+            map.put("driver_id",driver_id);
+            map.put("user_id",App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
+            map.put("rating",rating);
+            map.put("review",review);
+            map.put("remark",remark);
+            map.put("status","Active");
+            Date date=new Date();
+            map.put("timestamp",""+date);
+            Call<Response_register> call= APIClient.getWebServiceMethod().give_ratiing(map);
+            call.enqueue(new Callback<Response_register>() {
+                @Override
+                public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+                    progressDialog.dismiss();
+                    try{
+                        String status=response.body().getApi_status();
+                        String msg=response.body().getApi_message();
+
+                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                        {
+                            //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Home.this, "Rating success", Toast.LENGTH_SHORT).show();
+                        }else{
+
+                            Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
+                        }
+                    }catch (Exception e){
+                        //                     Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();}
+
+                }
+
+                @Override
+                public void onFailure(Call<Response_register> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(Home.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        }else{
+            Toast.makeText(Home.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     private void show_driver_profile(final Response_Booking message, final String contactno, final String driver_id,
                                      String name, String photo, String address, String city, String email,

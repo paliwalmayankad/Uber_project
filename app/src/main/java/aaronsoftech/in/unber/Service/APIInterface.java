@@ -30,6 +30,11 @@ public interface APIInterface {
     public Call<Response_register> getRegister(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
+    @POST("driver_rating_by_user")
+    public Call<Response_register> give_ratiing(@FieldMap Map<String, String> map);
+
+
+    @FormUrlEncoded
     @POST("change_vehicle_status")
     public Call<Response_register> update_change_vehicle_status(@FieldMap Map<String, String> map);
 
@@ -52,6 +57,7 @@ public interface APIInterface {
     @FormUrlEncoded
     @POST("user_profile")
     public Call<Response_Login> getUpdate_Profile(@FieldMap Map<String, String> map);
+
 
 
     @FormUrlEncoded
