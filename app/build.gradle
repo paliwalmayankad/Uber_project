@@ -70,6 +70,8 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-auth:16.1.0'
     implementation project(':checkout-1.5.6')
+    // Standard -- not recommended!
+    compile 'com.philliphsu:bottomsheetpickers:2.4.1'
 
 }
 

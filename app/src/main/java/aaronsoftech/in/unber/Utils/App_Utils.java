@@ -30,6 +30,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -2384,6 +2385,16 @@ public class App_Utils {
             return false;
         }
         return true;
+    }
+
+
+    public static String getCurrentdate()
+    {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        String getdate=dateFormat.format(date);
+        //2016/11/16 12:08:43
+        return getdate;
     }
 
     public static boolean isNetworkAvailable(Context context)

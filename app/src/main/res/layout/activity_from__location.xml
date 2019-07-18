@@ -223,6 +223,14 @@
             </fragment>
         </LinearLayout>
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+       android:layout_weight="1"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+        <include layout="@layout/layout_calander"
+            ></include>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/txt_done"
@@ -230,7 +238,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_margin="5dp"
-        android:background="@drawable/border_black_line"
+        android:background="@drawable/border_line_grey"
         android:gravity="center"
         android:padding="7dp"
         android:singleLine="true"
@@ -247,4 +255,42 @@
         android:id="@+id/recycle_vehicle_Select_list"
         android:visibility="gone"
         android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:layout_marginTop="11dp"
+        android:id="@+id/layout_btn_order"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/txt_book_now"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/border_line_yellow"
+            android:gravity="center"
+            android:padding="7dp"
+            android:singleLine="true"
+            android:text="Book now"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/txt_book_later"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/border_line_yellow"
+            android:gravity="center"
+            android:padding="7dp"
+            android:singleLine="true"
+            android:text="Book later"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
 </LinearLayout>

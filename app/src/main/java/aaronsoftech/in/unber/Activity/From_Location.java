@@ -3,7 +3,6 @@ package aaronsoftech.in.unber.Activity;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -14,19 +13,23 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,9 +66,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.philliphsu.bottomsheetpickers.BottomSheetPickerDialog;
+import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
+import com.philliphsu.bottomsheetpickers.time.BottomSheetTimePickerDialog;
+import com.philliphsu.bottomsheetpickers.time.grid.GridTimePickerDialog;
+import com.philliphsu.bottomsheetpickers.time.numberpad.NumberPadTimePickerDialog;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -74,10 +84,7 @@ import java.util.Map;
 import aaronsoftech.in.unber.Adapter.Adapter_Vehicle;
 import aaronsoftech.in.unber.Adapter.Adapter_vehicle_type;
 import aaronsoftech.in.unber.App_Conteroller;
-import aaronsoftech.in.unber.Model.FB_Token_res;
 import aaronsoftech.in.unber.POJO.Response_All_Vehicle;
-import aaronsoftech.in.unber.POJO.Response_Booking;
-import aaronsoftech.in.unber.POJO.Response_Login;
 import aaronsoftech.in.unber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.unber.POJO.Response_register;
 import aaronsoftech.in.unber.R;
@@ -91,7 +98,8 @@ import retrofit2.Response;
 import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 public class From_Location extends AppCompatActivity implements LocationListener,GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,Adapter_vehicle_type.Click_Adapter_Item_listner,Adapter_Vehicle.Vehicle_Item_listner {
+        GoogleApiClient.OnConnectionFailedListener,Adapter_vehicle_type.Click_Adapter_Item_listner,Adapter_Vehicle.Vehicle_Item_listner,
+        BottomSheetTimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
     String TAG="From_Location";
     LinearLayout coordinatorLayout;
 
@@ -106,7 +114,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     private static final int RESULT_CODE_MAPLOCATION = 104;
     TextView et_location,et_location2;
     TextView btn_done;
-
+    String date,time;
     Dialog dialog;
     String isFrom="";
     String focus_type="FROM";
@@ -135,11 +143,46 @@ public class From_Location extends AppCompatActivity implements LocationListener
     RecyclerView recyclerView_vehicle_type,recy_vehicle_list;
     private DatabaseReference mDatabase;
     boolean Call_driver_book_api=false;
+    private static final boolean USE_BUILDERS = false;
+    TextView btn_book_later,btn_book_now;
+    RadioGroup group;
+    RadioButton rb_time,rb_date;
+    LinearLayout btn_order_layout;
+    String book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id;
+    String Book_status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_from__location);
+
+        btn_order_layout=findViewById(R.id.layout_btn_order);
+        rb_time=findViewById(R.id.choice_grid_picker);
+        rb_date=findViewById(R.id.choice_date_picker);
+
+        group = (RadioGroup) findViewById(R.id.radioGroup);
+        btn_book_later=findViewById(R.id.txt_book_later);
+        btn_book_now=findViewById(R.id.txt_book_now);
+        btn_book_now.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Book_status="Now";
+                String datenew=App_Utils.getCurrentdate();
+                get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+
+            }
+        });
+
+        btn_book_later.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Book_status="Later";
+                rb_time.setChecked(true);
+                Show_calander();
+            }
+        });
+
+
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         ImageView get_from_Address_btn=findViewById(R.id.find_location);
         ImageView get_to_Address_btn=findViewById(R.id.find_location2);
@@ -147,7 +190,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
             @Override
             public void onClick(View view) {
                 focus_type="FROM";
-             //   et_location2.selectAll();
                 et_location2.setTextIsSelectable(true);
 
             }
@@ -220,8 +262,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
             btn_done.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Show_polyline_map();
 
+                      Show_polyline_map();
+                  //  Show_calander();
                 }
             });
 
@@ -266,6 +309,188 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     }
 
+    private void Show_calander() {
+
+        DialogFragment dialog = createDialog(group.getCheckedRadioButtonId());
+        dialog.show(getSupportFragmentManager(), TAG);
+
+    }
+
+    private DialogFragment createDialog(int checkedId) {
+        if (USE_BUILDERS) {
+            return createDialogWithBuilders(checkedId);
+        } else {
+            return createDialogWithSetters(checkedId);
+        }
+    }
+
+    private DialogFragment createDialogWithBuilders(int checkedId) {
+        BottomSheetPickerDialog.Builder builder = null;
+        boolean custom = false;
+        boolean customDark = false;
+        boolean themeDark = false;
+
+        switch (checkedId) {
+            case R.id.choice_number_pad:
+            case R.id.choice_number_pad_dark:
+            case R.id.choice_number_pad_custom:
+            case R.id.choice_number_pad_custom_dark: {
+                custom = checkedId == R.id.choice_number_pad_custom;
+                customDark = checkedId == R.id.choice_number_pad_custom_dark;
+                themeDark = checkedId == R.id.choice_number_pad_dark || customDark;
+                builder = new NumberPadTimePickerDialog.Builder(From_Location.this);
+                if (custom || customDark) {
+                    ((NumberPadTimePickerDialog.Builder) builder).setHeaderTextColor(0xFFFF4081);
+                }
+                break;
+            }
+            case R.id.choice_grid_picker:
+            case R.id.choice_grid_picker_dark:
+            case R.id.choice_grid_picker_custom:
+            case R.id.choice_grid_picker_custom_dark: {
+                custom = checkedId == R.id.choice_grid_picker_custom;
+                customDark = checkedId == R.id.choice_grid_picker_custom_dark;
+                themeDark = checkedId == R.id.choice_grid_picker_dark || customDark;
+
+                Calendar now = Calendar.getInstance();
+                builder = new GridTimePickerDialog.Builder(
+                        From_Location.this,
+                        now.get(Calendar.HOUR_OF_DAY),
+                        now.get(Calendar.MINUTE),
+                        DateFormat.is24HourFormat(From_Location.this));
+                GridTimePickerDialog.Builder gridDialogBuilder =
+                        (GridTimePickerDialog.Builder) builder;
+                if (custom || customDark) {
+                    gridDialogBuilder.setHeaderTextColorSelected(0xFFFF4081)
+                            .setHeaderTextColorUnselected(0x4AFF4081)
+                            .setTimeSeparatorColor(0xFF000000)
+                            .setHalfDayButtonColorSelected(0xFFFF4081)
+                            .setHalfDayButtonColorUnselected(0x4AFF4081);
+                }
+                break;
+            }
+            case R.id.choice_date_picker:
+            case R.id.choice_date_picker_dark:
+            case R.id.choice_date_picker_custom:
+            case R.id.choice_date_picker_custom_dark: {
+                custom = checkedId == R.id.choice_date_picker_custom;
+                customDark = checkedId == R.id.choice_date_picker_custom_dark;
+                themeDark = checkedId == R.id.choice_date_picker_dark || customDark;
+
+                Calendar now = Calendar.getInstance();
+                Calendar max = Calendar.getInstance();
+                max.add(Calendar.YEAR, 10);
+                builder = new DatePickerDialog.Builder(
+                        From_Location.this,
+                        now.get(Calendar.YEAR),
+                        now.get(Calendar.MONTH),
+                        now.get(Calendar.DAY_OF_MONTH));
+                DatePickerDialog.Builder dateDialogBuilder = (DatePickerDialog.Builder) builder;
+                dateDialogBuilder.setMaxDate(max)
+                        .setMinDate(now)
+                        .setYearRange(1970, 2032);
+                if (custom || customDark) {
+                    dateDialogBuilder.setHeaderTextColorSelected(0xFFFF4081)
+                            .setHeaderTextColorUnselected(0x4AFF4081)
+                            .setDayOfWeekHeaderTextColorSelected(0xFFFF4081)
+                            .setDayOfWeekHeaderTextColorUnselected(0x4AFF4081);
+                }
+                break;
+            }
+        }
+
+        builder.setThemeDark(themeDark);
+        if (custom || customDark) {
+            builder.setAccentColor(0xFFFF4081)
+                    .setBackgroundColor(custom? 0xFF90CAF9 : 0xFF2196F3)
+                    .setHeaderColor(custom? 0xFF90CAF9 : 0xFF2196F3)
+                    .setHeaderTextDark(custom);
+        }
+        return builder.build();
+    }
+
+    private DialogFragment createDialogWithSetters(int checkedId) {
+        BottomSheetPickerDialog dialog = null;
+        boolean custom = false;
+        boolean customDark = false;
+        boolean themeDark = false;
+
+        switch (checkedId) {
+            case R.id.choice_number_pad:
+            case R.id.choice_number_pad_dark:
+            case R.id.choice_number_pad_custom:
+            case R.id.choice_number_pad_custom_dark: {
+                dialog = NumberPadTimePickerDialog.newInstance(From_Location.this);
+                custom = checkedId == R.id.choice_number_pad_custom;
+                customDark = checkedId == R.id.choice_number_pad_custom_dark;
+                themeDark = checkedId == R.id.choice_number_pad_dark || customDark;
+                if (custom || customDark) {
+                    ((NumberPadTimePickerDialog) dialog).setHeaderTextColor(0xFFFF4081);
+                }
+                break;
+            }
+            case R.id.choice_grid_picker:
+            case R.id.choice_grid_picker_dark:
+            case R.id.choice_grid_picker_custom:
+            case R.id.choice_grid_picker_custom_dark: {
+                Calendar now = Calendar.getInstance();
+                dialog = GridTimePickerDialog.newInstance(
+                        From_Location.this,
+                        now.get(Calendar.HOUR_OF_DAY),
+                        now.get(Calendar.MINUTE),
+                        DateFormat.is24HourFormat(From_Location.this));
+                custom = checkedId == R.id.choice_grid_picker_custom;
+                customDark = checkedId == R.id.choice_grid_picker_custom_dark;
+                themeDark = checkedId == R.id.choice_grid_picker_dark || customDark;
+                GridTimePickerDialog gridDialog = (GridTimePickerDialog) dialog;
+                if (custom || customDark) {
+                    gridDialog.setHeaderTextColorSelected(0xFFFF4081);
+                    gridDialog.setHeaderTextColorUnselected(0x4AFF4081);
+                    gridDialog.setTimeSeparatorColor(0xFF000000);
+                    gridDialog.setHalfDayButtonColorSelected(0xFFFF4081);
+                    gridDialog.setHalfDayButtonColorUnselected(0x4AFF4081);
+                }
+                break;
+            }
+            case R.id.choice_date_picker:
+            case R.id.choice_date_picker_dark:
+            case R.id.choice_date_picker_custom:
+            case R.id.choice_date_picker_custom_dark: {
+                Calendar now = Calendar.getInstance();
+                dialog = DatePickerDialog.newInstance(
+                        From_Location.this,
+                        now.get(Calendar.YEAR),
+                        now.get(Calendar.MONTH),
+                        now.get(Calendar.DAY_OF_MONTH));
+                custom = checkedId == R.id.choice_date_picker_custom;
+                customDark = checkedId == R.id.choice_date_picker_custom_dark;
+                themeDark = checkedId == R.id.choice_date_picker_dark || customDark;
+                DatePickerDialog dateDialog = (DatePickerDialog) dialog;
+                dateDialog.setMinDate(now);
+                Calendar max = Calendar.getInstance();
+                max.add(Calendar.YEAR, 10);
+                dateDialog.setMaxDate(max);
+                dateDialog.setYearRange(1970, 2032);
+                if (custom || customDark) {
+                    dateDialog.setHeaderTextColorSelected(0xFFFF4081);
+                    dateDialog.setHeaderTextColorUnselected(0x4AFF4081);
+                    dateDialog.setDayOfWeekHeaderTextColorSelected(0xFFFF4081);
+                    dateDialog.setDayOfWeekHeaderTextColorUnselected(0x4AFF4081);
+                }
+                break;
+            }
+        }
+
+        dialog.setThemeDark(themeDark);
+        if (custom || customDark) {
+            dialog.setAccentColor(0xFFFF4081);
+            dialog.setBackgroundColor(custom? 0xFF90CAF9 : 0xFF2196F3);
+            dialog.setHeaderColor(custom? 0xFF90CAF9 : 0xFF2196F3);
+            dialog.setHeaderTextDark(custom);
+        }
+
+        return dialog;
+    }
     private void Save_data_on_firebase(DatabaseReference mDatabase) {
         // Read from the database
         mDatabase.addValueEventListener(new ValueEventListener() {
@@ -857,25 +1082,26 @@ public class From_Location extends AppCompatActivity implements LocationListener
     @Override
     public void OnClick_item(Response_All_Vehicle.Data_Vehicle_List vehicle_id) {
         //for vehicle book call api
-        String vehicleid=vehicle_id.getId();
-        String amount=vehicle_id.getVehicle_price();
-        String Driver_ID=vehicle_id.getDriver_id();
-        String vehicle_no=vehicle_id.getVehicle_number();
-        String vehicle_image=vehicle_id.getVehicle_photo();
-        String refreshtoken=vehicle_id.getToken_no();
-        String vehicle_type_id=vehicle_id.getVehicle_type_id();
-        get_driver_token(vehicleid,amount,Driver_ID,vehicle_no,vehicle_image,refreshtoken,vehicle_type_id);
+         book_vehicleid=vehicle_id.getId();
+         book_amount=vehicle_id.getVehicle_price();
+         book_Driver_ID=vehicle_id.getDriver_id();
+         book_vehicle_no=vehicle_id.getVehicle_number();
+         book_vehicle_image=vehicle_id.getVehicle_photo();
+         book_refreshtoken=vehicle_id.getToken_no();
+         book_vehicle_type_id=vehicle_id.getVehicle_type_id();
+
+         btn_order_layout.setVisibility(View.VISIBLE);
 
     }
 
-    public void Call_Api_book_ride(final String vehicleid, String pricc, final String driver_ID, final String vehicle_no, final String vehicle_image, String refreshtoken,final String vehicla_type_id){
+    public void Call_Api_book_ride(String date,final String vehicleid, String pricc, final String driver_ID, final String vehicle_no, final String vehicle_image, String refreshtoken,final String vehicla_type_id){
 
         progressDialog=new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
 
-        Date date=new Date();
+
         final HashMap<String,String> map=new HashMap<>();
         String userid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
 
@@ -892,7 +1118,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         map.put("payment_status","cash");
         map.put("payment_id","2342687624");
         map.put("amount",""+pricc);
-        map.put("pickup","now");
+        map.put("pickup",""+Book_status);
         map.put("uname",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
         map.put("ucontact",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
         map.put("uimage",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
@@ -995,7 +1221,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
     }
 
-    private void get_driver_token(final String vehicleid, final String amount, final String driver_ID, final String vehicle_no, final String vehicle_image, final String refreshtoken,final String vehicle_type_id) {
+    private void get_driver_token(final String datetime,final String vehicleid, final String amount, final String driver_ID, final String vehicle_no, final String vehicle_image, final String refreshtoken,final String vehicle_type_id) {
         Call_driver_book_api=true;
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -1010,7 +1236,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 if   (Call_driver_book_api)
                 {    Call_driver_book_api=false;
 
-                     Call_Api_book_ride(vehicleid,amount,driver_ID,vehicle_no,vehicle_image,token_no,vehicle_type_id);
+                     Call_Api_book_ride(datetime,vehicleid,amount,driver_ID,vehicle_no,vehicle_image,token_no,vehicle_type_id);
                 }
 
             }
@@ -1033,5 +1259,47 @@ public class From_Location extends AppCompatActivity implements LocationListener
             Call_Select_Vihicle_Api(vehicle_type.getId(),vehicle_type.getKm_price());
         }
 
+    }
+
+    @Override
+    public void onTimeSet(ViewGroup viewGroup, int hourOfDay, int minute) {
+        Calendar cal = new java.util.GregorianCalendar();
+        cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        cal.set(Calendar.MINUTE, minute);
+        rb_date.setChecked(true);
+        java.text.DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        time=dateFormat.format(cal.getTime());
+        btn_done.setText("Time set: " + dateFormat.format(cal.getTime()));
+        Show_calander();
+
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog dialog, int year, int monthOfYear, int dayOfMonth) {
+        Calendar cal = new java.util.GregorianCalendar();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, monthOfYear);
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        java.text.DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        date=dateFormat.format(cal.getTime());
+        String datenew=date+" "+time;
+        btn_done.setText("Time set: " + datenew);
+
+        get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+
+        //btn_done.setText("Date set: " + DateFormat.getDateFormat(this).format(cal.getTime()));
+
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                findViewById(R.id.fab).requestFocus();
+                break;
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                findViewById(R.id.radioGroup).requestFocus();
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
