@@ -28,6 +28,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -94,6 +95,7 @@ import aaronsoftech.in.unber.POJO.Response_Booking_List;
 import aaronsoftech.in.unber.POJO.Response_register;
 import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Service.APIClient;
+import aaronsoftech.in.unber.Utils.App_Utils;
 import aaronsoftech.in.unber.Utils.SP_Utils;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.fabric.sdk.android.Fabric;
@@ -135,7 +137,8 @@ public class Home extends AppCompatActivity
     List<Response_Booking_List.User_List> get_Booking_List=new ArrayList<>();
     LinearLayout layout_user_info,layout_user_profile_list;
     TextView btn_finish_ride_driver,btn_finish_ride_user;
-
+    String get_Selected_Driver_Id;
+    String get_BookID_Status,get_vehicle_id_status,get_book_id_2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -268,7 +271,8 @@ public class Home extends AppCompatActivity
         btn_finish_ride_driver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                add_payment_gatway(list);
+
+               /* add_payment_gatway(list);
                 Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
                 mDatabase = FirebaseDatabase.getInstance().getReference();
                 mDatabase.child("Driver_ID").child(list.get(0).getDriver_id()).child("status").child("Deactive");
@@ -281,7 +285,7 @@ public class Home extends AppCompatActivity
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
-                });
+                });*/
             }
         });
         user_list_recycle.setAdapter(aa);
@@ -306,6 +310,7 @@ public class Home extends AppCompatActivity
             String   pricee = priceee.substring(0, priceee.length() - 3);
             options.put("amount", String.valueOf(pricee+"00"));
 
+            options.put("amount", String.valueOf("100"));
             JSONObject preFill = new JSONObject();
             //     preFill.put("email", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
             preFill.put("contact", list.get(0).getUcontact());
@@ -317,10 +322,10 @@ public class Home extends AppCompatActivity
             btn_finish_ride_user.setVisibility(View.GONE);
             btn_finish_ride_driver.setVisibility(View.GONE);
             Log.i(TAG, "Error in payment: " +e.getMessage());
-            Toast.makeText(activity, "Error in payment: " + e.getMessage(), Toast.LENGTH_LONG
-            )
-                    .show();
+            Toast.makeText(activity, "Error in payment: " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
+
+
         }
     }
 
@@ -332,13 +337,23 @@ public class Home extends AppCompatActivity
     @SuppressWarnings("unused")
     @Override
     public void onPaymentSuccess(String razorpayPaymentID) {
+        Log.e(TAG, "Home ||  in onPaymentSuccess------- "+razorpayPaymentID);
+
+
+        progressDialog=new ProgressDialog(Home.this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+        get_Booking_List.clear();
+
+        Change_ride_status(get_BookID_Status,get_vehicle_id_status,razorpayPaymentID);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("Driver_ID").removeValue();
+
+
         try {
-            if (  App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
-                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
-                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
-            {
-                Show_driver_rating_box();
-            }
+
 
             Toast.makeText(this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
             btn_finish_ride_user.setVisibility(View.GONE);
@@ -357,30 +372,31 @@ public class Home extends AppCompatActivity
     @SuppressWarnings("unused")
     @Override
     public void onPaymentError(int code, String response) {
-        try {
-
-            if (  App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
+        Toast.makeText(this, "Error: "+response, Toast.LENGTH_SHORT).show();
+        Log.e(TAG, "Home ||  in onPaymentError------- "+response);
+        /*try {
+            if (       App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
                     || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
                     || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
             {
                 Show_driver_rating_box();
             }
 
+            Toast.makeText(this, "Payment onPaymentError: " + response, Toast.LENGTH_SHORT).show();
             btn_finish_ride_user.setVisibility(View.GONE);
             btn_finish_ride_driver.setVisibility(View.GONE);
-            Log.i(TAG, "Exception in onPaymentError  Payment failed: " + code + " " + response);
-            Toast.makeText(this, "Payment failed: " + code + " " + response, Toast.LENGTH_LONG).show();
         } catch (Exception e) {
-            Log.e(TAG, "Exception in onPaymentError", e);
-        }
+            Log.e(TAG, "Exception in onPaymentSuccess", e);
+        }*/
     }
 
-    private void Change_ride_status(final String bookID, final String vehicleid, final String getbookid) {
+    private void Change_ride_status(final String bookID, final String vehicleid, final String get_payment_id) {
         if (isNetworkAvailable(Home.this))
         {
             Map<String,String> map=new HashMap<>();
             map.put("id",bookID);
             map.put("status","Deactive");
+            map.put("payment_id",""+get_payment_id);
             Call<Response_register> call= APIClient.getWebServiceMethod().get_booking_status_change(map);
             call.enqueue(new Callback<Response_register>() {
                 @Override
@@ -394,6 +410,7 @@ public class Home extends AppCompatActivity
                         {
                             Toast.makeText(Home.this, "Complite your ride", Toast.LENGTH_SHORT).show();
                             Change_vehicle_status(vehicleid,bookID);
+                            Show_driver_rating_box();
                         }else{
 
                             Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
@@ -438,7 +455,6 @@ public class Home extends AppCompatActivity
                             Toast.makeText(Home.this, "status change", Toast.LENGTH_SHORT).show();
                             String id=response.body().getId();
 
-
                         }else{
 
                             Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
@@ -469,9 +485,6 @@ public class Home extends AppCompatActivity
             Toast.makeText(Home.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
 
     private void Save_Token_on_firebase() {
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
@@ -592,7 +605,6 @@ public class Home extends AppCompatActivity
                             }
                         });
                     }
-
                 }
             }
 
@@ -602,7 +614,6 @@ public class Home extends AppCompatActivity
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
-
     }
 
     private void Set_running_value(final String book_id, final Location location, final String veh_img, final String veh_type_id, final String veh_no, final String amount, final String contact, final String img, final String name) {
@@ -665,12 +676,7 @@ public class Home extends AppCompatActivity
                     .strokeColor(Color.YELLOW)
                     .fillColor(Color.TRANSPARENT));
         }
-
-
-
     }
-
-
 
     private void Call_driver_book_Api(String driver_ID, final String contact, final String img, final String name, final String bookid) {
         progressDialog=new ProgressDialog(this);
@@ -725,8 +731,6 @@ public class Home extends AppCompatActivity
             Toast.makeText(Home.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
     private void Show_dialog_box(final String book_id, final Location location, final String veh_img, final String veh_type_id, final String veh_no, final String amount, final String contact, final String img, final String name) {
         try{
@@ -1045,7 +1049,6 @@ public class Home extends AppCompatActivity
         }catch (Exception e){e.printStackTrace();}
     }
 
-
     @Override
     protected void onResume() {
         set_Header_value();
@@ -1068,7 +1071,6 @@ public class Home extends AppCompatActivity
         };
         handler.postDelayed(runnable, 2000);
     }
-
 
     @Override
     public void onBackPressed() {
@@ -1177,7 +1179,6 @@ public class Home extends AppCompatActivity
             }
         });
     }
-
 
     private void Save_data_on_firebase(DatabaseReference mDatabase) {
         // Read from the database
@@ -1316,27 +1317,41 @@ public class Home extends AppCompatActivity
         });
     }
 
-
     public void Show_driver_rating_box(){
         // Create custom dialog object
         final Dialog dialog = new Dialog(Home.this);
         // Include dialog.xml file
-        dialog.setContentView(R.layout.dialog_driver_rating);
-        AppCompatRatingBar ratingBar=findViewById(R.id.rating_bar);
-        EditText ed_review=findViewById(R.id.txt_review);
-        TextView btn_submit=findViewById(R.id.txt_submit_btn);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View v = inflater.inflate(R.layout.dialog_driver_rating, null);
+        final AppCompatRatingBar ratingBar=v.findViewById(R.id.rating_bar);
+        final EditText ed_review=v.findViewById(R.id.txt_review);
+        TextView btn_submit=v.findViewById(R.id.txt_submit_btn);
+        dialog.setContentView(v);
+
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (ed_review.getText().toString().isEmpty())
+                {
+                    ed_review.setError("Enter review");
+                    ed_review.requestFocus();
+                }else{
 
-            //    Api_rating(driver_id,rating,review,remark);
+                    progressDialog=new ProgressDialog(Home.this);
+                    progressDialog.setCancelable(false);
+                    progressDialog.setMessage("Loading...");
+                    progressDialog.show();
+
+                    String rating_value= String.valueOf(ratingBar.getRating());
+                    String remark="no";
+                    Api_rating(get_Selected_Driver_Id,rating_value,ed_review.getText().toString(),remark);
+                }
 
             }
         });
 
         dialog.show();
     }
-
 
     private void Api_rating(String driver_id,String rating,String review,String remark) {
         if (isNetworkAvailable(Home.this))
@@ -1348,7 +1363,7 @@ public class Home extends AppCompatActivity
             map.put("review",review);
             map.put("remark",remark);
             map.put("status","Active");
-            Date date=new Date();
+            String date= App_Utils.getCurrentdate();
             map.put("timestamp",""+date);
             Call<Response_register> call= APIClient.getWebServiceMethod().give_ratiing(map);
             call.enqueue(new Callback<Response_register>() {
@@ -1368,9 +1383,9 @@ public class Home extends AppCompatActivity
                             Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-                        //                     Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
+                        Log.i(TAG,"Home || Api_rating || "+response);
+                        Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
-
                 }
 
                 @Override
@@ -1385,7 +1400,6 @@ public class Home extends AppCompatActivity
         }
     }
 
-
     private void show_driver_profile(final Response_Booking message, final String contactno, final String driver_id,
                                      String name, String photo, String address, String city, String email,
                                      String veh_type_id, String veh_no, String amount, String veh_img, String vehicle_id, final String book_id) {
@@ -1398,7 +1412,6 @@ public class Home extends AppCompatActivity
         TextView driver_veh_no=findViewById(R.id.txt_veh_no);
         TextView driver_amount=findViewById(R.id.txt_amount);
 
-
         DecimalFormat df2=new DecimalFormat("#.##");
         if (amount!=null)
         {
@@ -1406,7 +1419,6 @@ public class Home extends AppCompatActivity
         }else{
             driver_amount.setText(getResources().getString(R.string.rupee_sign)+ " 0.00");
         }
-
 
         driver_veh_no.setText("Vehicle no :"+ veh_no);
         driver_name.setText("Driver name :"+ name);
@@ -1420,11 +1432,9 @@ public class Home extends AppCompatActivity
             }
         });
 
-
         try{
             Picasso.with(Home.this).load(veh_img).error(R.drawable.ic_user).into(driver_vehicle);
         }catch (Exception e){e.printStackTrace();}
-
 
         try{
             Picasso.with(Home.this).load(photo).error(R.drawable.ic_user).into(driver_image);
@@ -1433,30 +1443,15 @@ public class Home extends AppCompatActivity
         btn_finish_ride_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressDialog=new ProgressDialog(Home.this);
-                progressDialog.setCancelable(false);
-                progressDialog.setMessage("Loading...");
-                progressDialog.show();
+                get_Selected_Driver_Id=driver_id;
+                get_BookID_Status=message.getBook_id();
+                get_vehicle_id_status=message.getVehicle_id();
+                get_book_id_2=book_id;
 
-                get_Booking_List.clear();
                 add_payment_gatway_user(message);
-                Change_ride_status(message.getBook_id(),message.getVehicle_id(),book_id);
-
-                mDatabase = FirebaseDatabase.getInstance().getReference();
-                mDatabase.child("Driver_ID").child(driver_id).child("status").child("Deactive");
-                mDatabase.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                //  Show_driver_rating_box();
             }
         });
-
     }
 
 
@@ -1530,7 +1525,7 @@ public class Home extends AppCompatActivity
         } else if (id == R.id.nav_free_trips) {
             startActivity(new Intent(Home.this,Acc_edit.class));
         } else if (id == R.id.nav_setting) {
-            startActivity(new Intent(Home.this,Acc_setting.class));
+
         } else if (id == R.id.nav_your_trips) {
             startActivity(new Intent(Home.this,Trip.class));
         }

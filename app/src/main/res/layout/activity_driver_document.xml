@@ -36,12 +36,24 @@
             android:id="@+id/txt_licence"
             android:textColor="@android:color/black"
             android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="Driver's License" />
+            android:text="Driver's License first side" />
         <View
             android:layout_width="match_parent"
             android:background="@color/light_gray"
             android:layout_height="1dp"></View>
-
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="11dp"
+            android:textSize="16dp"
+            android:id="@+id/txt_licence2"
+            android:textColor="@android:color/black"
+            android:drawableRight="@drawable/ic_arrow_back2"
+            android:text="Driver's License Second side" />
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/light_gray"
+            android:layout_height="1dp"></View>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -119,7 +131,20 @@
             android:id="@+id/txt_aadhar"
             android:textColor="@android:color/black"
             android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="Aadhar card" />
+            android:text="Aadhar card First side" />
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/light_gray"
+            android:layout_height="1dp"></View>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="11dp"
+            android:textSize="16dp"
+            android:id="@+id/txt_aadhar2"
+            android:textColor="@android:color/black"
+            android:drawableRight="@drawable/ic_arrow_back2"
+            android:text="Aadhar card Second side" />
         <View
             android:layout_width="match_parent"
             android:background="@color/light_gray"

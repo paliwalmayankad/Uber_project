@@ -49,7 +49,7 @@
         <!-- Add your API key here -->
         <meta-data
             android:name="com.razorpay.ApiKey"
-            android:value="rzp_live_ILgsfZCZoFIKMb"
+            android:value="rzp_live_qdUReWKfy2SE4Y"
             />
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"

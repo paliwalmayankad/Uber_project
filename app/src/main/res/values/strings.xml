@@ -32,6 +32,7 @@
 
     <string name="txt_message_license">Please upload the document by taking a picture</string>
     <string name="txt_title_license">Take a photo of your \n <b>Driver\'s Licence</b></string>
+    <string name="txt_title_license2">Take a photo of your \n <b>Driver\'s Licence Back image</b></string>
 
     <string name="txt_message_pancard">Please upload the document by taking a picture</string>
     <string name="txt_title_pancard">Take a photo of your \n <b>PAN Card</b></string>
@@ -53,6 +54,7 @@
 
     <string name="txt_message_aadhar">Please upload the document by taking a picture</string>
     <string name="txt_title_aadhar">Take a photo of your \n <b>Aadhar card</b></string>
+    <string name="txt_title_aadhar2">Take a photo of your \n <b>Aadhar card back image</b></string>
 
     <string name="txt_message_common">Please upload the document by taking a picture</string>
     <string name="txt_title_permit">Take a photo of your \n <b>Permit</b></string>

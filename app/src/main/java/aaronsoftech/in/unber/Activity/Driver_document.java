@@ -32,23 +32,25 @@ import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 
 public class Driver_document extends AppCompatActivity {
-    TextView btn_licence,btn_pancard,btn_permit_a,
-            btn_permit_b,btn_registertion,btn_insurence,btn_continue,btn_aadhar,btn_verification_file;
-    ImageView btn_back;
+    TextView btn_licence,btn_licence2,btn_pancard,btn_permit_a,btn_permit_b,
+            btn_registertion,btn_insurence,btn_continue,btn_aadhar,btn_aadhar2,btn_verification_file;
+    ImageView btn_back,img;
     String TAG="Driver_document";
-    ImageView img;
     public static String txt_aadharcard_no="",txt_pancard_no="",txt_licence_no="";
-    public static String path_licence="",path_pancard="",path_permit_a="",
-            path_permit_b="",path_registration="",path_insurense="",path_aadhar="",path_police_verification_file="";
+    public static String path_licence="",path_licence2="",path_pancard="",path_permit_a="",
+            path_permit_b="",path_registration="",path_insurense="",path_aadhar="",path_aadhar2="",path_police_verification_file="";
     ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_document);
         btn_licence=findViewById(R.id.txt_licence);
+        btn_licence2=findViewById(R.id.txt_licence2);
         img=findViewById(R.id.pic);
         btn_verification_file=findViewById(R.id.txt_verify);
         btn_aadhar=findViewById(R.id.txt_aadhar);
+        btn_aadhar2=findViewById(R.id.txt_aadhar2);
         btn_pancard=findViewById(R.id.txt_pancard);
         btn_permit_a=findViewById(R.id.txt_permit_a);
         btn_permit_b=findViewById(R.id.txt_permit_b);
@@ -72,7 +74,11 @@ public class Driver_document extends AppCompatActivity {
                {
                    Toast.makeText(Driver_document.this, "Please select Licence Image", Toast.LENGTH_SHORT).show();
 
-               }else if (path_pancard=="" || path_pancard.isEmpty())
+               }if (path_licence2=="" || path_licence2.isEmpty() )
+                {
+                    Toast.makeText(Driver_document.this, "Please select back Licence Image", Toast.LENGTH_SHORT).show();
+
+                }else if (path_pancard=="" || path_pancard.isEmpty())
                {
                    Toast.makeText(Driver_document.this, "Please select Pancard Image", Toast.LENGTH_SHORT).show();
                }else if (path_permit_a=="" || path_permit_a.isEmpty())
@@ -90,6 +96,9 @@ public class Driver_document extends AppCompatActivity {
                }else if (path_aadhar=="" || path_aadhar.isEmpty())
                {
                    Toast.makeText(Driver_document.this, "Please select Aadhar Image", Toast.LENGTH_SHORT).show();
+               }else if (path_aadhar2=="" || path_aadhar2.isEmpty())
+               {
+                    Toast.makeText(Driver_document.this, "Please select back Aadhar Image", Toast.LENGTH_SHORT).show();
                }else if (path_police_verification_file=="" || path_police_verification_file.isEmpty())
                {
                    Toast.makeText(Driver_document.this, "Please select Ploice verification file", Toast.LENGTH_SHORT).show();
@@ -106,11 +115,8 @@ public class Driver_document extends AppCompatActivity {
                 else{
                    Call_Document_submit_Api();
                }
-                
-
             }
         });
-
 
         btn_verification_file.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,6 +133,23 @@ public class Driver_document extends AppCompatActivity {
                         .putExtra("type","9"));
             }
         });
+
+        btn_aadhar2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Driver_document.this,Driver_doc_Image.class)
+                        .putExtra("type","99"));
+            }
+        });
+
+        btn_licence2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Driver_document.this,Driver_doc_Image.class)
+                        .putExtra("type","111"));
+            }
+        });
+
         btn_licence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,6 +157,7 @@ public class Driver_document extends AppCompatActivity {
                         .putExtra("type","1"));
             }
         });
+
         btn_pancard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -141,6 +165,7 @@ public class Driver_document extends AppCompatActivity {
                         .putExtra("type","3"));
             }
         });
+
         btn_permit_a.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -148,6 +173,7 @@ public class Driver_document extends AppCompatActivity {
                         .putExtra("type","4"));
             }
         });
+
         btn_permit_b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,6 +181,7 @@ public class Driver_document extends AppCompatActivity {
                         .putExtra("type","6"));
             }
         });
+
         btn_registertion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -162,6 +189,7 @@ public class Driver_document extends AppCompatActivity {
                         .putExtra("type","5"));
             }
         });
+
         btn_insurence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -193,8 +221,6 @@ public class Driver_document extends AppCompatActivity {
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_DRIVER_ID,""+driver_id);
                         App_Conteroller. editor.commit();
 
-
-
                     }else{
                         Toast.makeText(Driver_document.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
                     }
@@ -217,6 +243,7 @@ public class Driver_document extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.show();
         File file_licence = new File(path_licence);
+        File file_licence_back = new File(path_licence2);
         File file_pancard = new File(path_pancard);
         File file_permit_a = new File(path_permit_a);
         File file_permit_b = new File(path_permit_b);
@@ -224,26 +251,25 @@ public class Driver_document extends AppCompatActivity {
         File file_insurense = new File(path_insurense);
 
         File file_aadhar = new File(path_aadhar);
+        File file_aadhar_back = new File(path_aadhar2);
         File file_police_verification = new File(path_police_verification_file);
 
         RequestBody request_file_licence = RequestBody.create(MediaType.parse("multipart/form-data"), file_licence);
         RequestBody request_aadhar = RequestBody.create(MediaType.parse("multipart/form-data"), file_aadhar);
         RequestBody request_police_verification = RequestBody.create(MediaType.parse("multipart/form-data"), file_police_verification);
         RequestBody request_file_pancard = RequestBody.create(MediaType.parse("multipart/form-data"), file_pancard);
-        RequestBody request_file_permit_a = RequestBody.create(MediaType.parse("multipart/form-data"), file_permit_a);
-        RequestBody request_file_permit_b = RequestBody.create(MediaType.parse("multipart/form-data"), file_permit_b);
-        RequestBody request_file_registration = RequestBody.create(MediaType.parse("multipart/form-data"), file_registration);
-        RequestBody request_file_insurense = RequestBody.create(MediaType.parse("multipart/form-data"), file_insurense);
+        RequestBody request_aadhar_back = RequestBody.create(MediaType.parse("multipart/form-data"), file_aadhar_back);
+        RequestBody request_file_licence_back = RequestBody.create(MediaType.parse("multipart/form-data"), file_licence_back);
+     //   RequestBody request_file_registration = RequestBody.create(MediaType.parse("multipart/form-data"), file_registration);
+     //   RequestBody request_file_insurense = RequestBody.create(MediaType.parse("multipart/form-data"), file_insurense);
 
         MultipartBody.Part body_request_file_aadhar = MultipartBody.Part.createFormData("aadhar_file", file_aadhar.getName(), request_aadhar);
         MultipartBody.Part body_request_file_police_verify = MultipartBody.Part.createFormData("police_verification_file", file_police_verification.getName(), request_police_verification);
+        MultipartBody.Part body_request_file_licence_back = MultipartBody.Part.createFormData("dl_file_back", file_licence_back.getName(), request_file_licence_back);
+        MultipartBody.Part body_request_file_aadhar_back = MultipartBody.Part.createFormData("aadhar_file_back", file_aadhar_back.getName(), request_aadhar_back);
 
         MultipartBody.Part body_request_file_licence = MultipartBody.Part.createFormData("dl_file", file_licence.getName(), request_file_licence);
         MultipartBody.Part body_request_file_pancard = MultipartBody.Part.createFormData("pan_file", file_pancard.getName(), request_file_pancard);
-        //   MultipartBody.Part body_request_file_permit_a = MultipartBody.Part.createFormData("dl_file", file_licence.getName(), request_file_permit_a);
-        //   MultipartBody.Part body_request_file_permit_b = MultipartBody.Part.createFormData("dl_file", file_licence.getName(), request_file_permit_b);
-        //  MultipartBody.Part body_request_file_registration = MultipartBody.Part.createFormData("file_registration", file_licence.getName(), request_file_registration);
-        //   MultipartBody.Part body_request_file_insurense = MultipartBody.Part.createFormData("driver_insured_file", file_insurense.getName(), request_file_insurense);
 
         String userId= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
         RequestBody body_user_id =RequestBody.create(okhttp3.MultipartBody.FORM, userId);
@@ -259,9 +285,10 @@ public class Driver_document extends AppCompatActivity {
         {
             Call<Response_register> call=APIClient.getWebServiceMethod().driver_register(body_user_id,
                     body_verified_status,body_dl_number,body_aadhar_number,body_pan_number,
-                    body_police_verification_status,body_driver_insured_status,
-                    body_status,body_request_file_licence,body_request_file_pancard,
-                    body_request_file_police_verify,body_request_file_aadhar );
+                    body_police_verification_status,body_driver_insured_status,body_status,
+                    body_request_file_licence,body_request_file_pancard,body_request_file_police_verify,
+                    body_request_file_aadhar,body_request_file_aadhar_back,body_request_file_licence_back );
+
             call.enqueue(new Callback<Response_register>() {
                 @Override
                 public void onResponse(Call<Response_register> call, Response<Response_register> response) {
@@ -272,16 +299,13 @@ public class Driver_document extends AppCompatActivity {
 
                         if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                         {
-
                             Update_info(response.body().getId());
                             Toast.makeText(Driver_document.this, "Submit your document ", Toast.LENGTH_SHORT).show();
                             finish();
                         }else{
-
                             Toast.makeText(Driver_document.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-           //             Toast.makeText(Driver_document.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
                 }
@@ -309,6 +333,8 @@ public class Driver_document extends AppCompatActivity {
     private void Check_path_image() {
         if (path_licence!=""){ btn_licence.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.done, 0); }
         if (path_aadhar!=""){ btn_aadhar.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.done, 0); }
+        if (path_licence2!=""){ btn_licence2.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.done, 0); }
+        if (path_aadhar2!=""){ btn_aadhar2.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.done, 0); }
         if (path_police_verification_file!=""){ btn_verification_file.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.done, 0); }
         if (path_pancard!=""){ btn_pancard.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.done, 0); }
         if (path_permit_a!=""){ btn_permit_a.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.done, 0); }

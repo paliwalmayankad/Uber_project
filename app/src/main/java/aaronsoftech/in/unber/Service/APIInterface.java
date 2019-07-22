@@ -114,7 +114,9 @@ public interface APIInterface {
             @Part MultipartBody.Part dl_file,
             @Part MultipartBody.Part pan_file,
             @Part MultipartBody.Part police_verification_file,
-            @Part MultipartBody.Part aadhar_file
+            @Part MultipartBody.Part aadhar_file,
+            @Part MultipartBody.Part aadhar_file_back,
+            @Part MultipartBody.Part dl_file_back
     );
 
 }

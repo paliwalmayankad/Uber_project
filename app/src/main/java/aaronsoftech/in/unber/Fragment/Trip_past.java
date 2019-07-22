@@ -4,7 +4,6 @@ package aaronsoftech.in.unber.Fragment;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,12 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import aaronsoftech.in.unber.Activity.Acc_edit;
-import aaronsoftech.in.unber.Activity.From_Location;
-import aaronsoftech.in.unber.Activity.Home;
-import aaronsoftech.in.unber.Activity.Show_Vehicle;
-import aaronsoftech.in.unber.Activity.Trip;
-import aaronsoftech.in.unber.Adapter.Adapter_past;
 import aaronsoftech.in.unber.Adapter.Adapter_user_list;
 import aaronsoftech.in.unber.App_Conteroller;
 import aaronsoftech.in.unber.POJO.Response_Booking_List;
@@ -35,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static aaronsoftech.in.unber.Activity.Trip.trip_activity;
+import static aaronsoftech.in.unber.Fragment.Trip_Upcomming.set_data_in_alist;
 import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 /**
@@ -46,7 +39,10 @@ public class Trip_past extends Fragment implements Adapter_user_list.Vehicle_Ite
     static RecyclerView recyclerView;
     String TAG="Trip_past";
     ProgressDialog progressDialog;
-    List<Response_Booking_List.User_List> get_Booking_List=new ArrayList<>();
+    public static List<Response_Booking_List.User_List> get_Booking_List=new ArrayList<>();
+    public static List<Response_Booking_List.User_List> get_Booking_List_past=new ArrayList<>();
+    public static List<Response_Booking_List.User_List> get_Booking_List_upcomming=new ArrayList<>();
+
     Context con;
     public Trip_past() {
         // Required empty public constructor
@@ -77,7 +73,6 @@ public class Trip_past extends Fragment implements Adapter_user_list.Vehicle_Ite
         }
 
 
-
         return v;
     }
 
@@ -100,14 +95,25 @@ public class Trip_past extends Fragment implements Adapter_user_list.Vehicle_Ite
                         String status=response.body().getApi_status();
                         String msg=response.body().getApi_message();
                         if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                        {
+                        {   if (response.body().getData()!=null)
+                             {
+                                 get_Booking_List=response.body().getData();
+                                 for (int i=0;i<get_Booking_List.size();i++)
+                                 {
+                                     if (get_Booking_List.get(i).getStatus().toString().equalsIgnoreCase("Now"))
+                                     {
+                                         get_Booking_List_past.add(get_Booking_List.get(i));
+                                     }else{
+                                         get_Booking_List_upcomming.add(get_Booking_List.get(i));
+                                     }
+                                 }
+                                 set_data_in_alist(get_Booking_List_upcomming);
 
-                            get_Booking_List=response.body().getData();
-                            Adapter_user_list aa=new Adapter_user_list(((Activity)con),get_Booking_List, (Adapter_user_list.Vehicle_Item_listner) con);
-                            recyclerView.setAdapter(aa);
+                                 Adapter_user_list aa=new Adapter_user_list(((Activity)con),get_Booking_List_past, (Adapter_user_list.Vehicle_Item_listner) con);
+                                 recyclerView.setAdapter(aa);
+                             }
 
                         }else{
-
                             Toast.makeText(getContext(), "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                         }
                     }catch (Exception e){
@@ -148,9 +154,24 @@ public class Trip_past extends Fragment implements Adapter_user_list.Vehicle_Ite
                         if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                         {
 
-                            get_Booking_List=response.body().getData();
-                            Adapter_user_list aa=new Adapter_user_list(((Activity)con),get_Booking_List, (Adapter_user_list.Vehicle_Item_listner) con);
-                            recyclerView.setAdapter(aa);
+                            if (response.body().getData()!=null)
+                            {
+                                get_Booking_List=response.body().getData();
+                                for (int i=0;i<get_Booking_List.size();i++)
+                                {
+                                    if (get_Booking_List.get(i).getStatus().toString().equalsIgnoreCase("Now"))
+                                    {
+                                        get_Booking_List_past.add(get_Booking_List.get(i));
+                                    }else{
+                                        get_Booking_List_upcomming.add(get_Booking_List.get(i));
+                                    }
+                                }
+                                set_data_in_alist(get_Booking_List_upcomming);
+
+                                Adapter_user_list aa=new Adapter_user_list(((Activity)con),get_Booking_List_past, (Adapter_user_list.Vehicle_Item_listner) con);
+                                recyclerView.setAdapter(aa);
+                            }
+
 
                         }else{
 

@@ -41,8 +41,10 @@ import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Utils.App_Utils;
 
 import static aaronsoftech.in.unber.Activity.Driver_document.path_aadhar;
+import static aaronsoftech.in.unber.Activity.Driver_document.path_aadhar2;
 import static aaronsoftech.in.unber.Activity.Driver_document.path_insurense;
 import static aaronsoftech.in.unber.Activity.Driver_document.path_licence;
+import static aaronsoftech.in.unber.Activity.Driver_document.path_licence2;
 import static aaronsoftech.in.unber.Activity.Driver_document.path_pancard;
 import static aaronsoftech.in.unber.Activity.Driver_document.path_permit_a;
 import static aaronsoftech.in.unber.Activity.Driver_document.path_permit_b;
@@ -123,7 +125,12 @@ public class Driver_doc_Image extends AppCompatActivity {
             ed_title.setText(getResources().getString(R.string.txt_title_license));
             ed_value.setVisibility(View.VISIBLE);
             ed_value.setHint("Enter Licence card no");
-
+        }else if (activity_type.equalsIgnoreCase("111"))
+        {
+            ed_message.setText(getResources().getString(R.string.txt_message_license));
+            ed_title.setText(getResources().getString(R.string.txt_title_license2));
+            ed_value.setVisibility(View.GONE);
+            ed_value.setHint("Enter Licence card no");
         }else if (activity_type.equalsIgnoreCase("3"))
         {
             ed_message.setText(getResources().getString(R.string.txt_message_pancard));
@@ -156,6 +163,12 @@ public class Driver_doc_Image extends AppCompatActivity {
             ed_message.setText(getResources().getString(R.string.txt_message_aadhar));
             ed_title.setText(getResources().getString(R.string.txt_title_aadhar));
             ed_value.setVisibility(View.VISIBLE);
+            ed_value.setHint("Enter Aadhar card no");
+        }else if (activity_type.equalsIgnoreCase("99"))
+        {
+            ed_message.setText(getResources().getString(R.string.txt_message_aadhar));
+            ed_title.setText(getResources().getString(R.string.txt_title_aadhar2));
+            ed_value.setVisibility(View.GONE);
             ed_value.setHint("Enter Aadhar card no");
         }else if (activity_type.equalsIgnoreCase("11"))
         {
@@ -219,6 +232,10 @@ public class Driver_doc_Image extends AppCompatActivity {
         {
             path_licence=picturePath;
             txt_licence_no=ed_value.getText().toString().trim();
+        }else if (activity_type.equalsIgnoreCase("111"))
+        {
+            path_licence2=picturePath;
+
         }else if (activity_type.equalsIgnoreCase("3"))
         {
             path_pancard=picturePath;
@@ -242,6 +259,10 @@ public class Driver_doc_Image extends AppCompatActivity {
         {
             path_aadhar=picturePath;
             txt_aadharcard_no =ed_value.getText().toString().trim();
+        }else if (activity_type.equalsIgnoreCase("99"))
+        {
+            path_aadhar2=picturePath;
+
         }else if (activity_type.equalsIgnoreCase("11"))
         {
             PATH_PERMIT =picturePath;
