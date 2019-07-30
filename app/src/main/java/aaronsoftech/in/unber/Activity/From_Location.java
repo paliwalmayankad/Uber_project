@@ -531,23 +531,20 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
                     if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                     {
-
-                        Adapter_vehicle_type adapter_past=new Adapter_vehicle_type(From_Location.this,response.body().getData(),From_Location.this);
-                        if (gender_value.trim().equalsIgnoreCase("Male"))
+                        for (int i=0;i<response.body().getData().size();i++)
                         {
-
-                            for (int i=0;i<response.body().getData().size();i++)
+                            if (response.body().getData().get(i).getVehicle_type().trim().equalsIgnoreCase("Scooty"))
                             {
-                                if (!(response.body().getData().get(i).getVehicle_type().toString().equalsIgnoreCase("Scooty")))
-                                {
+                                if (gender_value.equalsIgnoreCase("Female")){
                                     get_vehicle_type_list.add(response.body().getData().get(i));
                                 }
+                            }else{
+                                get_vehicle_type_list.add(response.body().getData().get(i));
                             }
 
-                        }else{
-                            get_vehicle_type_list=response.body().getData();
                         }
-                                                recyclerView_vehicle_type.setAdapter(adapter_past);
+                        Adapter_vehicle_type adapter_past=new Adapter_vehicle_type(From_Location.this,get_vehicle_type_list,From_Location.this);
+                        recyclerView_vehicle_type.setAdapter(adapter_past);
 
                     }else{
                         progressDialog.dismiss();

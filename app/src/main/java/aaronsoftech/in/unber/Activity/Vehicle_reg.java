@@ -31,10 +31,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import aaronsoftech.in.unber.Adapter.Adapter_Driver_vehicle;
 import aaronsoftech.in.unber.Adapter.Adapter_Vehicle;
 import aaronsoftech.in.unber.Adapter.Adapter_vehicle_type;
 import aaronsoftech.in.unber.App_Conteroller;
 import aaronsoftech.in.unber.POJO.Response_All_Vehicle;
+import aaronsoftech.in.unber.POJO.Response_Driver_vehicle;
 import aaronsoftech.in.unber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.unber.POJO.Response_vehicle;
 import aaronsoftech.in.unber.R;
@@ -61,6 +63,7 @@ public class Vehicle_reg extends AppCompatActivity {
     ProgressDialog progressDialog;
     String TAG="Vehicle_reg";
     Spinner vehicle_type;
+    int get_vehicle_type=0;
     List<Response_Vehicle_type.Data_List> get_vehicle_type_list=new ArrayList<>();
     String get_Vehicle_id="";
     String refreshedToken;
@@ -158,11 +161,72 @@ public class Vehicle_reg extends AppCompatActivity {
 
             }
         });
+        get_Vihicle_Api();
+    }
+
+
+    private void get_Vihicle_Api() {
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+
+        HashMap map= new HashMap<>();
+        map.put("driver_id",App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""));
+        if (isNetworkAvailable(Vehicle_reg.this))
+        {
+            Call<Response_Driver_vehicle> call= APIClient.getWebServiceMethod().get_Driver_Vehicle(map);
+            call.enqueue(new Callback<Response_Driver_vehicle>() {
+                @Override
+                public void onResponse(Call<Response_Driver_vehicle> call, Response<Response_Driver_vehicle> response) {
+                    progressDialog.dismiss();
+                    try{
+                        String status=response.body().getApi_status();
+                        String msg=response.body().getApi_message();
+                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                        {
+                            List< Response_Driver_vehicle.Vehicle_Info> getlist=new ArrayList<>();
+                            getlist=response.body().data;
+
+                            try{
+                                get_vehicle_type=Integer.valueOf(getlist.get(0).getVehicle_type_id());
+
+                            }catch (Exception e){e.printStackTrace();}
+
+
+                            try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getPermit()).into(btn_permit);  }catch (Exception e){e.printStackTrace();}
+
+                            try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_other_doc()).into(btn_other_doc);  }catch (Exception e){e.printStackTrace();}
+
+                            try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_photo()).into(btn_vehicle);  }catch (Exception e){e.printStackTrace();}
+
+                            try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_rc()).into(btn_vehicle_rc);  }catch (Exception e){e.printStackTrace();}
+
+                            try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_insurance_id()).into(btn_insurence_id);  }catch (Exception e){e.printStackTrace();}
+
+                            try{ ed_no.setText(getlist.get(0).getVehicle_number()); }catch (Exception e){e.printStackTrace();}
+
+                        }
+                    }catch (Exception e){
+                        progressDialog.dismiss();
+                        e.printStackTrace();}
+
+                }
+
+                @Override
+                public void onFailure(Call<Response_Driver_vehicle> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(Vehicle_reg.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 
     private void Call_Vihicle_Api() {
-
         progressDialog=new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
@@ -182,16 +246,17 @@ public class Vehicle_reg extends AppCompatActivity {
                     {
                         for (int i=0;i<response.body().getData().size();i++)
                         {
-                            if (txt_gender.equalsIgnoreCase("Male") &&
-                                    !(response.body().getData().get(i).getVehicle_type().toString().trim().equalsIgnoreCase("Scooty")))
+                            if (response.body().getData().get(i).getVehicle_type().trim().equalsIgnoreCase("Scooty"))
                             {
-                                vehicle_list.add(response.body().getData().get(i).getVehicle_type());
-                                get_vehicle_type_list.add(response.body().getData().get(i));
+                                if (txt_gender.equalsIgnoreCase("Female")){
+                                    vehicle_list.add(response.body().getData().get(i).getVehicle_type());
+                                    get_vehicle_type_list.add(response.body().getData().get(i));
+                                }
+
                             }else{
                                 vehicle_list.add(response.body().getData().get(i).getVehicle_type());
                                 get_vehicle_type_list.add(response.body().getData().get(i));
                             }
-
                         }
 
                         ArrayAdapter aa=new ArrayAdapter(Vehicle_reg.this,R.layout.textview_address_show,vehicle_list);
@@ -202,7 +267,6 @@ public class Vehicle_reg extends AppCompatActivity {
                         //   Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                     }
                 }
-
                 @Override
                 public void onFailure(Call<Response_Vehicle_type> call, Throwable t) {
                     progressDialog.dismiss();
@@ -212,20 +276,16 @@ public class Vehicle_reg extends AppCompatActivity {
         }else{
             Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
-
     }
-
 
 
     private void Call_Api() {
 
-
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
-      if (isNetworkAvailable(Vehicle_reg.this))
-      {
+        if (isNetworkAvailable(Vehicle_reg.this))
+        {
 
-          Log.i(TAG,"Token ID : call api "+refreshedToken);
-
+            Log.i(TAG,"Token ID : call api "+refreshedToken);
 
             DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
             Date date = new Date();
@@ -235,15 +295,15 @@ public class Vehicle_reg extends AppCompatActivity {
             progressDialog.setMessage("Loading...");
             progressDialog.setCancelable(false);
             progressDialog.show();
-          String driverid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-          RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+driverid);
-          RequestBody body_status =RequestBody.create(okhttp3.MultipartBody.FORM, "Active");
-          RequestBody body_type_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+get_Vehicle_id);
-          RequestBody body_tokene =RequestBody.create(okhttp3.MultipartBody.FORM, ""+refreshedToken);
-          RequestBody body_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_no.getText().toString().trim());
 
+            String driverid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+            RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+driverid);
+            RequestBody body_status =RequestBody.create(okhttp3.MultipartBody.FORM, "Active");
+            RequestBody body_type_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+get_Vehicle_id);
+            RequestBody body_tokene =RequestBody.create(okhttp3.MultipartBody.FORM, ""+refreshedToken);
+            RequestBody body_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_no.getText().toString().trim());
 
-          File file_permit = new File(PATH_PERMIT);
+            File file_permit = new File(PATH_PERMIT);
             File file_vehicle = new File(PATH_VEHICLE);
             File file_rc = new File(PATH_RC);
             File file_other_doc = new File(PATH_OTHER_DOC);
@@ -255,53 +315,40 @@ public class Vehicle_reg extends AppCompatActivity {
             RequestBody request_file_other_doc = RequestBody.create(MediaType.parse("multipart/form-data"), file_other_doc);
             RequestBody request_file_insurense = RequestBody.create(MediaType.parse("multipart/form-data"), file_insurense);
 
-
             MultipartBody.Part body_request_permit = MultipartBody.Part.createFormData("permit", file_permit.getName(), request_file_permit);
             MultipartBody.Part body_request_vehicle = MultipartBody.Part.createFormData("vehicle_photo", file_vehicle.getName(), request_file_vehicle);
             MultipartBody.Part body_request_rc = MultipartBody.Part.createFormData("vehicle_rc", file_rc.getName(), request_file_rc);
             MultipartBody.Part body_request_other_doc = MultipartBody.Part.createFormData("vehicle_other_doc", file_other_doc.getName(), request_file_other_doc);
             MultipartBody.Part body_request_insurense = MultipartBody.Part.createFormData("vehicle_insurance_id", file_insurense.getName(), request_file_insurense);
 
-
-
-                Call<Response_vehicle> call= APIClient.getWebServiceMethod().vehicle_register(body_tokene,body_driver_id,body_type_id,body_number,body_status,
+            Call<Response_vehicle> call= APIClient.getWebServiceMethod().vehicle_register(body_tokene,body_driver_id,body_type_id,body_number,body_status,
                         body_request_permit,body_request_vehicle,body_request_rc,body_request_other_doc,body_request_insurense);
 
                 call.enqueue(new Callback<Response_vehicle>() {
                     @Override
                     public void onResponse(Call<Response_vehicle> call, Response<Response_vehicle> response) {
                         progressDialog.dismiss();
-
                         try{
                             String status=response.body().getApi_status();
                             String msg=response.body().getApi_message();
 
                             if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                             {
-
                                 Toast.makeText(Vehicle_reg.this, "successfully Add Your Vehicle", Toast.LENGTH_SHORT).show();
                             }else{
-
                                 Toast.makeText(Vehicle_reg.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                             }
-
                         }catch (Exception e){
                             Toast.makeText(Vehicle_reg.this, "Please retry..", Toast.LENGTH_SHORT).show();
                             e.printStackTrace();}
-
                     }
-
                     @Override
                     public void onFailure(Call<Response_vehicle> call, Throwable t) {
                         progressDialog.dismiss();
                         Toast.makeText(Vehicle_reg.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
                     }
-
                 });
-
-
-      }else{
-
+        }else{
             Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
 

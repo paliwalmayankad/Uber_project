@@ -177,7 +177,7 @@ public class Home extends AppCompatActivity
                     {
                         startActivity(new Intent(Home.this,From_Location.class));
                     }else{
-                        startActivity(new Intent(Home.this,Show_Vehicle.class));
+                        startActivity(new Intent(Home.this,Vehicle_reg.class));
                     }
 
                 }
@@ -537,7 +537,7 @@ public class Home extends AppCompatActivity
                     // Extract a Message object from the DataSnapshot
                     Response_Booking message = child.getValue(Response_Booking.class);
                     if (message.getStatus().toString().equalsIgnoreCase("Active") || message.getStatus().toString().equalsIgnoreCase("Running"))
-                    {
+                   {
                       //  String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
                         if (message.getDriver_id().equalsIgnoreCase(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"")) && (Accept_this_booking==0) )
                         {

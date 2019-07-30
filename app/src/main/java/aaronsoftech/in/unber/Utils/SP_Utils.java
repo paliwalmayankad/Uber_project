@@ -30,4 +30,12 @@ public class SP_Utils {
     public static String LOGIN_TOKEN_ID="sp_token_id";
     public static String LOGIN_PASSCODE="sp_passcode";
     public static String LOGIN_USR_STATUS="sp_usr_status";
+
+    public static String LOGIN_USR_HOME_ADDRESS="sp_usr_home_add";
+    public static String LOGIN_USR_HOME_LAT="sp_usr_home_lat";
+    public static String LOGIN_USR_HOME_LNG="sp_usr_home_lng";
+
+    public static String LOGIN_USR_WORK_ADDRESS="sp_usr_work_add";
+    public static String LOGIN_USR_WORK_LAT="sp_usr_work_lat";
+    public static String LOGIN_USR_WORK_LNG="sp_usr_work_lng";
 }
