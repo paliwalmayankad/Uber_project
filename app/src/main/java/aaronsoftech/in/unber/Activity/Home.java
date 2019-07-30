@@ -1452,7 +1452,7 @@ public class Home extends AppCompatActivity
         btn_finish_ride_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                get_Selected_Driver_Id=driver_id;
+                /*get_Selected_Driver_Id=driver_id;
                 get_BookID_Status=message.getBook_id();
                 get_vehicle_id_status=message.getVehicle_id();
                 get_book_id_2=book_id;
@@ -1468,8 +1468,8 @@ public class Home extends AppCompatActivity
                     btn_finish_ride_driver.setVisibility(View.GONE);
                 } catch (Exception e) {
                     Log.e(TAG, "Exception in onPaymentSuccess", e);
-                }
-              //  add_payment_gatway_user(message);
+                }*/
+                add_payment_gatway_user(message);
 
             }
         });
