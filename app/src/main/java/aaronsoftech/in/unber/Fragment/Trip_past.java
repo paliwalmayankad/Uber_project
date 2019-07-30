@@ -81,7 +81,11 @@ public class Trip_past extends Fragment implements Adapter_user_list.Vehicle_Ite
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
+
         get_Booking_List.clear();
+        get_Booking_List_past.clear();
+        get_Booking_List_upcomming.clear();
+
         HashMap map= new HashMap<>();
         map.put("user_id",driver_ID);
         if (isNetworkAvailable(getContext()))
@@ -95,12 +99,13 @@ public class Trip_past extends Fragment implements Adapter_user_list.Vehicle_Ite
                         String status=response.body().getApi_status();
                         String msg=response.body().getApi_message();
                         if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                        {   if (response.body().getData()!=null)
+                        {
+                            if (response.body().getData()!=null)
                              {
                                  get_Booking_List=response.body().getData();
                                  for (int i=0;i<get_Booking_List.size();i++)
                                  {
-                                     if (get_Booking_List.get(i).getStatus().toString().equalsIgnoreCase("Now"))
+                                     if (get_Booking_List.get(i).getPickup().toString().equalsIgnoreCase("Now"))
                                      {
                                          get_Booking_List_past.add(get_Booking_List.get(i));
                                      }else{
@@ -117,7 +122,6 @@ public class Trip_past extends Fragment implements Adapter_user_list.Vehicle_Ite
                             Toast.makeText(getContext(), "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                         }
                     }catch (Exception e){
-                          // Toast.makeText(getContext(), "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
                 }
 
@@ -139,6 +143,8 @@ public class Trip_past extends Fragment implements Adapter_user_list.Vehicle_Ite
         progressDialog.setMessage("Loading...");
         progressDialog.show();
         get_Booking_List.clear();
+        get_Booking_List_past.clear();
+        get_Booking_List_upcomming.clear();
         HashMap map= new HashMap<>();
         map.put("driver_id",driver_ID);
         if (isNetworkAvailable(getContext()))
@@ -159,7 +165,7 @@ public class Trip_past extends Fragment implements Adapter_user_list.Vehicle_Ite
                                 get_Booking_List=response.body().getData();
                                 for (int i=0;i<get_Booking_List.size();i++)
                                 {
-                                    if (get_Booking_List.get(i).getStatus().toString().equalsIgnoreCase("Now"))
+                                    if (get_Booking_List.get(i).getPickup().toString().equalsIgnoreCase("Now"))
                                     {
                                         get_Booking_List_past.add(get_Booking_List.get(i));
                                     }else{

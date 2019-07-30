@@ -208,7 +208,7 @@ public class Driver_document extends AppCompatActivity {
 
         if (isNetworkAvailable(Driver_document.this))
         {
-            Call<Response_Login> call= APIClient.getWebServiceMethod().getUpdate_Profile(map);
+            Call<Response_Login> call= APIClient.getWebServiceMethod().getUpdate_Profile_driverid(map);
             call.enqueue(new Callback<Response_Login>() {
                 @Override
                 public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {

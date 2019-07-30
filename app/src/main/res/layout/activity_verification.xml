@@ -207,6 +207,7 @@
                 android:layout_marginTop="15dp"
                 android:text="Please Re-Send"
                 android:gravity="center"
+                android:id="@+id/txt_resend_otp"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />

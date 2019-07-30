@@ -63,7 +63,7 @@
             android:layout_height="40dp" />
         <TextView
             android:layout_width="match_parent"
-            android:text="Paytm"
+            android:text="Online"
             android:layout_marginLeft="22dp"
             android:textSize="22dp"
             android:id="@+id/txt_online"
@@ -85,13 +85,7 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="@color/light_gray"></View>
-    <TextView
-        android:layout_width="match_parent"
-        android:text="Promotions"
-        android:layout_margin="22dp"
-        android:textSize="22dp"
-        android:textStyle="bold"
-        android:layout_height="wrap_content" />
+
 
     <TextView
         android:layout_width="match_parent"
@@ -99,6 +93,7 @@
         android:layout_marginLeft="22dp"
         android:textSize="22dp"
         android:id="@+id/add_code"
+        android:layout_marginTop="22dp"
         android:layout_marginBottom="22dp"
         android:gravity="center_vertical"
         android:textStyle="bold"

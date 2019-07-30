@@ -30,6 +30,9 @@ import java.io.IOException;
 
 import aaronsoftech.in.unber.R;
 
+import static aaronsoftech.in.unber.Activity.Acc_edit.PATH_IMAGE;
+import static aaronsoftech.in.unber.Activity.Acc_edit.profile_img;
+
 public class Driver_photo extends AppCompatActivity {
     public  static final int RequestPermissionCode2  = 51 ;
     String[] locationPermissions = {"android.permission.READ_EXTERNAL_STORAGE","android.permission.WRITE_EXTERNAL_STORAGE","android.permission.CAMERA"};
@@ -51,6 +54,7 @@ public class Driver_photo extends AppCompatActivity {
     Intent CropIntent ;
     ImageView btn_photo;
     String activity_type;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +69,20 @@ public class Driver_photo extends AppCompatActivity {
                 selectimage();
             }
         });
+        ImageView btn_back=findViewById(R.id.btn_ic_back);
 
+        btn_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectimage();
+            }
+        });
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
 
@@ -113,7 +130,7 @@ public class Driver_photo extends AppCompatActivity {
                 }
             }
         };
-        handler.postDelayed(runnable, 2000);
+        handler.postDelayed(runnable, 1000);
     }
 
     @Override
@@ -131,8 +148,10 @@ public class Driver_photo extends AppCompatActivity {
             picturePath = cursor.getString(columnIndex);
             Set_image_path(picturePath);
             cursor.close();
+            profile_img.setImageBitmap(BitmapFactory.decodeFile(picturePath));
             btn_photo.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-            finish();
+            Set_image_path(picturePath);
+
         }
         else if (requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK) {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
@@ -157,15 +176,16 @@ public class Driver_photo extends AppCompatActivity {
             btn_photo .setImageBitmap(thumbnail);
             byte[] imageBytes = bytes.toByteArray();
             picturePath = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-
+            profile_img.setImageBitmap(thumbnail);
             Set_image_path(picturePath);
             finish();
         }
     }
 
     private void Set_image_path(String picturePath) {
+        PATH_IMAGE=picturePath;
+        finish();
 
-        //path_profile=picturePath;
     }
 
 

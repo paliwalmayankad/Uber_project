@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -54,7 +55,7 @@ public class Verification extends AppCompatActivity {
     String TAG="Verification";
     RelativeLayout real_layout;
     TextInputEditText txt_one,txt_two,txt_three,txt_four,txt_five,txt_six;
-
+    TextView resend_otp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,18 +71,30 @@ public class Verification extends AppCompatActivity {
         txt_six=findViewById(R.id.ed_six);
 
         ImageView btn_next=findViewById(R.id.next_button);
-
+        resend_otp=findViewById(R.id.txt_resend_otp);
+        resend_otp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String otp=txt_one.getText().toString().trim()+txt_two.getText().toString().trim()+txt_three.getText().toString().trim()+
+                        txt_four.getText().toString().trim()+txt_five.getText().toString().trim()+txt_six.getText().toString().trim();
+                if (otp.length()!=6)
+                {
+                    Toast.makeText(Verification.this, "Enter OTP", Toast.LENGTH_SHORT).show();
+                }else{
+                    progressDialog=new ProgressDialog(Verification.this);
+                    progressDialog.setCancelable(false);
+                    progressDialog.setMessage("Loading...");
+                    progressDialog.show();
+                    verifyVerificationCode(otp);
+                }
+            }
+        });
         mobileno=getIntent().getExtras().getString("mobile");
         otp=getIntent().getExtras().getString("otp");
         if (otp.equalsIgnoreCase("no"))
         {
 
         }else{
-
-            for (int i=0;i<6;i++)
-            {
-
-            }
 
 
           try{
@@ -442,7 +455,9 @@ public class Verification extends AppCompatActivity {
                             App_Conteroller. editor.commit();
                             activity_login_mobile.finish();
                             Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(Verification.this, Home.class));
+                            Intent intent = new Intent(Verification.this, Home.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
                             finish();
                         }
                     }else{
@@ -459,8 +474,6 @@ public class Verification extends AppCompatActivity {
         }else{
             Toast.makeText(Verification.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
-
-
     }
 
     private void Api_Social_login(HashMap<String, String> login_map, final HashMap<String, String> register_map) {
@@ -559,9 +572,11 @@ public class Verification extends AppCompatActivity {
                             }else{   App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());                    }
 
 
+
                             App_Conteroller. editor.commit();
                             Toast.makeText(getApplicationContext(), "Wel-Come", Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(Verification.this, Home.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                             finish();
                         }

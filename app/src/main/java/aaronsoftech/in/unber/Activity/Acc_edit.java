@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.HashMap;
 
 import aaronsoftech.in.unber.App_Conteroller;
@@ -26,6 +28,9 @@ import aaronsoftech.in.unber.Service.APIClient;
 import aaronsoftech.in.unber.Utils.SP_Utils;
 import de.hdodenhof.circleimageview.CircleImageView;
 import github.nisrulz.easydeviceinfo.base.EasyLocationMod;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,10 +41,12 @@ public class Acc_edit extends AppCompatActivity {
     TextView t_name,t_mobile,t_email,btn_save,t_status;
     RadioButton rb_btn_male,rb_btn_female;
     String gender="Male";
+    String TAG="Acc_edit";
     public static String Lat="0.0";
     public static String Longt="0.0";
     ProgressDialog progressDialog;
-    CircleImageView profile_img;
+    public static CircleImageView profile_img;
+    public static String PATH_IMAGE="";
     EditText ed_name,ed_address,ed_city,ed_email,ed_state,ed_country,tx_mobile,ed_zipcode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,13 @@ public class Acc_edit extends AppCompatActivity {
         Init();
 
         Set_Profile_data();
+
+        profile_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Acc_edit.this,Driver_photo.class));
+            }
+        });
 
         try {
                EasyLocationMod easyLocationMod = new EasyLocationMod(Acc_edit.this);
@@ -103,49 +117,64 @@ public class Acc_edit extends AppCompatActivity {
     }
 
     private void Set_Profile_data() {
-        ed_name.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
-        t_name.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
-
-        String mobileno=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,"");
-        tx_mobile.setText(mobileno);
-        if (tx_mobile.getText().toString().isEmpty())
-        {
-            tx_mobile.setEnabled(true);
-        }else{
-            tx_mobile.setEnabled(false);
-        }
-
         try{
-            String photo= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,"");
-            Picasso.with(Acc_edit.this).load(photo)
-                .placeholder(R.drawable.ic_user)
-                .error(R.drawable.ic_user)
-                .into(profile_img);
+            ed_name.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+            t_name.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+
+            String mobileno=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,"");
+            tx_mobile.setText(mobileno);
+            if (tx_mobile.getText().toString().isEmpty())
+            {
+                tx_mobile.setEnabled(true);
+            }else{
+                tx_mobile.setEnabled(false);
+            }
+
+            try{
+                PATH_IMAGE= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,"");
+                Picasso.with(Acc_edit.this).load(PATH_IMAGE)
+                        .placeholder(R.drawable.ic_user)
+                        .error(R.drawable.ic_user)
+                        .into(profile_img);
+            }catch (Exception e){e.printStackTrace();}
+
+            t_email.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
+            ed_address.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ADDRESS,""));
+            ed_city.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CITY,""));
+            ed_state.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_STATE,""));
+            t_mobile.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
+            ed_country.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_COUNTER,""));
+            tx_mobile.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
+            ed_zipcode.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ZIP_CODE,""));
+            t_status.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_USR_STATUS,""));
+            String gender_txt=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_GENDER,"");
+            ed_email.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
+            if (gender_txt.equalsIgnoreCase("Female"))
+            {
+                rb_btn_female.setChecked(true);
+                rb_btn_male.setChecked(false);
+                gender="Female";
+            }else{
+                rb_btn_female.setChecked(false);
+                rb_btn_male.setChecked(true);
+                gender="male";
+            }
         }catch (Exception e){e.printStackTrace();}
 
-        t_email.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
-        ed_address.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ADDRESS,""));
-        ed_city.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CITY,""));
-        ed_state.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_STATE,""));
-        t_mobile.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
-        ed_country.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_COUNTER,""));
-        tx_mobile.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
-        ed_zipcode.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ZIP_CODE,""));
-        t_status.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_USR_STATUS,""));
-        String gender_txt=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_GENDER,"");
-        ed_email.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
-        if (gender_txt.equalsIgnoreCase("Female"))
-        {
-            rb_btn_female.setChecked(true);
-            rb_btn_male.setChecked(false);
-            gender="Female";
-        }else{
-            rb_btn_female.setChecked(false);
-            rb_btn_male.setChecked(true);
-            gender="male";
-        }
     }
 
+    @Override
+    protected void onResume() {
+        Log.i(TAG,"Image path: "+PATH_IMAGE);
+       /* try{
+            //PATH_IMAGE= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,"");
+            Picasso.with(Acc_edit.this).load(PATH_IMAGE)
+                    .placeholder(R.drawable.ic_user)
+                    .error(R.drawable.ic_user)
+                    .into(profile_img);
+        }catch (Exception e){e.printStackTrace();}*/
+        super.onResume();
+    }
 
     public void Update_info()
     {
@@ -154,31 +183,29 @@ public class Acc_edit extends AppCompatActivity {
         progressDialog.setMessage("Loading...");
         progressDialog.show();
 
-        HashMap<String,String> map=new HashMap<>();
-        map.put("id", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
-        map.put("name", ""+ed_name.getText().toString().trim());
-        map.put("gender", ""+gender);
-        map.put("photo", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
-        map.put("email", ""+ed_email.getText().toString());
-       map.put("contact_number", ""+tx_mobile.getText().toString().trim());
-       map.put("address", ""+ed_address.getText().toString().trim());
-       map.put("city", ""+ed_city.getText().toString().trim());
-       map.put("state", ""+ed_state.getText().toString().trim());
-       map.put("country", ""+ed_country.getText().toString().trim());
-       map.put("password", "12345");
-    //  map.put("lng", ""+Longt);
-       map.put("zip_code", ""+ed_zipcode.getText().toString().trim());
-    //    map.put("mac_id", id);
-    //    map.put("passcode", id);
-    //    map.put("if_driver_id", id);
+        File file = new File(PATH_IMAGE);
+        RequestBody request_file = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part body_request_file_aadhar = MultipartBody.Part.createFormData("photo", file.getName(), request_file);
+        RequestBody id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
+        RequestBody name =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_name.getText().toString().trim());
+        RequestBody d_gender =RequestBody.create(okhttp3.MultipartBody.FORM, gender);
+        RequestBody email =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_email.getText().toString());
+        RequestBody contact_number =RequestBody.create(okhttp3.MultipartBody.FORM, ""+tx_mobile.getText().toString().trim());
+        RequestBody address =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_address.getText().toString().trim());
+        RequestBody city =RequestBody.create(okhttp3.MultipartBody.FORM, ed_city.getText().toString().trim());
+        RequestBody state =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_state.getText().toString().trim());
+        RequestBody country =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_country.getText().toString().trim());
+        RequestBody password =RequestBody.create(okhttp3.MultipartBody.FORM, "12345");
+        RequestBody zip_code =RequestBody.create(okhttp3.MultipartBody.FORM, ""+ed_zipcode.getText().toString().trim());
+
         if (isNetworkAvailable(Acc_edit.this))
         {
-            Call<Response_Login> call= APIClient.getWebServiceMethod().getUpdate_Profile(map);
+            Call<Response_Login> call= APIClient.getWebServiceMethod().getUpdate_Profile(id,name,d_gender,email,contact_number,address,city,state,country,password,zip_code,body_request_file_aadhar);
             call.enqueue(new Callback<Response_Login>() {
                 @Override
                 public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
-                    String status=response.body().getApi_status();
-                    String msg=response.body().getApi_message();
+                    String status=response.body().getApi_status().toString();
+                    String msg=response.body().getApi_message().toString();
                     progressDialog.dismiss();
                     if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                     {
@@ -186,26 +213,11 @@ public class Acc_edit extends AppCompatActivity {
                         App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
                         App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
 
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_ID,""+response.body().getData().get(0).getId());
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+ed_name.getText().toString().trim());
 
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+gender);
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).getPhoto());
 
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+ed_email.getText().toString().trim());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSWORD,""+response.body().getData().get(0).getPassword());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_ID_CMS_PRIVILEGES,""+response.body().getData().get(0).getId_cms_privileges());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_NAME,""+response.body().getData().get(0).getCms_privileges_name());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_IS_SUPERADMIN,""+response.body().getData().get(0).getCms_privileges_is_superadmin());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_CMS_PRIVILEGES_THEME_COLOR,""+response.body().getData().get(0).getCms_privileges_theme_color());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_STATUS,""+response.body().getData().get(0).getStatus());
-
-                       /* if (response.body().getData().get(0).getContact_number()==null)
-                        {
-                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,"");
-                        }else{
-                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+response.body().getData().get(0).getContact_number());
-                        }*/
 
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+tx_mobile.getText().toString().trim());
 
@@ -215,23 +227,17 @@ public class Acc_edit extends AppCompatActivity {
 
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+ed_state.getText().toString().trim());
 
-
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+ed_country.getText().toString().trim());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_LAT,""+response.body().getData().get(0).getLat());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_LNG,""+response.body().getData().get(0).getLng());
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+ed_zipcode.getText().toString().trim());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_MAC_ID,""+response.body().getData().get(0).getMac_id());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_SOCIAL_TYPE,""+response.body().getData().get(0).getSocial_type());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_TOKEN_ID,""+response.body().getData().get(0).getToken_id());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_PASSCODE,""+response.body().getData().get(0).getPasscode());
-                        //  App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_STATUS,""+response.body().getData().get(0).getUsr_status());
 
-                        App_Conteroller. editor.commit();
+                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+ed_zipcode.getText().toString().trim());
+
+                        Call_Image_Api(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
+
                         Toast.makeText(getApplicationContext(), "Update Successfully", Toast.LENGTH_LONG).show();
 
                     }else{
                         progressDialog.dismiss();
-                        Toast.makeText(Acc_edit.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Acc_edit.this, "msg  "+msg+"\n"+"status  "+status, Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -247,8 +253,29 @@ public class Acc_edit extends AppCompatActivity {
 
     }
 
+    private void Call_Image_Api(String string) {
+        HashMap<String,String>map=new HashMap<>();
+        map.put("id", string);
+
+        Call<Response_Login> call= APIClient.getWebServiceMethod().getLogin_with_id(map);
+        call.enqueue(new Callback<Response_Login>() {
+            @Override
+            public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
+                App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).photo);
+                App_Conteroller. editor.commit();
+            }
+
+            @Override
+            public void onFailure(Call<Response_Login> call, Throwable t) {
+
+            }
+        });
+
+    }
+
 
     private void Init() {
+
         profile_img=findViewById(R.id.profile_image);
         t_status=findViewById(R.id.user_status);
         ed_zipcode=findViewById(R.id.e_zipcode);
@@ -265,6 +292,7 @@ public class Acc_edit extends AppCompatActivity {
         ed_state=findViewById(R.id.e_state);
         ed_country=findViewById(R.id.e_country);
         ed_email=findViewById(R.id.e_email);
+
         ImageView backbtn=findViewById(R.id.btn_back);
         backbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -272,5 +300,6 @@ public class Acc_edit extends AppCompatActivity {
                 finish();
             }
         });
+
     }
 }

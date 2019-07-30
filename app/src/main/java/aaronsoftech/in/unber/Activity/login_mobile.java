@@ -1,5 +1,6 @@
 package aaronsoftech.in.unber.Activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -37,6 +38,7 @@ public class login_mobile extends AppCompatActivity {
     public static String mVerificationId;
    public  static login_mobile activity_login_mobile;
     //firebase auth object
+    ProgressDialog progressDialog;
     public static FirebaseAuth mAuth;
 
     @Override
@@ -85,10 +87,13 @@ public class login_mobile extends AppCompatActivity {
         }else{
             Toast.makeText(activity_login_mobile, "No internet Connection", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private void sendVerificationCode(String mobile) {
+        progressDialog=new ProgressDialog(login_mobile.this);
+        progressDialog.setCancelable(true);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 "+91" + mobile,
                 60,
@@ -109,6 +114,7 @@ public class login_mobile extends AppCompatActivity {
             //in this case the code will be null
             //so user has to manually enter the code
             if (code != null) {
+                progressDialog.dismiss();
                 startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp",code));
             }
 
@@ -122,6 +128,7 @@ public class login_mobile extends AppCompatActivity {
         @Override
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
             super.onCodeSent(s, forceResendingToken);
+            progressDialog.dismiss();
             startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp","no"));
             mVerificationId = s;
         }

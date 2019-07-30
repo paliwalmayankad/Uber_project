@@ -16,10 +16,7 @@
             android:id="@+id/nav_help"
             android:icon="@drawable/ic_nav_help"
             android:title="Help" />
-        <item
-            android:id="@+id/nav_free_trips"
-            android:icon="@drawable/ic_nav_travel"
-            android:title="Free Trips" />
+
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_nav_repairing_service"

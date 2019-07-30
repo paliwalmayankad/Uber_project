@@ -30,9 +30,8 @@ public interface APIInterface {
     public Call<Response_register> getRegister(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
-    @POST("driver_rating_by_user")
+    @POST("driver_rating")
     public Call<Response_register> give_ratiing(@FieldMap Map<String, String> map);
-
 
     @FormUrlEncoded
     @POST("change_vehicle_status")
@@ -56,7 +55,24 @@ public interface APIInterface {
 
     @FormUrlEncoded
     @POST("user_profile")
-    public Call<Response_Login> getUpdate_Profile(@FieldMap Map<String, String> map);
+    public Call<Response_Login> getUpdate_Profile_driverid(@FieldMap Map<String, String> map);
+
+    @Multipart
+    @POST("user_profile")
+    Call<Response_Login> getUpdate_Profile(
+            @Part("id") RequestBody id,
+            @Part("name") RequestBody name,
+            @Part("gender") RequestBody gender,
+            @Part("email") RequestBody email,
+            @Part("contact_number") RequestBody contact_number,
+            @Part("address") RequestBody address,
+            @Part("city") RequestBody city,
+            @Part("state") RequestBody state,
+            @Part("country") RequestBody country,
+            @Part("password") RequestBody password,
+            @Part("zip_code") RequestBody zip_code,
+            @Part MultipartBody.Part file
+    );
 
 
 

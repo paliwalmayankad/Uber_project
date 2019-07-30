@@ -177,13 +177,23 @@ public class Vehicle_reg extends AppCompatActivity {
                     progressDialog.dismiss();
                     String status=response.body().getApi_status();
                     String msg=response.body().getApi_message();
+                    String txt_gender=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_GENDER,"");
                     if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                     {
                         for (int i=0;i<response.body().getData().size();i++)
                         {
-                            vehicle_list.add(response.body().getData().get(i).getVehicle_type());
+                            if (txt_gender.equalsIgnoreCase("Male") &&
+                                    !(response.body().getData().get(i).getVehicle_type().toString().trim().equalsIgnoreCase("Scooty")))
+                            {
+                                vehicle_list.add(response.body().getData().get(i).getVehicle_type());
+                                get_vehicle_type_list.add(response.body().getData().get(i));
+                            }else{
+                                vehicle_list.add(response.body().getData().get(i).getVehicle_type());
+                                get_vehicle_type_list.add(response.body().getData().get(i));
+                            }
+
                         }
-                        get_vehicle_type_list=response.body().getData();
+
                         ArrayAdapter aa=new ArrayAdapter(Vehicle_reg.this,R.layout.textview_address_show,vehicle_list);
                         vehicle_type.setAdapter(aa);
 

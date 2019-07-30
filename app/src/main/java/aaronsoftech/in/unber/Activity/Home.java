@@ -353,8 +353,6 @@ public class Home extends AppCompatActivity
 
 
         try {
-
-
             Toast.makeText(this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
             btn_finish_ride_user.setVisibility(View.GONE);
             btn_finish_ride_driver.setVisibility(View.GONE);
@@ -374,20 +372,7 @@ public class Home extends AppCompatActivity
     public void onPaymentError(int code, String response) {
         Toast.makeText(this, "Error: "+response, Toast.LENGTH_SHORT).show();
         Log.e(TAG, "Home ||  in onPaymentError------- "+response);
-        /*try {
-            if (       App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
-                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
-                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
-            {
-                Show_driver_rating_box();
-            }
 
-            Toast.makeText(this, "Payment onPaymentError: " + response, Toast.LENGTH_SHORT).show();
-            btn_finish_ride_user.setVisibility(View.GONE);
-            btn_finish_ride_driver.setVisibility(View.GONE);
-        } catch (Exception e) {
-            Log.e(TAG, "Exception in onPaymentSuccess", e);
-        }*/
     }
 
     private void Change_ride_status(final String bookID, final String vehicleid, final String get_payment_id) {
@@ -438,7 +423,7 @@ public class Home extends AppCompatActivity
         if (isNetworkAvailable(Home.this))
         {
             Map<String,String> map=new HashMap<>();
-            map.put("vehicle_type_id",vehicleid);
+            map.put("id",vehicleid);
             map.put("status","Active");
             Call<Response_register> call= APIClient.getWebServiceMethod().update_change_vehicle_status(map);
             call.enqueue(new Callback<Response_register>() {
@@ -503,13 +488,33 @@ public class Home extends AppCompatActivity
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
             });
         }
+    }
+
+    private double distance(double lat1, double lng1, double lat2, double lng2)
+    {
+
+        double earthRadius = 6371;  // in miles, change to 6371 for kilometer output
+                                    // in km, change to 3958.75 for miles output
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+
+        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        double dist = earthRadius * c;
+
+        return dist; // output distance, in MILES
     }
 
     private void Check_driver_booking(final Location location) {
@@ -820,10 +825,6 @@ public class Home extends AppCompatActivity
                                 .fillColor(Color.TRANSPARENT));
                     }
 
-
-
-
-
                 }
             });
             dialog.show();
@@ -866,9 +867,7 @@ public class Home extends AppCompatActivity
                             layout_user_info.setVisibility(View.GONE);
                         }
                     }
-
                 }catch (Exception e){e.printStackTrace();}
-
             }
 
             @Override
@@ -935,7 +934,6 @@ public class Home extends AppCompatActivity
     {
 
         try {
-
             final MarkerOptions marker2e = new MarkerOptions().position(
                     new LatLng(from_lat, from_lng)).title("Pick up at:" + from_add);
             marker2e.icon(BitmapDescriptorFactory.fromResource(R.drawable.greenpin));
@@ -961,6 +959,14 @@ public class Home extends AppCompatActivity
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        double dist_value=distance(lat,lng,to_lat,to_lng);
+        Log.i(TAG,"Home || addstart_end_icontrip || dist_value in km :"+dist_value);
+        if (dist_value<5){
+            btn_finish_ride_user.setVisibility(View.VISIBLE);
+        }else{
+            btn_finish_ride_user.setVisibility(View.GONE);
         }
 
         try {
@@ -1052,6 +1058,7 @@ public class Home extends AppCompatActivity
     @Override
     protected void onResume() {
         set_Header_value();
+        update_marker = 0;
         super.onResume();
     }
 
@@ -1144,10 +1151,11 @@ public class Home extends AppCompatActivity
             @Override
             public void onMyLocationChange(Location location) {
             try{
+                lat=location.getLatitude();
+                lng=location.getLongitude();
                 if (setCurrentLocation){
 
-                    lat=location.getLatitude();
-                    lng=location.getLongitude();                    // Add a marker in Sydney and move the camera
+                                      // Add a marker in Sydney and move the camera
                     LatLng sydney = new LatLng(lat, lng);
                     //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Udaipur"));
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
@@ -1203,17 +1211,14 @@ public class Home extends AppCompatActivity
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
                 try{
-
                     String id=dataSnapshot.getKey();
                     String contactno = String.valueOf(dataSnapshot.child("contact_number").getValue());
                     String driver_ID = String.valueOf(dataSnapshot.child("driver_ID").getValue());
                     String name = String.valueOf(dataSnapshot.child("name").getValue());
                     String photo = String.valueOf(dataSnapshot.child("photo").getValue());
-                    String lat = String.valueOf(dataSnapshot.child("lat").getValue());
-                    String lng = String.valueOf(dataSnapshot.child("lng").getValue());
+                    String d_lat = String.valueOf(dataSnapshot.child("lat").getValue());
+                    String d_lng = String.valueOf(dataSnapshot.child("lng").getValue());
                     String address = String.valueOf(dataSnapshot.child("address").getValue());
                     String city = String.valueOf(dataSnapshot.child("city").getValue());
                     String email = String.valueOf(dataSnapshot.child("email").getValue());
@@ -1227,12 +1232,17 @@ public class Home extends AppCompatActivity
                     String state = String.valueOf(dataSnapshot.child("state").getValue());
                     MarkerOptions marker2 = null;
 
+                    if (name.toString().equalsIgnoreCase("null"))
+                    {
+
+                    }
                     show_driver_profile(message,contactno,driver_ID,name,photo,address,city,email,veh_type_id,veh_no,amount,veh_img,vehicle_id,book_id);
 
                     Toast.makeText(Home.this, "name "+name+"\n"+"get_driverid "+driver_ID, Toast.LENGTH_SHORT).show();
 
-                    double get_lat= Double.valueOf(lat);
-                    double get_lng=Double.valueOf(lng);
+                    double get_lat= Double.valueOf(d_lat);
+                    double get_lng=Double.valueOf(d_lng);
+
 
                     Location prevLoc = new Location("service Provider");
                     prevLoc.setLatitude(oldlat);
@@ -1244,7 +1254,6 @@ public class Home extends AppCompatActivity
                     marker2 = new MarkerOptions().position(new LatLng(get_lat, get_lng));
                     if (update_marker == 0)
                     {
-
                         if (veh_type_id.toString().equalsIgnoreCase("8"))
                         {
                             marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
@@ -1346,7 +1355,7 @@ public class Home extends AppCompatActivity
                     String remark="no";
                     Api_rating(get_Selected_Driver_Id,rating_value,ed_review.getText().toString(),remark);
                 }
-
+                dialog.dismiss();
             }
         });
 
@@ -1448,8 +1457,20 @@ public class Home extends AppCompatActivity
                 get_vehicle_id_status=message.getVehicle_id();
                 get_book_id_2=book_id;
 
-                add_payment_gatway_user(message);
-                //  Show_driver_rating_box();
+                Change_ride_status(get_BookID_Status,get_vehicle_id_status,"kjhasdkjfsa");
+
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                mDatabase.child("Driver_ID").removeValue();
+
+                try {
+
+                    btn_finish_ride_user.setVisibility(View.GONE);
+                    btn_finish_ride_driver.setVisibility(View.GONE);
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception in onPaymentSuccess", e);
+                }
+              //  add_payment_gatway_user(message);
+
             }
         });
     }
@@ -1522,10 +1543,8 @@ public class Home extends AppCompatActivity
             startActivity(new Intent(Home.this,Payment_add.class));
         } else if (id == R.id.nav_help) {
             startActivity(new Intent(Home.this,Trip_free.class));
-        } else if (id == R.id.nav_free_trips) {
-            startActivity(new Intent(Home.this,Acc_edit.class));
         } else if (id == R.id.nav_setting) {
-
+            startActivity(new Intent(Home.this,Acc_setting.class));
         } else if (id == R.id.nav_your_trips) {
             startActivity(new Intent(Home.this,Trip.class));
         }

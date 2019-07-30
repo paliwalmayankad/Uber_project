@@ -36,7 +36,7 @@ public class Trip_Upcomming extends Fragment implements Adapter_user_list.Vehicl
         View v= inflater.inflate(R.layout.fragment_trip__upcomming, container, false);
 
         try{
-            recyclerView_upcomming = (RecyclerView)v. findViewById(R.id.recycle_past_trips);
+            recyclerView_upcomming = (RecyclerView)v. findViewById(R.id.recycle_upcomming);
             StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
             recyclerView_upcomming.setLayoutManager(staggeredGridLayoutManager);
 

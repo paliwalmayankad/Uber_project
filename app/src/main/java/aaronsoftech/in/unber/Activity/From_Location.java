@@ -85,6 +85,7 @@ import aaronsoftech.in.unber.Adapter.Adapter_Vehicle;
 import aaronsoftech.in.unber.Adapter.Adapter_vehicle_type;
 import aaronsoftech.in.unber.App_Conteroller;
 import aaronsoftech.in.unber.POJO.Response_All_Vehicle;
+import aaronsoftech.in.unber.POJO.Response_Booking;
 import aaronsoftech.in.unber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.unber.POJO.Response_register;
 import aaronsoftech.in.unber.R;
@@ -182,7 +183,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
             }
         });
 
-
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         ImageView get_from_Address_btn=findViewById(R.id.find_location);
         ImageView get_to_Address_btn=findViewById(R.id.find_location2);
@@ -250,10 +250,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
             @Override
             public void onClick(View view) {
                 focus_type="TO";
-            //    et_location2.selectAll();
                 et_location2.setTextIsSelectable(true);
                 String location = et_location2.getText().toString();
-               // set_location_list(location);
             }
         });
 
@@ -264,7 +262,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 public void onClick(View view) {
 
                       Show_polyline_map();
-                  //  Show_calander();
+
                 }
             });
 
@@ -529,11 +527,27 @@ public class From_Location extends AppCompatActivity implements LocationListener
                     progressDialog.dismiss();
                     String status=response.body().getApi_status();
                     String msg=response.body().getApi_message();
+                    String gender_value=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_GENDER,"");
+
                     if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                     {
+
                         Adapter_vehicle_type adapter_past=new Adapter_vehicle_type(From_Location.this,response.body().getData(),From_Location.this);
-                        get_vehicle_type_list=response.body().getData();
-                        recyclerView_vehicle_type.setAdapter(adapter_past);
+                        if (gender_value.trim().equalsIgnoreCase("Male"))
+                        {
+
+                            for (int i=0;i<response.body().getData().size();i++)
+                            {
+                                if (!(response.body().getData().get(i).getVehicle_type().toString().equalsIgnoreCase("Scooty")))
+                                {
+                                    get_vehicle_type_list.add(response.body().getData().get(i));
+                                }
+                            }
+
+                        }else{
+                            get_vehicle_type_list=response.body().getData();
+                        }
+                                                recyclerView_vehicle_type.setAdapter(adapter_past);
 
                     }else{
                         progressDialog.dismiss();
@@ -1096,11 +1110,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     public void Call_Api_book_ride(String date,final String vehicleid, String pricc, final String driver_ID, final String vehicle_no, final String vehicle_image, String refreshtoken,final String vehicla_type_id){
 
-        progressDialog=new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Loading...");
-        progressDialog.show();
-
 
         final HashMap<String,String> map=new HashMap<>();
         String userid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
@@ -1135,7 +1144,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             call.enqueue(new Callback<Response_register>() {
                 @Override
                 public void onResponse(Call<Response_register> call, Response<Response_register> response) {
-                    progressDialog.dismiss();
+
                     try{
                         String status=response.body().getApi_status();
                         String msg=response.body().getApi_message();
@@ -1154,9 +1163,35 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             mDatabase.child("Booking_ID").child(id).setValue(map);
                             Save_data_on_firebase(mDatabase);
                             Change_vehicle_status(vehicleid);
-                            finish();
-                            //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
-                            Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
+                            Query myTopPostsQuery = mDatabase.child("Driver_ID").child(driver_ID);
+                            myTopPostsQuery.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    try{
+                                        String name = String.valueOf(dataSnapshot.child("name").getValue());
+
+                                        String state = String.valueOf(dataSnapshot.child("state").getValue());
+                                        MarkerOptions marker2 = null;
+
+                                        if (name.toString().equalsIgnoreCase("null") || name.toString().equalsIgnoreCase(null) || name.toString().equalsIgnoreCase("") )
+                                        {
+
+                                        }else{
+                                            progressDialog.dismiss();
+                                            finish();
+                                            Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                    }catch (Exception e){e.printStackTrace();}
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
                         }else{
 
                             Toast.makeText(From_Location.this, "status "+status+"\n"+" msg "+msg, Toast.LENGTH_LONG).show();
@@ -1177,14 +1212,26 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }else{
             Toast.makeText(From_Location.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+    private void Show_Driver_Location(final String datetime,final String vehicleid,final String amount, final String driver_ID, final String vehicle_no, final String vehicle_image,final String token_no,final String vehicle_type_id) {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+
+        Call_Api_book_ride(datetime,vehicleid,amount,driver_ID,vehicle_no,vehicle_image,token_no,vehicle_type_id);
 
     }
+
 
     private void Change_vehicle_status(String vehicleid) {
         if (isNetworkAvailable(From_Location.this))
         {
             Map<String,String> map=new HashMap<>();
-            map.put("vehicle_type_id",vehicleid);
+            map.put("id",vehicleid);
             map.put("status","Deactive");
             Call<Response_register> call= APIClient.getWebServiceMethod().update_change_vehicle_status(map);
             call.enqueue(new Callback<Response_register>() {
@@ -1204,7 +1251,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             Toast.makeText(From_Location.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-   //                     Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
+                         Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
                 }
@@ -1235,8 +1282,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 String token_no = String.valueOf(dataSnapshot.child("token_id").getValue());
                 if   (Call_driver_book_api)
                 {    Call_driver_book_api=false;
+                    Show_Driver_Location(datetime,vehicleid,amount,driver_ID,vehicle_no,vehicle_image,token_no,vehicle_type_id);
 
-                     Call_Api_book_ride(datetime,vehicleid,amount,driver_ID,vehicle_no,vehicle_image,token_no,vehicle_type_id);
                 }
 
             }
