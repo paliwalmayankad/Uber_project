@@ -22,6 +22,8 @@ public class Acc_setting extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     TextView t_name,t_mobile,t_email;
     CircleImageView img_profile;
+    TextView txt_place,txt_home,txt_work;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,5 +76,45 @@ public class Acc_setting extends AppCompatActivity {
                     .error(R.drawable.ic_user)
                     .into(img_profile);
         }catch (Exception e){e.printStackTrace();}
+
+
+        TextView btn_place=findViewById(R.id.txt_add_place);
+        TextView btn_home=findViewById(R.id.txt_add_home);
+        TextView btn_work=findViewById(R.id.txt_add_work);
+
+         txt_place=findViewById(R.id.txt_add_place2);
+         txt_home=findViewById(R.id.txt_add_home2);
+         txt_work=findViewById(R.id.txt_add_work2);
+
+        btn_place.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Acc_setting.this,MapsActivity.class).putExtra("type","3"));
+            }
+        });
+        btn_home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Acc_setting.this,MapsActivity.class).putExtra("type","1"));
+            }
+        });
+        btn_work.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Acc_setting.this,MapsActivity.class).putExtra("type","2"));
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        set_data_address();
+    }
+
+    private void set_data_address() {
+        txt_home.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_USR_HOME_ADDRESS,""));
+        txt_place.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_USR_PLACE_ADDRESS,""));
+        txt_work.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_USR_WORK_ADDRESS,""));
     }
 }

@@ -36,7 +36,7 @@ public class login_mobile extends AppCompatActivity {
     //These are the objects needed
     //It is the verification id that will be sent to the user
     public static String mVerificationId;
-   public  static login_mobile activity_login_mobile;
+    public  static login_mobile activity_login_mobile;
     //firebase auth object
     ProgressDialog progressDialog;
     public static FirebaseAuth mAuth;
@@ -57,7 +57,6 @@ public class login_mobile extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(login_mobile.this,Social_Login.class));
-
             }
         });
 
@@ -148,4 +147,7 @@ public class login_mobile extends AppCompatActivity {
             };
             handler.postDelayed(runnable, 1000);
         }
+
+
     }
+

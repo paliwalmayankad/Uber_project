@@ -152,6 +152,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     String book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id;
     String Book_status;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,7 +171,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 Book_status="Now";
                 String datenew=App_Utils.getCurrentdate();
                 get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
-
             }
         });
 
@@ -569,6 +569,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
+
         get_vehicle_select_list.clear();
         recy_vehicle_list.setVisibility(View.VISIBLE);
         recy_vehicle_list.clearFocus();
@@ -678,7 +679,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         toolBarTitle.setText("Book your ride");
         toolBarTitle.setTextColor(Color.BLACK);
         setSupportActionBar(toolBar);
-
     }
 
     private void Show_polyline_map()
@@ -1035,6 +1035,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
+
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
@@ -1278,11 +1279,10 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
                 String token_no = String.valueOf(dataSnapshot.child("token_id").getValue());
                 if   (Call_driver_book_api)
-                {    Call_driver_book_api=false;
-                    Show_Driver_Location(datetime,vehicleid,amount,driver_ID,vehicle_no,vehicle_image,token_no,vehicle_type_id);
-
+                {
+                     Call_driver_book_api=false;
+                     Show_Driver_Location(datetime,vehicleid,amount,driver_ID,vehicle_no,vehicle_image,token_no,vehicle_type_id);
                 }
-
             }
 
             @Override

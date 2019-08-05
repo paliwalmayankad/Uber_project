@@ -66,15 +66,7 @@
                     android:textSize="18dp" />
 
             </LinearLayout>
-            <EditText
-                android:layout_width="match_parent"
-                android:hint="Vehicle name"
-                android:inputType="textPersonName"
-                android:padding="11dp"
-                android:id="@+id/txt_vehicle_name"
-                android:layout_margin="11dp"
-                android:background="@drawable/border_black_line"
-                android:layout_height="wrap_content" />
+
             <EditText
                 android:layout_width="match_parent"
                 android:hint="Vehicle no"

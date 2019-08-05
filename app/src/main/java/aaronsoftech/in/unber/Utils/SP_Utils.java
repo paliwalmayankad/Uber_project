@@ -38,4 +38,8 @@ public class SP_Utils {
     public static String LOGIN_USR_WORK_ADDRESS="sp_usr_work_add";
     public static String LOGIN_USR_WORK_LAT="sp_usr_work_lat";
     public static String LOGIN_USR_WORK_LNG="sp_usr_work_lng";
+
+    public static String LOGIN_USR_PLACE_ADDRESS="sp_usr_place_add";
+    public static String LOGIN_USR_PLACE_LAT="sp_usr_place_lat";
+    public static String LOGIN_USR_PLACE_LNG="sp_usr_place_lng";
 }

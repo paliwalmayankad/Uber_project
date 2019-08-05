@@ -59,7 +59,7 @@ public class Vehicle_reg extends AppCompatActivity {
     ArrayList vehicle_list=new ArrayList();
     public static String PATH_PERMIT="",PATH_VEHICLE="",PATH_RC="",PATH_INSURENSE="",PATH_OTHER_DOC="";
     CircleImageView btn_permit,btn_vehicle,btn_vehicle_rc,btn_insurence_id,btn_other_doc;
-    EditText ed_name,ed_no;
+    EditText ed_no;
     ProgressDialog progressDialog;
     String TAG="Vehicle_reg";
     Spinner vehicle_type;
@@ -68,6 +68,7 @@ public class Vehicle_reg extends AppCompatActivity {
     String get_Vehicle_id="";
     String refreshedToken;
     String Driver_ID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,10 +132,6 @@ public class Vehicle_reg extends AppCompatActivity {
                 }else if (PATH_OTHER_DOC=="")
                 {
                     Toast.makeText(Vehicle_reg.this, "Upload Permit", Toast.LENGTH_SHORT).show();
-                }else if (ed_name.getText().toString().isEmpty())
-                {
-                    ed_name.setError("Enter name");
-                    ed_name.requestFocus();
                 }else if (ed_no.getText().toString().isEmpty())
                 {
                     ed_no.setError("Enter vehicle no.");
@@ -161,7 +158,7 @@ public class Vehicle_reg extends AppCompatActivity {
 
             }
         });
-        get_Vihicle_Api();
+     //   get_Vihicle_Api();
     }
 
 
@@ -170,58 +167,63 @@ public class Vehicle_reg extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
-
-        HashMap map= new HashMap<>();
-        map.put("driver_id",App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""));
-        if (isNetworkAvailable(Vehicle_reg.this))
-        {
-            Call<Response_Driver_vehicle> call= APIClient.getWebServiceMethod().get_Driver_Vehicle(map);
-            call.enqueue(new Callback<Response_Driver_vehicle>() {
-                @Override
-                public void onResponse(Call<Response_Driver_vehicle> call, Response<Response_Driver_vehicle> response) {
-                    progressDialog.dismiss();
-                    try{
-                        String status=response.body().getApi_status();
-                        String msg=response.body().getApi_message();
-                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                        {
-                            List< Response_Driver_vehicle.Vehicle_Info> getlist=new ArrayList<>();
-                            getlist=response.body().data;
-
-                            try{
-                                get_vehicle_type=Integer.valueOf(getlist.get(0).getVehicle_type_id());
-
-                            }catch (Exception e){e.printStackTrace();}
-
-
-                            try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getPermit()).into(btn_permit);  }catch (Exception e){e.printStackTrace();}
-
-                            try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_other_doc()).into(btn_other_doc);  }catch (Exception e){e.printStackTrace();}
-
-                            try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_photo()).into(btn_vehicle);  }catch (Exception e){e.printStackTrace();}
-
-                            try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_rc()).into(btn_vehicle_rc);  }catch (Exception e){e.printStackTrace();}
-
-                            try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_insurance_id()).into(btn_insurence_id);  }catch (Exception e){e.printStackTrace();}
-
-                            try{ ed_no.setText(getlist.get(0).getVehicle_number()); }catch (Exception e){e.printStackTrace();}
-
-                        }
-                    }catch (Exception e){
+        try{
+            HashMap map= new HashMap<>();
+            map.put("driver_id",App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""));
+            if (isNetworkAvailable(Vehicle_reg.this))
+            {
+                Call<Response_Driver_vehicle> call= APIClient.getWebServiceMethod().get_Driver_Vehicle(map);
+                call.enqueue(new Callback<Response_Driver_vehicle>() {
+                    @Override
+                    public void onResponse(Call<Response_Driver_vehicle> call, Response<Response_Driver_vehicle> response) {
                         progressDialog.dismiss();
-                        e.printStackTrace();}
+                        try{
+                            String status=response.body().getApi_status();
+                            String msg=response.body().getApi_message();
+                            if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                            {
+                                List< Response_Driver_vehicle.Vehicle_Info> getlist=new ArrayList<>();
+                                getlist=response.body().data;
 
-                }
+                                try{
+                                    get_vehicle_type=Integer.valueOf(getlist.get(0).getVehicle_type_id());
 
-                @Override
-                public void onFailure(Call<Response_Driver_vehicle> call, Throwable t) {
-                    progressDialog.dismiss();
-                    Toast.makeText(Vehicle_reg.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }else{
-            Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
-        }
+                                }catch (Exception e){e.printStackTrace();}
+
+
+                                try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getPermit()).into(btn_permit);  }catch (Exception e){e.printStackTrace();}
+
+                                try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_other_doc()).into(btn_other_doc);  }catch (Exception e){e.printStackTrace();}
+
+                                try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_photo()).into(btn_vehicle);  }catch (Exception e){e.printStackTrace();}
+
+                                try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_rc()).into(btn_vehicle_rc);  }catch (Exception e){e.printStackTrace();}
+
+                                try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_insurance_id()).into(btn_insurence_id);  }catch (Exception e){e.printStackTrace();}
+
+                                try{ ed_no.setText(getlist.get(0).getVehicle_number()); }catch (Exception e){e.printStackTrace();}
+
+                            }
+                        }catch (Exception e){
+                            progressDialog.dismiss();
+                            e.printStackTrace();}
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Response_Driver_vehicle> call, Throwable t) {
+                        progressDialog.dismiss();
+                        Toast.makeText(Vehicle_reg.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }else{
+                progressDialog.dismiss();
+                Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
+            }
+
+        }catch (Exception e){
+            progressDialog.dismiss();
+            e.printStackTrace();}
 
     }
 
@@ -231,6 +233,7 @@ public class Vehicle_reg extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
+
         HashMap map= new HashMap<>();
         if (isNetworkAvailable(Vehicle_reg.this))
         {
@@ -274,6 +277,7 @@ public class Vehicle_reg extends AppCompatActivity {
                 }
             });
         }else{
+            progressDialog.dismiss();
             Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
     }
@@ -362,7 +366,6 @@ public class Vehicle_reg extends AppCompatActivity {
         btn_vehicle=findViewById(R.id.pic_vehicle);
         btn_vehicle_rc=findViewById(R.id.pic_vehicle_rc);
         btn_insurence_id=findViewById(R.id.pic_insurece);
-        ed_name=findViewById(R.id.txt_vehicle_name);
         ed_no=findViewById(R.id.vehicle_no);
 
         ImageView btn_back1=findViewById(R.id.btn_back);

@@ -92,6 +92,7 @@
             android:gravity="right|center"
             android:id="@+id/social_login"
             android:layout_margin="22dp"
+            android:visibility="gone"
             android:textColor="@android:color/holo_blue_light"
             android:textSize="20dp" />
     </LinearLayout>

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,14 @@ public class Payment_add extends AppCompatActivity implements PaymentResultListe
         TextView btn_add_code=(TextView)findViewById(R.id.add_code);
         TextView btn_online=(TextView)findViewById(R.id.txt_online);
 
+        ImageView backbtn=findViewById(R.id.btn_back);
+        backbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         Checkout.preload(getApplicationContext());
         btn_online.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,14 +46,13 @@ public class Payment_add extends AppCompatActivity implements PaymentResultListe
             }
         });
 
-
-
         btn_add_code.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(Payment_add.this,Payment_code.class));
             }
         });
+
     }
 
 
