@@ -151,7 +151,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     LinearLayout btn_order_layout;
     String book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id;
     String Book_status;
-
+    boolean Check_booking_status=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,18 +168,31 @@ public class From_Location extends AppCompatActivity implements LocationListener
         btn_book_now.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Book_status="Now";
-                String datenew=App_Utils.getCurrentdate();
-                get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+
+                if (Check_booking_status){
+                    Check_booking_status=false;
+                    Book_status="Now";
+                    String datenew=App_Utils.getCurrentdate();
+                    get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+                }else{
+                    Toast.makeText(From_Location.this, "Already booked", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
         btn_book_later.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if (Check_booking_status){
+                    Check_booking_status=false;
                 Book_status="Later";
                 rb_time.setChecked(true);
                 Show_calander();
+                }else{
+                    Toast.makeText(From_Location.this, "Already booked", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -191,6 +204,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             public void onClick(View view) {
                 focus_type="FROM";
                 et_location2.setTextIsSelectable(true);
+
 
             }
         });
@@ -209,7 +223,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                 //   et_location.selectAll();
+
                     et_location.setTextIsSelectable(true);
                     et_location.setText(place.getName());
                     LatLng get_latlong=place.getLatLng();
@@ -252,6 +266,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 focus_type="TO";
                 et_location2.setTextIsSelectable(true);
                 String location = et_location2.getText().toString();
+
+
             }
         });
 
@@ -740,8 +756,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         });
     }
 
-
-
     private double distance(double lat1, double lng1, double lat2, double lng2)
     {
 
@@ -1166,8 +1180,13 @@ public class From_Location extends AppCompatActivity implements LocationListener
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     try{
-                                        String name = String.valueOf(dataSnapshot.child("name").getValue());
 
+
+
+
+
+
+                                        String name = String.valueOf(dataSnapshot.child("name").getValue());
                                         String state = String.valueOf(dataSnapshot.child("state").getValue());
                                         MarkerOptions marker2 = null;
 
@@ -1346,4 +1365,5 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
         return super.onKeyDown(keyCode, event);
     }
+
 }

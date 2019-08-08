@@ -69,6 +69,8 @@ public class Vehicle_reg extends AppCompatActivity {
     String refreshedToken;
     String Driver_ID;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,9 +78,7 @@ public class Vehicle_reg extends AppCompatActivity {
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.i(TAG,"Token ID : onstart "+refreshedToken);
         Init();
-     //   Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
 
-     //   Toast.makeText(this, "Driver_ID :"+Driver_ID, Toast.LENGTH_SHORT).show();
         btn_permit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -150,7 +150,6 @@ public class Vehicle_reg extends AppCompatActivity {
                 try{
                     get_Vehicle_id=get_vehicle_type_list.get(i).getId();
                 }catch (Exception e){e.printStackTrace();}
-
             }
 
             @Override
@@ -158,7 +157,8 @@ public class Vehicle_reg extends AppCompatActivity {
 
             }
         });
-     //   get_Vihicle_Api();
+
+        get_Vihicle_Api();
     }
 
 
@@ -190,7 +190,6 @@ public class Vehicle_reg extends AppCompatActivity {
 
                                 }catch (Exception e){e.printStackTrace();}
 
-
                                 try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getPermit()).into(btn_permit);  }catch (Exception e){e.printStackTrace();}
 
                                 try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_other_doc()).into(btn_other_doc);  }catch (Exception e){e.printStackTrace();}
@@ -220,7 +219,7 @@ public class Vehicle_reg extends AppCompatActivity {
                 progressDialog.dismiss();
                 Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
             }
-
+            progressDialog.dismiss();
         }catch (Exception e){
             progressDialog.dismiss();
             e.printStackTrace();}
@@ -229,10 +228,6 @@ public class Vehicle_reg extends AppCompatActivity {
 
 
     private void Call_Vihicle_Api() {
-        progressDialog=new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Loading...");
-        progressDialog.show();
 
         HashMap map= new HashMap<>();
         if (isNetworkAvailable(Vehicle_reg.this))
@@ -241,7 +236,6 @@ public class Vehicle_reg extends AppCompatActivity {
             call.enqueue(new Callback<Response_Vehicle_type>() {
                 @Override
                 public void onResponse(Call<Response_Vehicle_type> call, Response<Response_Vehicle_type> response) {
-                    progressDialog.dismiss();
                     String status=response.body().getApi_status();
                     String msg=response.body().getApi_message();
                     String txt_gender=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_GENDER,"");
@@ -266,18 +260,16 @@ public class Vehicle_reg extends AppCompatActivity {
                         vehicle_type.setAdapter(aa);
 
                     }else{
-                        progressDialog.dismiss();
+
                         //   Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
                 public void onFailure(Call<Response_Vehicle_type> call, Throwable t) {
-                    progressDialog.dismiss();
                     Toast.makeText(Vehicle_reg.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }else{
-            progressDialog.dismiss();
             Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
     }

@@ -200,7 +200,17 @@ public class Acc_edit extends AppCompatActivity {
 
         if (isNetworkAvailable(Acc_edit.this))
         {
-            Call<Response_Login> call= APIClient.getWebServiceMethod().getUpdate_Profile(id,name,d_gender,email,contact_number,address,city,state,country,password,zip_code,body_request_file_aadhar);
+            Call<Response_Login> call=null;
+             if (PATH_IMAGE=="" || PATH_IMAGE.equalsIgnoreCase(null) || PATH_IMAGE.equalsIgnoreCase("null"))
+                {
+                     call= APIClient.getWebServiceMethod().getUpdate_Profile_without_pic(id,name,d_gender,email,contact_number,address,city,state,country,password,zip_code);
+
+                }else{
+                     call= APIClient.getWebServiceMethod().getUpdate_Profile(id,name,d_gender,email,contact_number,address,city,state,country,password,zip_code,body_request_file_aadhar);
+
+             }
+
+
             call.enqueue(new Callback<Response_Login>() {
                 @Override
                 public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
@@ -230,8 +240,14 @@ public class Acc_edit extends AppCompatActivity {
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+ed_country.getText().toString().trim());
 
                         App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+ed_zipcode.getText().toString().trim());
+                        App_Conteroller. editor.commit();
+                        if (PATH_IMAGE=="" || PATH_IMAGE.equalsIgnoreCase(null) || PATH_IMAGE.equalsIgnoreCase("null"))
+                        {
 
-                        Call_Image_Api(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
+                        }else{
+                            Call_Image_Api(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
+                        }
+
 
                         Toast.makeText(getApplicationContext(), "Update Successfully", Toast.LENGTH_LONG).show();
 
@@ -261,8 +277,12 @@ public class Acc_edit extends AppCompatActivity {
         call.enqueue(new Callback<Response_Login>() {
             @Override
             public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
+
+                App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
                 App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).photo);
                 App_Conteroller. editor.commit();
+
             }
 
             @Override

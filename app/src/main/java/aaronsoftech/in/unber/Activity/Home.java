@@ -136,7 +136,7 @@ public class Home extends AppCompatActivity
     ProgressDialog progressDialog;
     List<Response_Booking_List.User_List> get_Booking_List=new ArrayList<>();
     LinearLayout layout_user_info,layout_user_profile_list;
-    TextView btn_finish_ride_driver,btn_finish_ride_user;
+    TextView btn_finish_ride_driver,btn_finish_ride_user,btn_from_address;
     String get_Selected_Driver_Id;
     String get_BookID_Status,get_vehicle_id_status,get_book_id_2;
 
@@ -193,6 +193,7 @@ public class Home extends AppCompatActivity
             View headerView = navigationView.getHeaderView(0);
 
             TextView btn_driver_login=headerView.findViewById(R.id.textView_driver);
+
             btn_driver_login.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -244,6 +245,8 @@ public class Home extends AppCompatActivity
 
     public void Init()
     {
+        btn_from_address=findViewById(R.id.set_loaction);
+
         btn_finish_ride_driver =findViewById(R.id.txt_finish_ride);
         btn_finish_ride_user=findViewById(R.id.txt_finish_ride2);
         layout_user_profile_list=findViewById(R.id.layout_bottomsheet_list);
@@ -267,12 +270,12 @@ public class Home extends AppCompatActivity
         StaggeredGridLayoutManager staggeredGridLayoutManager2 = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
         user_list_recycle.setLayoutManager(staggeredGridLayoutManager2); // set LayoutManager to RecyclerView
         Adapter_user_list aa=new Adapter_user_list(Home.this,list,Home.this);
-        btn_finish_ride_driver.setVisibility(View.GONE);
+
         btn_finish_ride_driver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-               /* add_payment_gatway(list);
+              //  add_payment_gatway(list);
                 Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
                 mDatabase = FirebaseDatabase.getInstance().getReference();
                 mDatabase.child("Driver_ID").child(list.get(0).getDriver_id()).child("status").child("Deactive");
@@ -285,7 +288,26 @@ public class Home extends AppCompatActivity
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
-                });*/
+                });
+
+                progressDialog=new ProgressDialog(Home.this);
+                progressDialog.setCancelable(false);
+                progressDialog.setMessage("Loading...");
+                progressDialog.show();
+                get_Booking_List.clear();
+
+                Change_ride_status(get_BookID_Status,get_vehicle_id_status,"COD");
+
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                mDatabase.child("Driver_ID").removeValue();
+
+                try {
+                    Toast.makeText(Home.this, "Payment Successful: ", Toast.LENGTH_SHORT).show();
+                    btn_finish_ride_user.setVisibility(View.GONE);
+                    btn_finish_ride_driver.setVisibility(View.GONE);
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception in onPaymentSuccess", e);
+                }
             }
         });
         user_list_recycle.setAdapter(aa);
@@ -310,7 +332,6 @@ public class Home extends AppCompatActivity
             String   pricee = priceee.substring(0, priceee.length() - 3);
             options.put("amount", String.valueOf(pricee+"00"));
 
-            options.put("amount", String.valueOf("100"));
             JSONObject preFill = new JSONObject();
             //     preFill.put("email", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
             preFill.put("contact", list.get(0).getUcontact());
@@ -865,6 +886,7 @@ public class Home extends AppCompatActivity
 
                         }else{
                             layout_user_info.setVisibility(View.GONE);
+                            get_loaction.setVisibility(View.VISIBLE);
                         }
                     }
                 }catch (Exception e){e.printStackTrace();}
@@ -1045,6 +1067,16 @@ public class Home extends AppCompatActivity
 
     private void set_Header_value() {
         try{
+
+            if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
+                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
+                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
+            {
+                btn_from_address.setText("Where you wanna go?");
+            }else{
+                btn_from_address.setText("Show your Vehicle");
+            }
+
             String name= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,"");
             String photo= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,"");
             header_name.setText(name);
@@ -1232,17 +1264,13 @@ public class Home extends AppCompatActivity
                     String state = String.valueOf(dataSnapshot.child("state").getValue());
                     MarkerOptions marker2 = null;
 
-                    if (name.toString().equalsIgnoreCase("null"))
-                    {
 
-                    }
                     show_driver_profile(message,contactno,driver_ID,name,photo,address,city,email,veh_type_id,veh_no,amount,veh_img,vehicle_id,book_id);
 
                     Toast.makeText(Home.this, "name "+name+"\n"+"get_driverid "+driver_ID, Toast.LENGTH_SHORT).show();
 
                     double get_lat= Double.valueOf(d_lat);
                     double get_lng=Double.valueOf(d_lng);
-
 
                     Location prevLoc = new Location("service Provider");
                     prevLoc.setLatitude(oldlat);
@@ -1412,7 +1440,7 @@ public class Home extends AppCompatActivity
     private void show_driver_profile(final Response_Booking message, final String contactno, final String driver_id,
                                      String name, String photo, String address, String city, String email,
                                      String veh_type_id, String veh_no, String amount, String veh_img, String vehicle_id, final String book_id) {
-
+        get_loaction.setVisibility(View.GONE);
         layout_user_info.setVisibility(View.VISIBLE);
         CircleImageView driver_image=findViewById(R.id.driver_img);
         CircleImageView driver_vehicle=findViewById(R.id.driver_veh);
@@ -1490,7 +1518,6 @@ public class Home extends AppCompatActivity
             DecimalFormat df2=new DecimalFormat("#.##");
 
             double price= (Double.parseDouble(get_booking.getAmount()));
-
             String priceee=df2.format(price);
             String   pricee = priceee.substring(0, priceee.length() - 3);
             options.put("amount", String.valueOf(pricee+"00"));

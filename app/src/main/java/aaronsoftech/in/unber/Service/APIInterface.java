@@ -59,6 +59,22 @@ public interface APIInterface {
 
     @Multipart
     @POST("user_profile")
+    Call<Response_Login> getUpdate_Profile_without_pic(
+            @Part("id") RequestBody id,
+            @Part("name") RequestBody name,
+            @Part("gender") RequestBody gender,
+            @Part("email") RequestBody email,
+            @Part("contact_number") RequestBody contact_number,
+            @Part("address") RequestBody address,
+            @Part("city") RequestBody city,
+            @Part("state") RequestBody state,
+            @Part("country") RequestBody country,
+            @Part("password") RequestBody password,
+            @Part("zip_code") RequestBody zip_code
+    );
+
+    @Multipart
+    @POST("user_profile")
     Call<Response_Login> getUpdate_Profile(
             @Part("id") RequestBody id,
             @Part("name") RequestBody name,
