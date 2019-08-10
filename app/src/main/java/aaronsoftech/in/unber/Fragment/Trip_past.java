@@ -2,28 +2,37 @@ package aaronsoftech.in.unber.Fragment;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import aaronsoftech.in.unber.Activity.Home;
 import aaronsoftech.in.unber.Adapter.Adapter_user_list;
 import aaronsoftech.in.unber.App_Conteroller;
 import aaronsoftech.in.unber.POJO.Response_Booking_List;
 import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Service.APIClient;
 import aaronsoftech.in.unber.Utils.SP_Utils;
+import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -34,7 +43,7 @@ import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Trip_past extends Fragment implements Adapter_user_list.Vehicle_Item_listner{
+public class Trip_past extends Fragment{
 
     static RecyclerView recyclerView;
     String TAG="Trip_past";
@@ -200,8 +209,57 @@ public class Trip_past extends Fragment implements Adapter_user_list.Vehicle_Ite
     }
 
 
-    @Override
-    public void OnClick_item(Response_Booking_List.User_List user_list) {
 
+
+    private void Show_Dialog_details(Response_Booking_List.User_List get_list) {
+        // Create custom dialog object
+        final Dialog dialog = new Dialog(getContext());
+        // Include dialog.xml file
+        LayoutInflater inflater = ((Activity)con).getLayoutInflater();
+        View v = inflater.inflate(R.layout.layout_trip_details, null);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+        TextView txt_add_from = v.findViewById(R.id.txt_from);
+        TextView txt_add_to = v.findViewById(R.id.txt_to);
+        TextView txt_contact = v.findViewById(R.id.txt_contact);
+        TextView img_icon = v.findViewById(R.id.price);
+        TextView llayout = v.findViewById(R.id.layout);
+        CircleImageView img = v.findViewById(R.id.vehicle_type_img);
+        CircleImageView img_driver = v.findViewById(R.id.vehicle_driver);
+        TextView txt_no = v.findViewById(R.id.txt_veh_no);
+        TextView txt_price = v.findViewById(R.id.txt_price);
+        dialog.setContentView(v);
+
+        try {
+            txt_contact.setText("Contact :" + get_list.getUcontact());
+            DecimalFormat df2 = new DecimalFormat("#.##");
+            if (get_list.getAmount() != null) {
+                txt_price.setText(df2.format(Double.valueOf(get_list.getAmount())));
+            } else {
+                txt_price.setText("0.00");
+            }
+            txt_add_from.setText("From :" + get_list.getFrom_address());
+            txt_add_to.setText("To :" + get_list.getTo_address());
+            txt_no.setText("Name :" + String.valueOf(get_list.getUname()));
+            String img_url = String.valueOf(get_list.getUimage().toString());
+            Picasso.with(con).load(img_url).fit().centerCrop()
+                    .placeholder(R.drawable.ic_user)
+                    .error(R.drawable.ic_user)
+                    .into(img);
+
+            String img_url_profile = String.valueOf(get_list.getUimage().toString());
+            Picasso.with(con).load(img_url_profile).fit().centerCrop()
+                    .placeholder(R.drawable.ic_user)
+                    .error(R.drawable.ic_user)
+                    .into(img_driver);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        dialog.show();
     }
+
+
+
 }

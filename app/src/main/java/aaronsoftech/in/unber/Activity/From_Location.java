@@ -67,6 +67,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.philliphsu.bottomsheetpickers.BottomSheetPickerDialog;
+import com.philliphsu.bottomsheetpickers.Utils;
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.philliphsu.bottomsheetpickers.time.BottomSheetTimePickerDialog;
 import com.philliphsu.bottomsheetpickers.time.grid.GridTimePickerDialog;
@@ -168,14 +169,18 @@ public class From_Location extends AppCompatActivity implements LocationListener
         btn_book_now.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (Check_booking_status){
-                    Check_booking_status=false;
-                    Book_status="Now";
-                    String datenew=App_Utils.getCurrentdate();
-                    get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+                if (App_Utils.isNetworkAvailable(From_Location.this))
+                {
+                    if (Check_booking_status){
+                        Check_booking_status=false;
+                        Book_status="Now";
+                        String datenew=App_Utils.getCurrentdate();
+                        get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+                    }else{
+                        Toast.makeText(From_Location.this, "Already ride pending", Toast.LENGTH_SHORT).show();
+                }
                 }else{
-                    Toast.makeText(From_Location.this, "Already booked", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(From_Location.this, "No internet", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -184,15 +189,18 @@ public class From_Location extends AppCompatActivity implements LocationListener
         btn_book_later.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (Check_booking_status){
-                    Check_booking_status=false;
-                Book_status="Later";
-                rb_time.setChecked(true);
-                Show_calander();
-                }else{
-                    Toast.makeText(From_Location.this, "Already booked", Toast.LENGTH_SHORT).show();
-                }
+            if (App_Utils.isNetworkAvailable(From_Location.this))
+              {      if (Check_booking_status){
+                        Check_booking_status=false;
+                        Book_status="Later";
+                        rb_time.setChecked(true);
+                        Show_calander();
+                    }else{
+                        Toast.makeText(From_Location.this, "Already ride pending", Toast.LENGTH_SHORT).show();
+                    }
+              }else{
+                Toast.makeText(From_Location.this, "No internet", Toast.LENGTH_SHORT).show();
+            }
             }
         });
 
@@ -204,16 +212,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
             public void onClick(View view) {
                 focus_type="FROM";
                 et_location2.setTextIsSelectable(true);
-
-
-            }
+                }
         });
-
 
         // Initialize Places.
         Places.initialize(getApplicationContext(), "AIzaSyAOyyZ58Mo8y0aaMVG1PevZNiMz-i62q3c");
         // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(this);
+
         // Initialize the AutocompleteSupportFragment.
         final AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -266,8 +272,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 focus_type="TO";
                 et_location2.setTextIsSelectable(true);
                 String location = et_location2.getText().toString();
-
-
             }
         });
 

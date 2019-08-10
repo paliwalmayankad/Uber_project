@@ -2,6 +2,7 @@ package aaronsoftech.in.unber.Fragment;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,17 +12,22 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import java.text.DecimalFormat;
 import java.util.List;
 
 import aaronsoftech.in.unber.Adapter.Adapter_user_list;
 import aaronsoftech.in.unber.POJO.Response_Booking_List;
 import aaronsoftech.in.unber.R;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Trip_Upcomming extends Fragment implements Adapter_user_list.Vehicle_Item_listner{
+public class Trip_Upcomming extends Fragment {
     static Context conu;
     static RecyclerView recyclerView_upcomming;
     public Trip_Upcomming() {
@@ -51,8 +57,7 @@ public class Trip_Upcomming extends Fragment implements Adapter_user_list.Vehicl
         recyclerView_upcomming.setAdapter(aa);
     }
 
-    @Override
-    public void OnClick_item(Response_Booking_List.User_List user_list) {
 
-    }
+
+
 }

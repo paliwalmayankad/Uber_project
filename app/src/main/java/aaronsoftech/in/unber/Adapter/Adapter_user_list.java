@@ -1,5 +1,7 @@
 package aaronsoftech.in.unber.Adapter;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -30,7 +32,6 @@ public class Adapter_user_list extends RecyclerView.Adapter<Adapter_user_list.My
         this.con = con;
         this.get_list = get_list;
         this.click_adapter_item_listner = click_adapter_item_listner;
-
     }
 
     @Override
@@ -60,15 +61,68 @@ public class Adapter_user_list extends RecyclerView.Adapter<Adapter_user_list.My
                     .placeholder(R.drawable.ic_user)
                     .error(R.drawable.ic_user)
                     .into(holder.img);
+
             holder.llayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    click_adapter_item_listner.OnClick_item(get_list.get(position));
+                    Response_Booking_List.User_List get_item=get_list.get(position);
+                    Show_Dialog_details(get_item,con);
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void Show_Dialog_details(Response_Booking_List.User_List get_list, Context mcon) {
+       try{
+           Dialog dialog = new Dialog((Activity)mcon);
+           // Include dialog.xml file
+           LayoutInflater inflater = ((Activity) mcon).getLayoutInflater();
+           View v = inflater.inflate(R.layout.layout_trip_details, null);
+           dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+           TextView txt_add_from = v.findViewById(R.id.txt_from);
+           TextView txt_add_to = v.findViewById(R.id.txt_to);
+           TextView txt_contact = v.findViewById(R.id.txt_contact);
+           TextView img_icon = v.findViewById(R.id.price);
+
+           CircleImageView img = v.findViewById(R.id.vehicle_type_img);
+           CircleImageView img_driver = v.findViewById(R.id.vehicle_driver);
+           TextView txt_no = v.findViewById(R.id.txt_veh_no);
+           TextView txt_price = v.findViewById(R.id.txt_price);
+           dialog.setContentView(v);
+
+           try {
+               txt_contact.setText("Contact :" + get_list.getUcontact());
+               DecimalFormat df2 = new DecimalFormat("#.##");
+               if (get_list.getAmount() != null) {
+                   txt_price.setText(df2.format(Double.valueOf(get_list.getAmount())));
+               } else {
+                   txt_price.setText("0.00");
+               }
+               txt_add_from.setText("From :" + get_list.getFrom_address());
+               txt_add_to.setText("To :" + get_list.getTo_address());
+               txt_no.setText("Name :" + String.valueOf(get_list.getUname()));
+               String img_url = String.valueOf(get_list.getVehicle_image().toString());
+               Picasso.with(this.con).load(img_url).fit().centerCrop()
+                       .placeholder(R.drawable.ic_user)
+                       .error(R.drawable.ic_user)
+                       .into(img);
+
+               String img_url_profile = String.valueOf(get_list.getUimage().toString());
+               Picasso.with(this.con).load(img_url_profile).fit().centerCrop()
+                       .placeholder(R.drawable.ic_user)
+                       .error(R.drawable.ic_user)
+                       .into(img_driver);
+
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+
+           dialog.show();
+       }catch (Exception e){e.printStackTrace();}
+
     }
 
     @Override

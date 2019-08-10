@@ -1,5 +1,6 @@
 package aaronsoftech.in.unber.Activity;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -25,11 +26,6 @@ public class Splash extends AppCompatActivity {
         App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
-       /* try{
-            book_id=getIntent().getExtras().getString("book_id","");
-            Toast.makeText(this, "book_id: "+book_id, Toast.LENGTH_SHORT).show();
-
-        }catch (Exception e){e.printStackTrace();}*/
 
     }
 
@@ -44,9 +40,11 @@ public class Splash extends AppCompatActivity {
                 }catch (Exception e){e.printStackTrace();}
                 if (userid.equalsIgnoreCase("") || userid.equalsIgnoreCase(null))
                 {
-                    startActivity(new Intent(Splash.this,login_mobile.class));
+                   startActivity(new Intent(Splash.this,login_mobile.class));
+                    overridePendingTransition(R.anim.slide_out, R.anim.slide_in);
                 }else{
                     startActivity(new Intent(Splash.this,Home.class).putExtra("book_id",book_id));
+                    overridePendingTransition(R.anim.slide_out, R.anim.slide_in);
                 }
 
             }

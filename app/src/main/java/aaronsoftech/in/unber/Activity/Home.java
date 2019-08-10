@@ -233,8 +233,6 @@ public class Home extends AppCompatActivity
             mapFragment.getMapAsync(this);
             Give_Permission();
 
-            Check_User_Id_on_firebase();
-
         }catch (Exception e){
             e.printStackTrace();
             Crashlytics.logException(e);}
@@ -417,6 +415,16 @@ public class Home extends AppCompatActivity
                             Toast.makeText(Home.this, "Complite your ride", Toast.LENGTH_SHORT).show();
                             Change_vehicle_status(vehicleid,bookID);
                             Show_driver_rating_box();
+
+                            if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
+                                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
+                                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
+                            {
+                                btn_from_address.setText("Where you wanna go?");
+                            }else{
+                                btn_from_address.setText("Show your Vehicle");
+                            }
+                            get_loaction.setClickable(true);
                         }else{
 
                             Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
@@ -535,12 +543,11 @@ public class Home extends AppCompatActivity
 
         double dist = earthRadius * c;
 
-        return dist; // output distance, in MILES
+        return dist; // output distance, in KM
     }
 
     private void Check_driver_booking(final Location location) {
         Save_Token_on_firebase();
-
        final List<Integer> get_User_ID=new ArrayList<>();
         get_User_ID.clear();
         get_Booking_list.clear();
@@ -645,7 +652,6 @@ public class Home extends AppCompatActivity
     private void Set_running_value(final String book_id, final Location location, final String veh_img, final String veh_type_id, final String veh_no, final String amount, final String contact, final String img, final String name) {
         String driverid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
         Call_driver_book_Api(driverid,contact,img,name,book_id);
-
         lat=location.getLatitude();
         lng=location.getLongitude();
         double speed=location.getSpeed();
@@ -674,8 +680,6 @@ public class Home extends AppCompatActivity
 
         if (update_marker2==0){
             marker3 = new MarkerOptions().position(new LatLng(lat, lng));
-
-
 
             if (veh_type_id.toString().equalsIgnoreCase("8"))
             {
@@ -936,10 +940,10 @@ public class Home extends AppCompatActivity
                         } else if (veh_type_id.toString().equalsIgnoreCase("4")) {
                             marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
                         }
-                        marker2.anchor(0.5f, 0.5f);
-                        marker2.rotation(bearing);
-                        marker2.flat(true);
+
                         mMap.addMarker(marker2);
+                        update_marker2 = 1;
+
                     }
                 }catch (Exception e){e.printStackTrace();}
             }
@@ -984,11 +988,14 @@ public class Home extends AppCompatActivity
         }
 
         double dist_value=distance(lat,lng,to_lat,to_lng);
+
         Log.i(TAG,"Home || addstart_end_icontrip || dist_value in km :"+dist_value);
         if (dist_value<5){
             btn_finish_ride_user.setVisibility(View.VISIBLE);
+            btn_finish_ride_driver.setVisibility(View.VISIBLE);
         }else{
             btn_finish_ride_user.setVisibility(View.GONE);
+            btn_finish_ride_driver.setVisibility(View.GONE);
         }
 
         try {
@@ -1091,6 +1098,7 @@ public class Home extends AppCompatActivity
     protected void onResume() {
         set_Header_value();
         update_marker = 0;
+        Check_User_Id_on_firebase();
         super.onResume();
     }
 
@@ -1261,87 +1269,70 @@ public class Home extends AppCompatActivity
                     String vehicle_id=String.valueOf(message.getVehicle_id());
                     String book_id=String.valueOf(message.getBook_id());
 
-                    String state = String.valueOf(dataSnapshot.child("state").getValue());
-                    MarkerOptions marker2 = null;
-
-
-                    show_driver_profile(message,contactno,driver_ID,name,photo,address,city,email,veh_type_id,veh_no,amount,veh_img,vehicle_id,book_id);
-
-                    Toast.makeText(Home.this, "name "+name+"\n"+"get_driverid "+driver_ID, Toast.LENGTH_SHORT).show();
-
-                    double get_lat= Double.valueOf(d_lat);
-                    double get_lng=Double.valueOf(d_lng);
-
-                    Location prevLoc = new Location("service Provider");
-                    prevLoc.setLatitude(oldlat);
-                    prevLoc.setLongitude(oldlong);
-                    Location newLoc = new Location("service Provider");
-                    newLoc.setLatitude(get_lat);
-                    newLoc.setLongitude(get_lng);
-                    float bearing = prevLoc.bearingTo(newLoc);
-                    marker2 = new MarkerOptions().position(new LatLng(get_lat, get_lng));
-                    if (update_marker == 0)
+                    if (!name.equalsIgnoreCase("null"))
                     {
-                        if (veh_type_id.toString().equalsIgnoreCase("8"))
+                        String state = String.valueOf(dataSnapshot.child("state").getValue());
+                        MarkerOptions marker2 = null;
+
+                        show_driver_profile(message,contactno,driver_ID,name,photo,address,city,email,veh_type_id,veh_no,amount,veh_img,vehicle_id,book_id);
+
+                        Toast.makeText(Home.this, "name "+name+"\n"+"get_driverid "+driver_ID, Toast.LENGTH_SHORT).show();
+
+                        double get_lat= Double.valueOf(d_lat);
+                        double get_lng=Double.valueOf(d_lng);
+
+                        Location prevLoc = new Location("service Provider");
+                        prevLoc.setLatitude(oldlat);
+                        prevLoc.setLongitude(oldlong);
+                        Location newLoc = new Location("service Provider");
+                        newLoc.setLatitude(get_lat);
+                        newLoc.setLongitude(get_lng);
+                        float bearing = prevLoc.bearingTo(newLoc);
+                        marker2 = new MarkerOptions().position(new LatLng(get_lat, get_lng));
+                        if (update_marker == 0)
                         {
-                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
-                        }else if (veh_type_id.toString().equalsIgnoreCase("7"))
-                        {
-                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
-                        }else if (veh_type_id.toString().equalsIgnoreCase("6"))
-                        {
-                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
-                        }else if (veh_type_id.toString().equalsIgnoreCase("5"))
-                        {
-                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
-                        }else if (veh_type_id.toString().equalsIgnoreCase("4"))
-                        {
-                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
+                            if (veh_type_id.toString().equalsIgnoreCase("8"))
+                            {
+                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
+                            }else if (veh_type_id.toString().equalsIgnoreCase("7"))
+                            {
+                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
+                            }else if (veh_type_id.toString().equalsIgnoreCase("6"))
+                            {
+                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
+                            }else if (veh_type_id.toString().equalsIgnoreCase("5"))
+                            {
+                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
+                            }else if (veh_type_id.toString().equalsIgnoreCase("4"))
+                            {
+                                marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
+                            }
+
+                            marker2.anchor(0.5f, 0.5f);
+                            marker2.rotation(bearing);
+                            marker2.flat(true);
+                            mMap.addMarker(marker2);
+                            update_marker = 1;
                         }
 
-                        marker2.anchor(0.5f, 0.5f);
-                        marker2.rotation(bearing);
-                        marker2.flat(true);
-                        mMap.addMarker(marker2);
-                        update_marker = 1;
+                        LatLng sydney = new LatLng(get_lat, get_lng);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(sydney)      // Sets the center of the map to Mountain View
+                                .zoom(29)                   // Sets the zoom
+                                .bearing(90)                // Sets the orientation of the camera to east
+                                .tilt(90)                   // Sets the tilt of the camera to 30 degrees
+                                .build();                   // Creates a CameraPosition from the builder
+                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                        oldlat=get_lat;
+                        oldlong=get_lng;
+                    }else {
+                        layout_user_info.setVisibility(View.GONE);
+                        get_loaction.setVisibility(View.VISIBLE);
+                        btn_from_address.setText("Pending booking");
+                        get_loaction.setClickable(false);
                     }
-                    else
-                    {
-                        if (veh_type_id.toString().equalsIgnoreCase("8"))
-                        {
-                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
-                        }else if (veh_type_id.toString().equalsIgnoreCase("7"))
-                        {
-                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
-                        }else if (veh_type_id.toString().equalsIgnoreCase("6"))
-                        {
-                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
-                        }else if (veh_type_id.toString().equalsIgnoreCase("5"))
-                        {
-                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
-                        }else if (veh_type_id.toString().equalsIgnoreCase("4"))
-                        {
-                            marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
-                        }
-                        marker2.anchor(0.5f, 0.5f);
-                        marker2.rotation(bearing);
-                        marker2.flat(true);
-                        mMap.addMarker(marker2);
-                    }
-
-                    LatLng sydney = new LatLng(get_lat, get_lng);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-                    CameraPosition cameraPosition = new CameraPosition.Builder()
-                            .target(sydney)      // Sets the center of the map to Mountain View
-                            .zoom(29)                   // Sets the zoom
-                            .bearing(90)                // Sets the orientation of the camera to east
-                            .tilt(30)                   // Sets the tilt of the camera to 30 degrees
-                            .build();                   // Creates a CameraPosition from the builder
-                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                    oldlat=get_lat;
-                    oldlong=get_lng;
-
 
                 }catch (Exception e){e.printStackTrace();}
 
@@ -1360,6 +1351,7 @@ public class Home extends AppCompatActivity
         // Include dialog.xml file
         LayoutInflater inflater = this.getLayoutInflater();
         View v = inflater.inflate(R.layout.dialog_driver_rating, null);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
         final AppCompatRatingBar ratingBar=v.findViewById(R.id.rating_bar);
         final EditText ed_review=v.findViewById(R.id.txt_review);
         TextView btn_submit=v.findViewById(R.id.txt_submit_btn);
@@ -1525,9 +1517,7 @@ public class Home extends AppCompatActivity
             JSONObject preFill = new JSONObject();
             //     preFill.put("email", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
             preFill.put("contact", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
-
             options.put("prefill", preFill);
-
             co.open(activity, options);
         } catch (Exception e) {
             Log.i(TAG, "Error in payment: " +e.getMessage());

@@ -73,6 +73,9 @@ dependencies {
     // Standard -- not recommended!
     compile 'com.philliphsu:bottomsheetpickers:2.4.1'
 
+    compile 'jp.wasabeef:picasso-transformations:2.2.1'
+    // If you want to use the GPU Filters
+    compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
 }
 
 

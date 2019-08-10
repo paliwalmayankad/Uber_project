@@ -69,8 +69,6 @@ public class Vehicle_reg extends AppCompatActivity {
     String refreshedToken;
     String Driver_ID;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

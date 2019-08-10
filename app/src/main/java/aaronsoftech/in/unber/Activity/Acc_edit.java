@@ -5,16 +5,22 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.squareup.picasso.Picasso;
 
@@ -26,8 +32,11 @@ import aaronsoftech.in.unber.POJO.Response_Login;
 import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Service.APIClient;
 import aaronsoftech.in.unber.Utils.SP_Utils;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
 import github.nisrulz.easydeviceinfo.base.EasyLocationMod;
+import jp.wasabeef.picasso.transformations.BlurTransformation;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -37,7 +46,7 @@ import retrofit2.Response;
 
 import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
-public class Acc_edit extends AppCompatActivity {
+public class Acc_edit extends AppCompatActivity  {
     TextView t_name,t_mobile,t_email,btn_save,t_status;
     RadioButton rb_btn_male,rb_btn_female;
     String gender="Male";
@@ -48,12 +57,32 @@ public class Acc_edit extends AppCompatActivity {
     public static CircleImageView profile_img;
     public static String PATH_IMAGE="";
     EditText ed_name,ed_address,ed_city,ed_email,ed_state,ed_country,tx_mobile,ed_zipcode;
+    Toolbar mToolbar22;
+    public static ImageView header_img;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_acc_edit);
 
         Init();
+
+        mToolbar22 = (Toolbar) findViewById(R.id.toolbar2);
+        setSupportActionBar(mToolbar22);
+
+        AppBarLayout mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = false;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+            }
+        });
+
 
         Set_Profile_data();
 
@@ -96,6 +125,9 @@ public class Acc_edit extends AppCompatActivity {
                 {
                     ed_address.setError("Enter Address");
                     ed_address.requestFocus();
+                }else if (PATH_IMAGE.toString().isEmpty() || PATH_IMAGE.equalsIgnoreCase(null) || PATH_IMAGE.equalsIgnoreCase(null))
+                {
+                    Toast.makeText(Acc_edit.this, "Select Image", Toast.LENGTH_SHORT).show();
                 }else if (ed_city.getText().toString().isEmpty())
                 {
                     ed_city.setError("Enter City");
@@ -120,6 +152,9 @@ public class Acc_edit extends AppCompatActivity {
         try{
             ed_name.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
             t_name.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+            String name=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,"");
+            //mToolbar22.setTitle(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
+            mToolbar22.setTitle(name);
 
             String mobileno=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,"");
             tx_mobile.setText(mobileno);
@@ -130,12 +165,22 @@ public class Acc_edit extends AppCompatActivity {
                 tx_mobile.setEnabled(false);
             }
 
+
+
             try{
                 PATH_IMAGE= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,"");
+
                 Picasso.with(Acc_edit.this).load(PATH_IMAGE)
                         .placeholder(R.drawable.ic_user)
                         .error(R.drawable.ic_user)
                         .into(profile_img);
+            }catch (Exception e){e.printStackTrace();}
+
+            try{
+                Picasso.with(Acc_edit.this)
+                        .load(PATH_IMAGE)
+                        .transform(new BlurTransformation(Acc_edit.this, 20, 1))
+                        .into(header_img);
             }catch (Exception e){e.printStackTrace();}
 
             t_email.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
@@ -160,19 +205,11 @@ public class Acc_edit extends AppCompatActivity {
                 gender="male";
             }
         }catch (Exception e){e.printStackTrace();}
-
     }
 
     @Override
     protected void onResume() {
         Log.i(TAG,"Image path: "+PATH_IMAGE);
-       /* try{
-            //PATH_IMAGE= App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,"");
-            Picasso.with(Acc_edit.this).load(PATH_IMAGE)
-                    .placeholder(R.drawable.ic_user)
-                    .error(R.drawable.ic_user)
-                    .into(profile_img);
-        }catch (Exception e){e.printStackTrace();}*/
         super.onResume();
     }
 
@@ -201,60 +238,61 @@ public class Acc_edit extends AppCompatActivity {
         if (isNetworkAvailable(Acc_edit.this))
         {
             Call<Response_Login> call=null;
-             if (PATH_IMAGE=="" || PATH_IMAGE.equalsIgnoreCase(null) || PATH_IMAGE.equalsIgnoreCase("null"))
-                {
-                     call= APIClient.getWebServiceMethod().getUpdate_Profile_without_pic(id,name,d_gender,email,contact_number,address,city,state,country,password,zip_code);
 
-                }else{
-                     call= APIClient.getWebServiceMethod().getUpdate_Profile(id,name,d_gender,email,contact_number,address,city,state,country,password,zip_code,body_request_file_aadhar);
+            if (PATH_IMAGE== App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""))
+            {
+                call= APIClient.getWebServiceMethod().getUpdate_Profile_without_pic(id,name,d_gender,email,contact_number,address,city,state,country,password,zip_code);
 
-             }
+            }else{
+                call= APIClient.getWebServiceMethod().getUpdate_Profile(id,name,d_gender,email,contact_number,address,city,state,country,password,zip_code,body_request_file_aadhar);
+
+            }
 
 
             call.enqueue(new Callback<Response_Login>() {
                 @Override
                 public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
-                    String status=response.body().getApi_status().toString();
-                    String msg=response.body().getApi_message().toString();
-                    progressDialog.dismiss();
-                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
-                    {
-
-                        App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
-                        App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+ed_name.getText().toString().trim());
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+gender);
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+ed_email.getText().toString().trim());
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+tx_mobile.getText().toString().trim());
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+ed_address.getText().toString().trim());
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+ed_city.getText().toString().trim());
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+ed_state.getText().toString().trim());
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+ed_country.getText().toString().trim());
-
-                        App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+ed_zipcode.getText().toString().trim());
-                        App_Conteroller. editor.commit();
-                        if (PATH_IMAGE=="" || PATH_IMAGE.equalsIgnoreCase(null) || PATH_IMAGE.equalsIgnoreCase("null"))
+                    try{
+                        String status=response.body().getApi_status().toString();
+                        String msg=response.body().getApi_message().toString();
+                        progressDialog.dismiss();
+                        if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                         {
 
-                        }else{
+                            App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                            App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_NAME,""+ed_name.getText().toString().trim());
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_GENDER,""+gender);
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_EMAIL,""+ed_email.getText().toString().trim());
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CONTACT_NUMBER,""+tx_mobile.getText().toString().trim());
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_ADDRESS,""+ed_address.getText().toString().trim());
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_CITY,""+ed_city.getText().toString().trim());
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_STATE,""+ed_state.getText().toString().trim());
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+ed_country.getText().toString().trim());
+
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+ed_zipcode.getText().toString().trim());
+                            App_Conteroller. editor.commit();
+
                             Call_Image_Api(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
+
+                            Toast.makeText(getApplicationContext(), "Update Successfully", Toast.LENGTH_LONG).show();
+
+                        }else{
+                            progressDialog.dismiss();
+                            Toast.makeText(Acc_edit.this, "msg  "+msg+"\n"+"status  "+status, Toast.LENGTH_SHORT).show();
                         }
-
-
-                        Toast.makeText(getApplicationContext(), "Update Successfully", Toast.LENGTH_LONG).show();
-
-                    }else{
+                    }catch (Exception e){
                         progressDialog.dismiss();
-                        Toast.makeText(Acc_edit.this, "msg  "+msg+"\n"+"status  "+status, Toast.LENGTH_SHORT).show();
-                    }
+                        Toast.makeText(Acc_edit.this, "try again...!", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();}
                 }
 
                 @Override
@@ -296,6 +334,7 @@ public class Acc_edit extends AppCompatActivity {
 
     private void Init() {
 
+        header_img=findViewById(R.id.expandedImage);
         profile_img=findViewById(R.id.profile_image);
         t_status=findViewById(R.id.user_status);
         ed_zipcode=findViewById(R.id.e_zipcode);
@@ -321,5 +360,8 @@ public class Acc_edit extends AppCompatActivity {
             }
         });
 
+
+
     }
+
 }

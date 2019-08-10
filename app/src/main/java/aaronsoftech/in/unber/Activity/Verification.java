@@ -286,8 +286,6 @@ public class Verification extends AppCompatActivity {
                     txt_six.setText(String.valueOf(code.charAt(5)));
                 }catch (Exception e){e.printStackTrace();}
 
-              //  startActivity(new Intent(Verification.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp",code));
-
             }
 
         }
@@ -301,7 +299,6 @@ public class Verification extends AppCompatActivity {
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
             super.onCodeSent(s, forceResendingToken);
             progressDialog.dismiss();
-          //  startActivity(new Intent(Verification.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp","no"));
             mVerificationId = s;
         }
     };
