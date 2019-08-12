@@ -486,7 +486,7 @@ public class Driver_doc_Image extends AppCompatActivity {
                 Log.e(TAG, "Image Size after in what comress : " + fileSize.length());
                 if(fileSize.length()>50000)
                 {
-                    Toast.makeText(this, "Maximum image size limit less then 500KB.", Toast.LENGTH_SHORT).show();
+         //          Toast.makeText(this, "Maximum image size limit less then 500KB.", Toast.LENGTH_SHORT).show();
                     picturePath_id=lastCompressedImageFileName;
                     bitmapProfileImage3=bitmap;
                     btn_photo.setImageBitmap(bitmap);

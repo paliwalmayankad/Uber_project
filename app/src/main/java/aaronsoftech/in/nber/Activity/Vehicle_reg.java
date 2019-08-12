@@ -125,7 +125,10 @@ public class Vehicle_reg extends AppCompatActivity {
                     ed_no.setError("Enter vehicle no.");
                     ed_no.requestFocus();
                 }else{
-
+                    progressDialog=new ProgressDialog(Vehicle_reg.this);
+                    progressDialog.setMessage("Loading...");
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
                     Call_Api();
                 }
 
@@ -275,10 +278,7 @@ public class Vehicle_reg extends AppCompatActivity {
             Date date = new Date();
             String new_date=dateFormat.format(date);
 
-            progressDialog=new ProgressDialog(Vehicle_reg.this);
-            progressDialog.setMessage("Loading...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+
 
             String driverid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
             RequestBody body_driver_id =RequestBody.create(okhttp3.MultipartBody.FORM, ""+driverid);
@@ -328,11 +328,12 @@ public class Vehicle_reg extends AppCompatActivity {
                     }
                     @Override
                     public void onFailure(Call<Response_vehicle> call, Throwable t) {
-                        progressDialog.dismiss();
-                        Toast.makeText(Vehicle_reg.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
+                        Call_Api();
+                       // Toast.makeText(Vehicle_reg.this, "Error: "+t.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
         }else{
+            progressDialog.dismiss();
             Toast.makeText(Vehicle_reg.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
 

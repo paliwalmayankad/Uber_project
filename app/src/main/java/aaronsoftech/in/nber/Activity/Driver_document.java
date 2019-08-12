@@ -111,6 +111,11 @@ public class Driver_document extends AppCompatActivity {
                    Toast.makeText(Driver_document.this, "Please enter Licence no", Toast.LENGTH_SHORT).show();
                }
                 else{
+
+                    progressDialog=new ProgressDialog(Driver_document.this);
+                    progressDialog.setMessage("Loading...");
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
                    Call_Document_submit_Api();
                }
             }
@@ -236,10 +241,7 @@ public class Driver_document extends AppCompatActivity {
     }
 
     private void Call_Document_submit_Api() {
-        progressDialog=new ProgressDialog(Driver_document.this);
-        progressDialog.setMessage("Loading...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+
         File file_licence = new File(path_licence);
         File file_licence_back = new File(path_licence2);
         File file_pancard = new File(path_pancard);
@@ -310,12 +312,12 @@ public class Driver_document extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<Response_register> call, Throwable t) {
-                    progressDialog.dismiss();
-                    Toast.makeText(Driver_document.this, " please retry", Toast.LENGTH_SHORT).show();
+                    Call_Document_submit_Api();
                 }
             });
 
         }else{
+            progressDialog.dismiss();
             Toast.makeText(Driver_document.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
 

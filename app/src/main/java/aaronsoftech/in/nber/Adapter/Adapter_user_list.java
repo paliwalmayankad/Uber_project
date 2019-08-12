@@ -3,6 +3,7 @@ package aaronsoftech.in.nber.Adapter;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import aaronsoftech.in.nber.Activity.From_Location;
 import aaronsoftech.in.nber.POJO.Response_Booking_List;
 import aaronsoftech.in.nber.R;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -75,8 +77,8 @@ public class Adapter_user_list extends RecyclerView.Adapter<Adapter_user_list.My
 
     private void Show_Dialog_details(Response_Booking_List.User_List get_list, Context mcon) {
        try{
-           Dialog dialog = new Dialog((Activity)mcon);
-           // Include dialog.xml file
+         //  Dialog dialog = new Dialog((Activity)mcon);
+           final BottomSheetDialog dialog = new BottomSheetDialog((Activity)mcon);
            LayoutInflater inflater = ((Activity) mcon).getLayoutInflater();
            View v = inflater.inflate(R.layout.layout_trip_details, null);
            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;

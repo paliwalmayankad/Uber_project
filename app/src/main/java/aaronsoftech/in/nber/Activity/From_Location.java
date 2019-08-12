@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
@@ -201,7 +202,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             public void onClick(View view) {
             if (App_Utils.isNetworkAvailable(From_Location.this))
               {      if (Check_booking_status){
-                        Check_booking_status=false;
+
                         Book_status="Later";
                         rb_time.setChecked(true);
                         Show_calander();
@@ -334,6 +335,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
             {
                 isFrom=getIntent().getExtras().getString("isFrom");
             }
+
+
 
         recyclerView_vehicle_type = (RecyclerView)findViewById(R.id.recycle_vehicle_type);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL);
@@ -1383,8 +1386,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
                                      final String book_vehicle_no,final  String book_vehicle_image,final  String book_refreshtoken,
                                      final String book_vehicle_type_id) {
 
-        final Dialog dialog = new Dialog(new ContextThemeWrapper(this, R.style.DialogSlideAnim));
-
+        final BottomSheetDialog dialog = new BottomSheetDialog(From_Location.this);
+        //final Dialog dialog = new Dialog(new ContextThemeWrapper(this, R.style.DialogSlideAnim));
         LayoutInflater inflater=this.getLayoutInflater();
         View v=inflater.inflate(R.layout.dialog_ride_book,null);
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme_down_up;
@@ -1420,9 +1423,15 @@ public class From_Location extends AppCompatActivity implements LocationListener
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Check_booking_status=false;
-                dialog.dismiss();
-                get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+                if (App_Utils.isNetworkAvailable(From_Location.this)){
+                    Check_booking_status=false;
+                    dialog.dismiss();
+                    get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+
+                }else{
+                    Toast.makeText(From_Location.this, "No Internet", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
         dialog.show();
