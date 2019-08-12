@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="aaronsoftech.in.unber.Activity.Select_payment">
+    tools:context="aaronsoftech.in.nber.Activity.Select_payment">
 
 </android.support.constraint.ConstraintLayout>

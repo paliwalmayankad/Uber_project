@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="aaronsoftech.in.unber">
+    package="aaronsoftech.in.nber">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -36,7 +36,7 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
 
-        <activity android:name=".Activity.Show_Vehicle" android:theme="@style/AppTheme_one"></activity>
+        <activity android:name="aaronsoftech.in.nber.Activity.Show_Vehicle" android:theme="@style/AppTheme_one"></activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -68,19 +68,19 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" /> <!-- start service for FCM -->
-        <service android:name=".FCM.MyFirebaseInstanceIDService">
+        <service android:name="aaronsoftech.in.nber.FCM.MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".FCM.MyFirebaseMessagingService">
+        <service android:name="aaronsoftech.in.nber.FCM.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <activity
-            android:name=".Activity.Splash"
+            android:name="aaronsoftech.in.nber.Activity.Splash"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one">
             <intent-filter>
@@ -90,77 +90,77 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activity.MainActivity"
+            android:name="aaronsoftech.in.nber.Activity.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.login_mobile"
+            android:name="aaronsoftech.in.nber.Activity.login_mobile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.login_email"
+            android:name="aaronsoftech.in.nber.Activity.login_email"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Acc_setting"
+            android:name="aaronsoftech.in.nber.Activity.Acc_setting"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Acc_edit"
+            android:name="aaronsoftech.in.nber.Activity.Acc_edit"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Trip"
+            android:name="aaronsoftech.in.nber.Activity.Trip"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Select_payment"
+            android:name="aaronsoftech.in.nber.Activity.Select_payment"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Payment_add"
+            android:name="aaronsoftech.in.nber.Activity.Payment_add"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Payment_code"
+            android:name="aaronsoftech.in.nber.Activity.Payment_code"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Trip_free"
+            android:name="aaronsoftech.in.nber.Activity.Trip_free"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Password"
+            android:name="aaronsoftech.in.nber.Activity.Password"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Privacy_setting"
+            android:name="aaronsoftech.in.nber.Activity.Privacy_setting"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Contacts"
+            android:name="aaronsoftech.in.nber.Activity.Contacts"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Notification"
+            android:name="aaronsoftech.in.nber.Activity.Notification"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Help"
+            android:name="aaronsoftech.in.nber.Activity.Help"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Register_mobile"
+            android:name="aaronsoftech.in.nber.Activity.Register_mobile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name=".Activity.Home"
+            android:name="aaronsoftech.in.nber.Activity.Home"
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Activity.Home"/>
+                android:value="aaronsoftech.in.nber.Activity.Home"/>
         </activity>
 
         <meta-data
@@ -197,7 +197,7 @@
              android:value="@string/google_maps_key" />
         -->
         <activity
-            android:name=".Activity.Social_Login"
+            android:name="aaronsoftech.in.nber.Activity.Social_Login"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <!--
@@ -213,20 +213,20 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".Activity.MapsActivity"
+            android:name="aaronsoftech.in.nber.Activity.MapsActivity"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".Activity.Verification"
+        <activity android:name="aaronsoftech.in.nber.Activity.Verification"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".Activity.From_Location"
+            android:name="aaronsoftech.in.nber.Activity.From_Location"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
-        <activity android:name=".Activity.Driver_document" android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.Driver_photo" android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.Driver_doc_Image" android:screenOrientation="portrait"/>
+        <activity android:name="aaronsoftech.in.nber.Activity.Driver_document" android:screenOrientation="portrait"/>
+        <activity android:name="aaronsoftech.in.nber.Activity.Driver_photo" android:screenOrientation="portrait"/>
+        <activity android:name="aaronsoftech.in.nber.Activity.Driver_doc_Image" android:screenOrientation="portrait"/>
         <activity
-            android:name=".Activity.Vehicle_reg"   android:screenOrientation="portrait"
+            android:name="aaronsoftech.in.nber.Activity.Vehicle_reg"   android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
     </application>
 

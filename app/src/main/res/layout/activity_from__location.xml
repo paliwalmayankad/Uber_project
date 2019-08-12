@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/coordinatorLayout"
-    tools:context="aaronsoftech.in.unber.Activity.From_Location">
+    tools:context="aaronsoftech.in.nber.Activity.From_Location">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

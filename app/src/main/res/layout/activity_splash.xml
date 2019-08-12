@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
         android:layout_gravity="center"
     android:gravity="center"
-    tools:context="aaronsoftech.in.unber.Activity.Splash">
+    tools:context="aaronsoftech.in.nber.Activity.Splash">
 <ImageView
     android:layout_width="match_parent"
     android:scaleType="centerInside"

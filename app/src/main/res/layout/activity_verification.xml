@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:id="@+id/layout_rel"
     android:layout_height="match_parent"
-    tools:context="aaronsoftech.in.unber.Activity.Verification">
+    tools:context="aaronsoftech.in.nber.Activity.Verification">
 
     <RelativeLayout
         android:layout_width="match_parent"
