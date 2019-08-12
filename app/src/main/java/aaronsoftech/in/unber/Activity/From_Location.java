@@ -238,16 +238,16 @@ public class From_Location extends AppCompatActivity implements LocationListener
         final AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.LAT_LNG, Place.Field.NAME));
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
 
-
                     et_location.setText(place.getName());
                     LatLng get_latlong=place.getLatLng();
                     set_location_list(get_latlong);
+                     startMapAnimation(get_latlong);
                     autocompleteFragment.onDestroy();  }
             @Override
             public void onError(Status status) {
@@ -260,15 +260,16 @@ public class From_Location extends AppCompatActivity implements LocationListener
         final AutocompleteSupportFragment autocompleteFragment2 = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment2);
         // Specify the types of place data to return.
-        autocompleteFragment2.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        autocompleteFragment2.setPlaceFields(Arrays.asList(Place.Field.LAT_LNG, Place.Field.NAME));
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment2.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-           //     et_location2.selectAll();
+              // et_location2.selectAll();
 
                 et_location2.setText(place.getName());
                 LatLng get_latlong=place.getLatLng();
+                startMapAnimation(get_latlong);
                 set_location_list(get_latlong);
                 autocompleteFragment2.onDestroy();  }
 
@@ -880,7 +881,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
     }
 
-    public void startMapAnimation()
+    public void startMapAnimation(final LatLng latlng)
     {
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(App_Conteroller.latitute,App_Conteroller.longitude), 17), 2200,new GoogleMap.CancelableCallback()
         {
@@ -889,12 +890,11 @@ public class From_Location extends AppCompatActivity implements LocationListener
             {
 
             }
-
             @Override
             public void onFinish()
             {
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
-                        .target(new LatLng(App_Conteroller.latitute,App_Conteroller.longitude))
+                        .target(latlng)
                         .zoom(googleMap.getCameraPosition().zoom)
                         .bearing(300F)
                         .tilt(50F)
@@ -955,7 +955,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
             {
 
                 googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-                startMapAnimation();
+               LatLng lt= new LatLng(App_Conteroller.latitute,App_Conteroller.longitude);
+                startMapAnimation(lt);
 
                 setEditTextAddress(App_Conteroller.mAddress,App_Conteroller.subLocality,App_Conteroller.city,App_Conteroller.state,App_Conteroller.country,App_Conteroller.postCode,App_Conteroller.full_address,new LatLng(App_Conteroller.latitute,App_Conteroller.longitude));
 
@@ -987,7 +988,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
                             if(googleMap!=null && App_Conteroller.latitute!=0 && App_Conteroller.latitute!=0.0 && App_Conteroller.longitude!=0 && App_Conteroller.longitude!=0.0)
                             {
-                                startMapAnimation();
+                                LatLng lt= new LatLng(App_Conteroller.latitute,App_Conteroller.longitude);
+                                startMapAnimation(lt);
                             }
                         }
                         catch (Exception e)
@@ -1377,7 +1379,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         date=dateFormat.format(cal.getTime());
         String datenew=date+" "+time;
         btn_done.setText("Time set: " + datenew);
-
         Show_Dialog_booking(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
 
     }

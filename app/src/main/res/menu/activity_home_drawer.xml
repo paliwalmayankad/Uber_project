@@ -4,10 +4,7 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_payment"
-            android:icon="@drawable/ic_nav_credit_card"
-            android:title="Payment" />
+
         <item
             android:id="@+id/nav_your_trips"
             android:icon="@drawable/ic_nav_travel"
@@ -24,7 +21,7 @@
 
         <item
             android:id="@+id/nav_logout"
-            android:icon="@android:drawable/ic_menu_set_as"
+            android:icon="@drawable/ic_logout"
             android:title="Sign out" />
     </group>
 

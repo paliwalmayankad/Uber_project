@@ -179,7 +179,7 @@ public class Acc_edit extends AppCompatActivity  {
             try{
                 Picasso.with(Acc_edit.this)
                         .load(PATH_IMAGE)
-                        .transform(new BlurTransformation(Acc_edit.this, 20, 1))
+                        .transform(new BlurTransformation(Acc_edit.this, 1, 1))
                         .into(header_img);
             }catch (Exception e){e.printStackTrace();}
 
@@ -216,7 +216,7 @@ public class Acc_edit extends AppCompatActivity  {
     public void Update_info()
     {
         progressDialog=new ProgressDialog(this);
-        progressDialog.setCancelable(true);
+        progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
 
@@ -247,7 +247,6 @@ public class Acc_edit extends AppCompatActivity  {
                 call= APIClient.getWebServiceMethod().getUpdate_Profile(id,name,d_gender,email,contact_number,address,city,state,country,password,zip_code,body_request_file_aadhar);
 
             }
-
 
             call.enqueue(new Callback<Response_Login>() {
                 @Override
@@ -290,7 +289,7 @@ public class Acc_edit extends AppCompatActivity  {
                             Toast.makeText(Acc_edit.this, "msg  "+msg+"\n"+"status  "+status, Toast.LENGTH_SHORT).show();
                         }
                     }catch (Exception e){
-                        progressDialog.dismiss();
+                        Update_info();
                         Toast.makeText(Acc_edit.this, "try again...!", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
                 }

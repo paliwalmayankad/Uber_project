@@ -35,6 +35,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
+
         <activity android:name=".Activity.Show_Vehicle" android:theme="@style/AppTheme_one"></activity>
 
         <provider

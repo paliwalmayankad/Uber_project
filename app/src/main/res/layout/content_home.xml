@@ -39,11 +39,12 @@
             android:background="@color/light_gray"
             android:layout_marginRight="22dp"
             android:layout_height="match_parent"></View>
+
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginRight="22dp"
-            android:src="@android:drawable/ic_search_category_default"/>
+            app:srcCompat="@drawable/ic_musica_searcher" />
     </LinearLayout>
 
     <LinearLayout

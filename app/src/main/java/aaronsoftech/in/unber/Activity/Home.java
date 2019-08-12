@@ -148,7 +148,7 @@ public class Home extends AppCompatActivity
     TextView btn_finish_ride_driver,btn_finish_ride_user,btn_from_address;
     String get_Selected_Driver_Id;
     String get_BookID_Status,get_vehicle_id_status,get_book_id_2;
-    private GoogleSignInClient mGoogleSignInClient;
+  //  private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,10 +159,10 @@ public class Home extends AppCompatActivity
         Init();
         Checkout.preload(getApplicationContext());
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+      /*  GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);*/
 
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         try{
@@ -1574,23 +1574,26 @@ public class Home extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_payment) {
-            startActivity(new Intent(Home.this,Payment_add.class));
-        } else if (id == R.id.nav_help) {
+         if (id == R.id.nav_help) {
             startActivity(new Intent(Home.this,Trip_free.class));
         } else if (id == R.id.nav_setting) {
             startActivity(new Intent(Home.this,Acc_setting.class));
         } else if (id == R.id.nav_your_trips) {
             startActivity(new Intent(Home.this,Trip.class));
         }else if (id == R.id.nav_logout) {
-            mGoogleSignInClient.signOut();
-            App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
-            App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
-            App_Conteroller.editor.clear();
-            App_Conteroller.editor.commit();
-            startActivity(new Intent(Home.this,login_mobile.class).
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
-            finish();
+             try{
+             //    mGoogleSignInClient.signOut();
+                 App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                 App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+                 App_Conteroller.editor.clear();
+                 App_Conteroller.editor.commit();
+                 startActivity(new Intent(Home.this,login_mobile.class).
+                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                 finish();
+             }catch (Exception e){
+                 e.printStackTrace();
+             }
+
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -1624,7 +1627,7 @@ public class Home extends AppCompatActivity
         Intent intent = new Intent(this, Home.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         builder.setContentIntent(pendingIntent);
-        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.nber_logo));
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.yellow_logo));
         builder.setContentTitle("You have new booking");
         builder.setContentText("Accept this book ride");
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
