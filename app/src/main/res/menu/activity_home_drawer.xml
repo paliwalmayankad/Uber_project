@@ -14,13 +14,18 @@
             android:title="Your Trips" />
         <item
             android:id="@+id/nav_help"
-            android:icon="@drawable/ic_nav_help"
-            android:title="Help" />
+            android:icon="@drawable/sharepng"
+            android:title="Share" />
 
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_nav_repairing_service"
             android:title="Setting" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@android:drawable/ic_menu_set_as"
+            android:title="Sign out" />
     </group>
 
 

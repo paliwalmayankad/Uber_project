@@ -49,7 +49,6 @@ public class MyNotificationManager {
                     .setSmallIcon(R.drawable.nber_logo)
                     .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.drawable.nber_logo));
 
-
             NotificationCompat.BigPictureStyle bigPicStyle = new NotificationCompat.BigPictureStyle();
             bigPicStyle.bigPicture(bigImageBitmap);
 

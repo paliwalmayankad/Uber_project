@@ -31,7 +31,7 @@
             android:textColor="@android:color/white"
             android:layout_marginLeft="11dp"
             android:gravity="center_vertical"
-            android:text="Soniya" />
+           android:hint="Name" />
     </LinearLayout>
 
     <View
@@ -46,8 +46,8 @@
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-
-        android:text="Do you nber for business ?"
+        android:textColor="@color/liht_gray"
+        android:text="Do more read your account ?"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
@@ -56,7 +56,6 @@
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:textColor="@color/liht_gray"
-        android:text="Tab on create business profile" />
+        android:text="Make money driving" />
 
 </LinearLayout>

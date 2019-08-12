@@ -32,7 +32,7 @@
             android:layout_margin="22dp"
             android:textSize="20dp"
             android:textStyle="bold"
-            android:text="Enter your mobile number or connect using social account to start ride"
+            android:text="Enter your mobile number to start ride"
             android:layout_height="wrap_content" />
 
         <LinearLayout

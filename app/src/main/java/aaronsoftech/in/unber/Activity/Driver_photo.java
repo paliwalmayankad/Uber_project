@@ -304,7 +304,7 @@ public class Driver_photo extends AppCompatActivity {
                 Log.e(TAG, "Image Size after in what comress : " + fileSize.length());
                 if(fileSize.length()>50000)
                 {
-                    Toast.makeText(this, "Maximum image size limit less then 500KB.", Toast.LENGTH_SHORT).show();
+                 //   Toast.makeText(this, "Maximum image size limit less then 500KB.", Toast.LENGTH_SHORT).show();
                     picturePath_id=lastCompressedImageFileName;
                     bitmapProfileImage3=bitmap;
                     btn_photo.setImageBitmap(bitmap);
@@ -314,11 +314,11 @@ public class Driver_photo extends AppCompatActivity {
                 {
                     picturePath_id=lastCompressedImageFileName;
                     bitmapProfileImage3=bitmap;
-                    btn_photo.setImageBitmap(bitmap);
-                    profile_img.setImageBitmap(bitmap);
-
-                    Set_image_path(picturePath_id);
                 }
+
+                btn_photo.setImageBitmap(bitmap);
+                profile_img.setImageBitmap(bitmap);
+                Set_image_path(picturePath_id);
             }
             else
             {

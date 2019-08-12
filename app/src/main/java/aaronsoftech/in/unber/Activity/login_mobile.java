@@ -90,7 +90,7 @@ public class login_mobile extends AppCompatActivity {
 
     private void sendVerificationCode(String mobile) {
         progressDialog=new ProgressDialog(login_mobile.this);
-        progressDialog.setCancelable(true);
+        progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
@@ -121,6 +121,7 @@ public class login_mobile extends AppCompatActivity {
 
         @Override
         public void onVerificationFailed(FirebaseException e) {
+            progressDialog.dismiss();
             Toast.makeText(login_mobile.this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
 

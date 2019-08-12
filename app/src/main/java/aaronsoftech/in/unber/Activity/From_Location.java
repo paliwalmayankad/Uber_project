@@ -16,16 +16,21 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -72,7 +77,9 @@ import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.philliphsu.bottomsheetpickers.time.BottomSheetTimePickerDialog;
 import com.philliphsu.bottomsheetpickers.time.grid.GridTimePickerDialog;
 import com.philliphsu.bottomsheetpickers.time.numberpad.NumberPadTimePickerDialog;
+import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,9 +100,11 @@ import aaronsoftech.in.unber.R;
 import aaronsoftech.in.unber.Service.APIClient;
 import aaronsoftech.in.unber.Utils.App_Utils;
 import aaronsoftech.in.unber.Utils.SP_Utils;
+import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
@@ -154,6 +163,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
     String Book_status;
     boolean Check_booking_status=true;
 
+    String get_vehicle_type,get_Vehicle_icon;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,13 +180,16 @@ public class From_Location extends AppCompatActivity implements LocationListener
         btn_book_now.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 if (App_Utils.isNetworkAvailable(From_Location.this))
                 {
                     if (Check_booking_status){
-                        Check_booking_status=false;
+
                         Book_status="Now";
                         String datenew=App_Utils.getCurrentdate();
-                        get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+                        Show_Dialog_booking(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+
+                   //     get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
                     }else{
                         Toast.makeText(From_Location.this, "Already ride pending", Toast.LENGTH_SHORT).show();
                 }
@@ -211,7 +225,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             @Override
             public void onClick(View view) {
                 focus_type="FROM";
-                et_location2.setTextIsSelectable(true);
+
                 }
         });
 
@@ -230,7 +244,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             @Override
             public void onPlaceSelected(Place place) {
 
-                    et_location.setTextIsSelectable(true);
+
                     et_location.setText(place.getName());
                     LatLng get_latlong=place.getLatLng();
                     set_location_list(get_latlong);
@@ -252,7 +266,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             @Override
             public void onPlaceSelected(Place place) {
            //     et_location2.selectAll();
-                et_location2.setTextIsSelectable(true);
+
                 et_location2.setText(place.getName());
                 LatLng get_latlong=place.getLatLng();
                 set_location_list(get_latlong);
@@ -292,9 +306,13 @@ public class From_Location extends AppCompatActivity implements LocationListener
             et_location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    try{
+                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                    }catch (Exception e){e.printStackTrace();}
+
                     focus_type="FROM";
-              //      et_location.selectAll();
-                    et_location.setTextIsSelectable(true);
+
                     et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
                     et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
                 }
@@ -302,9 +320,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
             et_location2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    try{
+                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                    }catch (Exception e){e.printStackTrace();}
+
                     focus_type="TO";
-            //        et_location2.selectAll();
-                    et_location2.setTextIsSelectable(true);
+
                     et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
                     et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
                 }
@@ -657,7 +680,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 // Otherwise, prompt user to get valid Play Services APK.
                 if (!App_Utils.isLocationEnabled(From_Location.this))
                 {
-                    /** to call for GPS Enabling  */
+                    /** to call for GPS Enabling
                    /* Todo-----set call intent for open map permission*/
                     startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_CODE_GPSON);
                 }
@@ -1325,6 +1348,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }else{
             Call_Select_Vihicle_Api(vehicle_type.getId(),vehicle_type.getKm_price());
         }
+        get_vehicle_type=vehicle_type.getVehicle_type();
+        get_Vehicle_icon=vehicle_type.getVehicle_icon();
+
 
     }
 
@@ -1352,9 +1378,58 @@ public class From_Location extends AppCompatActivity implements LocationListener
         String datenew=date+" "+time;
         btn_done.setText("Time set: " + datenew);
 
-        get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+        Show_Dialog_booking(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
 
-        //btn_done.setText("Date set: " + DateFormat.getDateFormat(this).format(cal.getTime()));
+    }
+
+    private void Show_Dialog_booking(final String datenew,final  String book_vehicleid,final  String book_amount,final  String book_Driver_ID,
+                                     final String book_vehicle_no,final  String book_vehicle_image,final  String book_refreshtoken,
+                                     final String book_vehicle_type_id) {
+
+        final Dialog dialog = new Dialog(new ContextThemeWrapper(this, R.style.DialogSlideAnim));
+
+        LayoutInflater inflater=this.getLayoutInflater();
+        View v=inflater.inflate(R.layout.dialog_ride_book,null);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme_down_up;
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        CircleImageView vehi_typ_img=v.findViewById(R.id.vehicle_type_img);
+        CircleImageView vehi_img=v.findViewById(R.id.vehicle_img);
+
+        TextView txt_amount=v.findViewById(R.id.txt_amount);
+        TextView txt_book_type=v.findViewById(R.id.txt_book_type);
+        TextView txt_vehicle_no=v.findViewById(R.id.txt_vehicle_no);
+        TextView txt_vehicle_type=v.findViewById(R.id.txt_vehicle_type);
+        TextView txt_from=v.findViewById(R.id.txt_from_add);
+        TextView txt_to=v.findViewById(R.id.txt_to_add);
+        TextView txt_date=v.findViewById(R.id.txt_date);
+        TextView btn_submit=v.findViewById(R.id.txt_book_done);
+        txt_from.setText(et_location.getText().toString().trim());
+        txt_to.setText(et_location2.getText().toString().trim());
+        txt_date.setText(datenew);
+        txt_vehicle_no.setText(book_vehicle_no);
+        txt_book_type.setText(Book_status);
+        txt_vehicle_type.setText(get_vehicle_type);
+
+        DecimalFormat df2 = new DecimalFormat("#.##");
+        if (book_amount != null) {
+            txt_amount.setText(df2.format(Double.valueOf(book_amount)));
+        } else {
+            txt_amount.setText("0.00");
+        }
+        Picasso.with(From_Location.this).load(get_Vehicle_icon).into(vehi_typ_img);
+        Picasso.with(From_Location.this).load(book_vehicle_image).into(vehi_img);
+        dialog.setContentView(v);
+        btn_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Check_booking_status=false;
+                dialog.dismiss();
+                get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+            }
+        });
+        dialog.show();
+
 
     }
 

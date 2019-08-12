@@ -120,16 +120,16 @@ public class Vehicle_reg extends AppCompatActivity {
                     Toast.makeText(Vehicle_reg.this, "Upload Permit", Toast.LENGTH_SHORT).show();
                 }else if (PATH_VEHICLE=="")
                 {
-                    Toast.makeText(Vehicle_reg.this, "Upload Permit", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Vehicle_reg.this, "Upload Vehicle Image", Toast.LENGTH_SHORT).show();
                 }else if (PATH_RC=="")
                 {
-                    Toast.makeText(Vehicle_reg.this, "Upload Permit", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Vehicle_reg.this, "Upload RC", Toast.LENGTH_SHORT).show();
                 }else if (PATH_INSURENSE=="")
                 {
-                    Toast.makeText(Vehicle_reg.this, "Upload Permit", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Vehicle_reg.this, "Upload Insurense", Toast.LENGTH_SHORT).show();
                 }else if (PATH_OTHER_DOC=="")
                 {
-                    Toast.makeText(Vehicle_reg.this, "Upload Permit", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Vehicle_reg.this, "Upload Other Doc", Toast.LENGTH_SHORT).show();
                 }else if (ed_no.getText().toString().isEmpty())
                 {
                     ed_no.setError("Enter vehicle no.");

@@ -16,6 +16,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import aaronsoftech.in.unber.Activity.From_Location;
 import aaronsoftech.in.unber.POJO.Response_All_Vehicle;
 import aaronsoftech.in.unber.POJO.Response_Booking;
 import aaronsoftech.in.unber.POJO.Response_Booking_List;
@@ -82,43 +83,30 @@ public class Adapter_user_list extends RecyclerView.Adapter<Adapter_user_list.My
            LayoutInflater inflater = ((Activity) mcon).getLayoutInflater();
            View v = inflater.inflate(R.layout.layout_trip_details, null);
            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
-           TextView txt_add_from = v.findViewById(R.id.txt_from);
-           TextView txt_add_to = v.findViewById(R.id.txt_to);
-           TextView txt_contact = v.findViewById(R.id.txt_contact);
-           TextView img_icon = v.findViewById(R.id.price);
 
-           CircleImageView img = v.findViewById(R.id.vehicle_type_img);
-           CircleImageView img_driver = v.findViewById(R.id.vehicle_driver);
-           TextView txt_no = v.findViewById(R.id.txt_veh_no);
-           TextView txt_price = v.findViewById(R.id.txt_price);
-           dialog.setContentView(v);
+           CircleImageView cust_img=v.findViewById(R.id.cust_img);
+           TextView txt_amount=v.findViewById(R.id.txt_amount);
+           TextView txt_book_type=v.findViewById(R.id.txt_book_type);
+           TextView txt_from=v.findViewById(R.id.txt_from_add);
+           TextView txt_to=v.findViewById(R.id.txt_to_add);
+           TextView txt_date=v.findViewById(R.id.txt_date);
+           TextView txt_name=v.findViewById(R.id.txt_name);
+           txt_name.setText(get_list.getUname());
+           txt_from.setText(get_list.getFrom_address());
+           txt_to.setText(get_list.getTo_address());
+           txt_date.setText(get_list.getBooked_date_time());
 
-           try {
-               txt_contact.setText("Contact :" + get_list.getUcontact());
-               DecimalFormat df2 = new DecimalFormat("#.##");
-               if (get_list.getAmount() != null) {
-                   txt_price.setText(df2.format(Double.valueOf(get_list.getAmount())));
-               } else {
-                   txt_price.setText("0.00");
-               }
-               txt_add_from.setText("From :" + get_list.getFrom_address());
-               txt_add_to.setText("To :" + get_list.getTo_address());
-               txt_no.setText("Name :" + String.valueOf(get_list.getUname()));
-               String img_url = String.valueOf(get_list.getVehicle_image().toString());
-               Picasso.with(this.con).load(img_url).fit().centerCrop()
-                       .placeholder(R.drawable.ic_user)
-                       .error(R.drawable.ic_user)
-                       .into(img);
 
-               String img_url_profile = String.valueOf(get_list.getUimage().toString());
-               Picasso.with(this.con).load(img_url_profile).fit().centerCrop()
-                       .placeholder(R.drawable.ic_user)
-                       .error(R.drawable.ic_user)
-                       .into(img_driver);
-
-           } catch (Exception e) {
-               e.printStackTrace();
+           DecimalFormat df2 = new DecimalFormat("#.##");
+           if (get_list.getAmount() != null) {
+               txt_amount.setText(df2.format(Double.valueOf(get_list.getAmount())));
+           } else {
+               txt_amount.setText("0.00");
            }
+
+           txt_book_type.setText(get_list.getPickup());
+           Picasso.with(mcon).load(get_list.getUimage()).into(cust_img);
+           dialog.setContentView(v);
 
            dialog.show();
        }catch (Exception e){e.printStackTrace();}

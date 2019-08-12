@@ -50,7 +50,7 @@
     <string name="txt_title_insurense">Take a photo of your \n <b>Insurance</b></string>
 
     <string name="txt_title_profile">Take a photo of your \n <b>Profile Photo </b></string>
-    <string name="txt_message_profile">Customers will use this photo to identify you.Looking friendly makes a great impression.</string>
+    <string name="txt_message_profile">Customers will use this photo to identify you. \n Looking friendly makes a great impression.</string>
 
     <string name="txt_message_aadhar">Please upload the document by taking a picture</string>
     <string name="txt_title_aadhar">Take a photo of your \n <b>Aadhar card</b></string>

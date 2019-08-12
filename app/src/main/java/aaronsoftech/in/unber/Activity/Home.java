@@ -6,12 +6,14 @@ import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,6 +56,9 @@ import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -106,7 +111,7 @@ import retrofit2.Response;
 import static aaronsoftech.in.unber.Utils.App_Utils.isNetworkAvailable;
 
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,Adapter_user_list.Vehicle_Item_listner, PaymentResultListener {
+        implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback,Adapter_user_list.Vehicle_Item_listner, PaymentResultListener , LocationListener {
     private GoogleMap mMap;
     CustomInfoWindowAdapter wind_adaptet;
     ArrayList<String> google_map_list = new ArrayList<String>();
@@ -120,6 +125,10 @@ public class Home extends AppCompatActivity
     private DatabaseReference mDatabase;
     double lat= 0.0;
     double lng= 0.0;
+
+    double current_lat= 0.0;
+    double current_lng= 0.0;
+
     boolean setCurrentLocation=true;
 
     List<FB_Driver_res >get_driver_vehicle=new ArrayList<>();
@@ -139,6 +148,7 @@ public class Home extends AppCompatActivity
     TextView btn_finish_ride_driver,btn_finish_ride_user,btn_from_address;
     String get_Selected_Driver_Id;
     String get_BookID_Status,get_vehicle_id_status,get_book_id_2;
+    private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +159,11 @@ public class Home extends AppCompatActivity
         Init();
         Checkout.preload(getApplicationContext());
 
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         try{
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -157,6 +172,7 @@ public class Home extends AppCompatActivity
             try{
                 booked_id= String.valueOf(getIntent().getExtras().get("book_id"));
             }catch (Exception e){e.printStackTrace();}
+
 
             try{
                 Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"")+"\n\n"+"Driver ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""), Toast.LENGTH_SHORT).show();
@@ -420,7 +436,7 @@ public class Home extends AppCompatActivity
                                     || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
                                     || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
                             {
-                                btn_from_address.setText("Where you wanna go?");
+                                btn_from_address.setText("Where to ?");
                             }else{
                                 btn_from_address.setText("Show your Vehicle");
                             }
@@ -565,7 +581,7 @@ public class Home extends AppCompatActivity
                     // Extract a Message object from the DataSnapshot
                     Response_Booking message = child.getValue(Response_Booking.class);
                     if (message.getStatus().toString().equalsIgnoreCase("Active") || message.getStatus().toString().equalsIgnoreCase("Running"))
-                   {
+                     {
                       //  String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
                         if (message.getDriver_id().equalsIgnoreCase(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"")) && (Accept_this_booking==0) )
                         {
@@ -986,17 +1002,18 @@ public class Home extends AppCompatActivity
         } catch (Exception e) {
             e.printStackTrace();
         }
+        btn_finish_ride_user.setVisibility(View.VISIBLE);
+        btn_finish_ride_driver.setVisibility(View.VISIBLE);
+      //  double dist_value=distance(current_lat,current_lng,to_lat,to_lng);
 
-        double dist_value=distance(lat,lng,to_lat,to_lng);
-
-        Log.i(TAG,"Home || addstart_end_icontrip || dist_value in km :"+dist_value);
+        /*Log.i(TAG,"Home || addstart_end_icontrip || dist_value in km :"+dist_value);
         if (dist_value<5){
             btn_finish_ride_user.setVisibility(View.VISIBLE);
             btn_finish_ride_driver.setVisibility(View.VISIBLE);
         }else{
             btn_finish_ride_user.setVisibility(View.GONE);
             btn_finish_ride_driver.setVisibility(View.GONE);
-        }
+        }*/
 
         try {
 
@@ -1079,7 +1096,7 @@ public class Home extends AppCompatActivity
                     || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
                     || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
             {
-                btn_from_address.setText("Where you wanna go?");
+                btn_from_address.setText("Where to ?");
             }else{
                 btn_from_address.setText("Show your Vehicle");
             }
@@ -1234,6 +1251,7 @@ public class Home extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 layout_user_profile_list.setVisibility(View.GONE);
+                btn_from_address.setText("Where to ?");
             }
 
             @Override
@@ -1564,6 +1582,15 @@ public class Home extends AppCompatActivity
             startActivity(new Intent(Home.this,Acc_setting.class));
         } else if (id == R.id.nav_your_trips) {
             startActivity(new Intent(Home.this,Trip.class));
+        }else if (id == R.id.nav_logout) {
+            mGoogleSignInClient.signOut();
+            App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+            App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+            App_Conteroller.editor.clear();
+            App_Conteroller.editor.commit();
+            startActivity(new Intent(Home.this,login_mobile.class).
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+            finish();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -1608,6 +1635,27 @@ public class Home extends AppCompatActivity
 
     @Override
     public void OnClick_item(Response_Booking_List.User_List user_list) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        current_lat=location.getLatitude();
+        current_lng=location.getLongitude();
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
 
     }
 }

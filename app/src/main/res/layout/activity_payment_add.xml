@@ -65,7 +65,7 @@
         android:layout_height="56dp">
         <ImageView
             android:layout_width="30dp"
-            android:src="@drawable/ic_paytm"
+            android:src="@drawable/car"
             android:layout_height="30dp" />
         <TextView
             android:layout_width="match_parent"

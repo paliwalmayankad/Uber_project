@@ -41,10 +41,10 @@ public class Splash extends AppCompatActivity {
                 if (userid.equalsIgnoreCase("") || userid.equalsIgnoreCase(null))
                 {
                    startActivity(new Intent(Splash.this,login_mobile.class));
-                    overridePendingTransition(R.anim.slide_out, R.anim.slide_in);
+
                 }else{
                     startActivity(new Intent(Splash.this,Home.class).putExtra("book_id",book_id));
-                    overridePendingTransition(R.anim.slide_out, R.anim.slide_in);
+
                 }
 
             }

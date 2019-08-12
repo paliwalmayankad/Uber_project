@@ -53,9 +53,8 @@
                 <ImageView
                     android:id="@+id/expandedImage"
                     android:layout_width="match_parent"
-                    android:layout_height="175dp"
+                    android:layout_height="155dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/black_logo"
                     app:layout_collapseMode="parallax"
                     app:layout_collapseParallaxMultiplier="0.7" />
 
@@ -86,7 +85,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:text="SAVE AND UPDATE"
+        android:text="SAVE PROFILE"
         android:textSize="20dp"
         android:id="@+id/btn_save"
         android:textColor="@android:color/white"

@@ -78,11 +78,6 @@
                             android:layout_marginEnd="4dp"
                             >
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="25dp"
-                                android:layout_gravity="top"
-                                android:background="@color/colorPrimaryTransparent1" />
 
                             <LinearLayout
                                 android:layout_width="fill_parent"
@@ -104,11 +99,10 @@
                                     android:layout_gravity="center"
                                     android:layout_weight="1"
                                     android:cursorVisible="true"
-                                    android:hint="From address here..."
+                                    android:hint="From address here"
                                     android:inputType="text|textNoSuggestions"
                                     android:padding="5dp"
-                                    android:focusable="false"
-                                    android:focusableInTouchMode="false"
+
                                     android:singleLine="true"
                                     android:textAppearance="?android:attr/textAppearanceMedium"
                                     android:textColor="@android:color/black"
@@ -119,6 +113,7 @@
                                     android:layout_width="wrap_content"
                                     android:src="@drawable/ic_mapplace"
                                     android:id="@+id/find_location"
+                                    android:visibility="gone"
                                     android:layout_height="30dp" />
                                 <fragment
                                     android:id="@+id/place_autocomplete_fragment"
@@ -146,11 +141,6 @@
                             android:layout_marginEnd="4dp"
                            >
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="25dp"
-                                android:layout_gravity="top"
-                                android:background="@color/colorPrimaryTransparent1" />
 
                             <LinearLayout
                                 android:layout_width="fill_parent"
@@ -174,10 +164,7 @@
                                     android:layout_weight="1"
                                     android:background="@drawable/login_et_rectangle1"
                                     android:cursorVisible="true"
-                                    android:editable="true"
-                                    android:focusable="false"
-                                    android:focusableInTouchMode="false"
-                                    android:hint="To address here..."
+                                    android:hint="To address here"
                                     android:inputType="text|textNoSuggestions"
                                     android:padding="5dp"
                                     android:singleLine="true"
@@ -188,6 +175,7 @@
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:src="@drawable/ic_mapplace"
+                                    android:visibility="gone"
                                     android:id="@+id/find_location2"
                                     android:layout_height="30dp" />
                                 <fragment
@@ -237,17 +225,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@drawable/border_line_grey"
+        android:background="@drawable/edittext"
         android:gravity="center"
         android:padding="7dp"
         android:singleLine="true"
-        android:text="Done"
-        android:textColor="@android:color/black"
+        android:text="Search"
         android:textStyle="bold" />
+
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:id="@+id/recycle_vehicle_type"
-            android:visibility="gone"
+            android:background="@android:color/transparent"
             android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

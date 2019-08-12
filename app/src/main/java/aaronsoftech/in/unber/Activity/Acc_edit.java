@@ -283,7 +283,7 @@ public class Acc_edit extends AppCompatActivity  {
 
                             Call_Image_Api(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
 
-                            Toast.makeText(getApplicationContext(), "Update Successfully", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Profile saved", Toast.LENGTH_LONG).show();
 
                         }else{
                             progressDialog.dismiss();
@@ -320,7 +320,7 @@ public class Acc_edit extends AppCompatActivity  {
                 App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
                 App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).photo);
                 App_Conteroller. editor.commit();
-
+                finish();
             }
 
             @Override
