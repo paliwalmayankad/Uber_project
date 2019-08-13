@@ -965,8 +965,15 @@ public class Home extends AppCompatActivity
                             addstart_end_icontrip(message.getFrom_address(),message.getTo_address(),Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()),Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
                             set_line_on_map(from_latlng,to_latlng);
                             Show_Driver_Location(driver_id,message);
-
+                            get_loaction.setVisibility(View.GONE);
+                            get_loaction.setClickable(false);
                         }else{
+
+                            get_loaction.setVisibility(View.VISIBLE);
+                            layout_user_info.setVisibility(View.GONE);
+                            btn_from_address.setText("Where go ?");
+                            get_loaction.setClickable(true);
+
                             layout_user_info.setVisibility(View.GONE);
                             get_loaction.setVisibility(View.VISIBLE);
                         }
@@ -1408,6 +1415,7 @@ public class Home extends AppCompatActivity
                         oldlat=get_lat;
                         oldlong=get_lng;
                     }else {
+                        get_loaction.setVisibility(View.VISIBLE);
                         layout_user_info.setVisibility(View.GONE);
                         get_loaction.setVisibility(View.VISIBLE);
                         btn_from_address.setText("Pending booking");
@@ -1487,6 +1495,11 @@ public class Home extends AppCompatActivity
                         {
                             //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
                             Toast.makeText(Home.this, "Rating success", Toast.LENGTH_SHORT).show();
+                            get_loaction.setVisibility(View.VISIBLE);
+                            layout_user_info.setVisibility(View.GONE);
+                            btn_from_address.setText("Where go ?");
+                            get_loaction.setClickable(true);
+
                         }else{
 
                             Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
