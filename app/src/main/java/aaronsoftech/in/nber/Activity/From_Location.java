@@ -1,6 +1,7 @@
 package aaronsoftech.in.nber.Activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -8,9 +9,11 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -31,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -88,6 +92,7 @@ import java.util.List;
 import java.util.Map;
 
 import aaronsoftech.in.nber.Adapter.Adapter_Vehicle;
+import aaronsoftech.in.nber.Adapter.Adapter_Vehicle_gallery;
 import aaronsoftech.in.nber.Adapter.Adapter_vehicle_type;
 import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.POJO.Response_All_Vehicle;
@@ -106,7 +111,7 @@ import retrofit2.Response;
 import static aaronsoftech.in.nber.Utils.App_Utils.isNetworkAvailable;
 
 public class From_Location extends AppCompatActivity implements LocationListener,GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,Adapter_vehicle_type.Click_Adapter_Item_listner,Adapter_Vehicle.Vehicle_Item_listner,
+        GoogleApiClient.OnConnectionFailedListener,Adapter_Vehicle_gallery.Click_Adapter_Item_listner,Adapter_Vehicle.Vehicle_Item_listner,
         BottomSheetTimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
     String TAG="From_Location";
     LinearLayout coordinatorLayout;
@@ -148,7 +153,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     List<Address> addressList = null;
     List<Response_Vehicle_type.Data_List> get_vehicle_type_list=new ArrayList<>();
     List<Response_All_Vehicle.Data_Vehicle_List> get_vehicle_select_list=new ArrayList<>();
-    RecyclerView recyclerView_vehicle_type,recy_vehicle_list;
+    RecyclerView recy_vehicle_list;
     private DatabaseReference mDatabase;
     boolean Call_driver_book_api=false;
     private static final boolean USE_BUILDERS = false;
@@ -159,13 +164,15 @@ public class From_Location extends AppCompatActivity implements LocationListener
     String book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id;
     String Book_status;
     boolean Check_booking_status=true;
-
+    Gallery galleryview;
     String get_vehicle_type,get_Vehicle_icon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_from__location);
+
+        galleryview=(Gallery)findViewById(R.id.gallery);
 
         btn_order_layout=findViewById(R.id.layout_btn_order);
         rb_time=findViewById(R.id.choice_grid_picker);
@@ -338,10 +345,10 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
 
 
-        recyclerView_vehicle_type = (RecyclerView)findViewById(R.id.recycle_vehicle_type);
+       /* recyclerView_vehicle_type = (RecyclerView)findViewById(R.id.recycle_vehicle_type);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL);
         recyclerView_vehicle_type.setLayoutManager(staggeredGridLayoutManager); // set LayoutManager to RecyclerView
-
+*/
         recy_vehicle_list = (RecyclerView)findViewById(R.id.recycle_vehicle_Select_list);
         StaggeredGridLayoutManager staggeredGridLayoutManager2 = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
         recy_vehicle_list.setLayoutManager(staggeredGridLayoutManager2); // set LayoutManager to RecyclerView
@@ -558,13 +565,15 @@ public class From_Location extends AppCompatActivity implements LocationListener
         progressDialog.setMessage("Loading...");
         progressDialog.show();
         get_vehicle_type_list.clear();
-        recyclerView_vehicle_type.setVisibility(View.VISIBLE);
+   //     recyclerView_vehicle_type.setVisibility(View.VISIBLE);
         HashMap map= new HashMap<>();
 
         if (isNetworkAvailable(From_Location.this))
         {
             Call<Response_Vehicle_type> call= APIClient.getWebServiceMethod().get_All_vehicle_type(map);
             call.enqueue(new Callback<Response_Vehicle_type>() {
+                @SuppressLint("Range")
+                @RequiresApi(api = Build.VERSION_CODES.P)
                 @Override
                 public void onResponse(Call<Response_Vehicle_type> call, Response<Response_Vehicle_type> response) {
                     progressDialog.dismiss();
@@ -586,9 +595,19 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             }
 
                         }
-                        Adapter_vehicle_type adapter_past=new Adapter_vehicle_type(From_Location.this,get_vehicle_type_list,From_Location.this);
-                        recyclerView_vehicle_type.setAdapter(adapter_past);
 
+                      //  final Adapter_Vehicle_gallery galleryImageAdapter= new Adapter_Vehicle_gallery(this);
+
+                        Adapter_Vehicle_gallery adapter_past=new Adapter_Vehicle_gallery(From_Location.this,get_vehicle_type_list,From_Location.this);
+                        galleryview.setAdapter(adapter_past);
+                        galleryview.setRotationY(0.2f);
+                        galleryview.setSpacing(11);
+                        galleryview.setFocusableInTouchMode(true);
+                        galleryview.setUnselectedAlpha(0.80f);
+                        galleryview.setNestedScrollingEnabled(true);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            galleryview.setScreenReaderFocusable(true);
+                        }
                     }else{
                         progressDialog.dismiss();
                         Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();

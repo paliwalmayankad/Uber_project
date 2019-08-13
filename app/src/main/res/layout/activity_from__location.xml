@@ -232,11 +232,13 @@
         android:text="Search"
         android:textStyle="bold" />
 
-        <android.support.v7.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:id="@+id/recycle_vehicle_type"
-            android:background="@android:color/transparent"
-            android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+
+      <Gallery
+        android:id="@+id/gallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+           />
+
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:id="@+id/recycle_vehicle_Select_list"

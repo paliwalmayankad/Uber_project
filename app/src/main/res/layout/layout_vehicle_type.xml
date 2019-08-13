@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="266dp"
     android:orientation="vertical"
     android:layout_gravity="center"
     android:gravity="center"
@@ -10,7 +10,7 @@
     android:id="@+id/layout"
     android:layout_margin="11dp"
     android:background="@color/grey_5"
-    android:layout_height="wrap_content">
+    android:layout_height="188dp">
     <ImageView
         android:layout_width="222dp"
         android:src="@drawable/profile_pics"
