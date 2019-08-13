@@ -12,43 +12,34 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="@color/colorPrimary"
-            android:elevation="0dp"
-            android:gravity="center_vertical"
-            android:minHeight="?attr/actionBarSize"
-            android:popupTheme="@style/AppTheme.PopupOverlay"
-            android:theme="@style/AppYellowTheme">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/toolbar_title"
-                    style="?android:textAppearanceLarge"
-                    android:layout_width="0dp"
-                    android:text="Set Location"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight=".7"
-                    android:gravity="center_vertical"
-                    android:textColor="@android:color/black"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-        </android.support.v7.widget.Toolbar>
-
-
         <LinearLayout
             android:layout_width="match_parent"
-
+            android:layout_marginTop="3dp"
+            android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:paddingLeft="11dp"
+            android:id="@+id/back_btn"
+            android:src="@drawable/ic_arrow_back"
+            android:layout_height="40dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="    For me"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:paddingLeft="11dp"
+                    android:drawableLeft="@drawable/ic_user_black"
+                    android:layout_height="40dp" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
@@ -60,23 +51,15 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:orientation="vertical"
+                    android:layout_marginBottom="11dp"
                     android:layout_height="wrap_content">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingLeft="5dp"
-                        android:background="@color/colorPrimary"
                         android:orientation="horizontal">
 
-                        <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_marginBottom="3dp"
-                            android:layout_weight="1"
-                            android:layout_marginRight="4dp"
-                            android:background="@android:color/white"
-                            android:layout_marginEnd="4dp"
-                            >
 
 
                             <LinearLayout
@@ -84,11 +67,9 @@
                                 android:layout_height="40dp"
                                 android:layout_gravity="center"
                                 android:layout_marginRight="4dp"
-                                android:clipToPadding="false"
                                 android:elevation="5dp"
                                 android:gravity="center"
                                 android:orientation="horizontal"
-                                android:outlineProvider="bounds"
                                 android:layout_marginEnd="4dp"
                                 android:layout_marginStart="4dp">
 
@@ -98,16 +79,12 @@
                                     android:layout_height="match_parent"
                                     android:layout_gravity="center"
                                     android:layout_weight="1"
-                                    android:cursorVisible="true"
                                     android:hint="From address here"
-                                    android:inputType="text|textNoSuggestions"
                                     android:padding="5dp"
-
+                                    android:textSize="18dp"
+                                    android:background="@drawable/login_et_rectangle2"
                                     android:singleLine="true"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"
                                     android:textColor="@android:color/black"
-                                    android:textColorHint="@android:color/darker_gray"
-
                                     />
                                 <ImageView
                                     android:layout_width="wrap_content"
@@ -121,25 +98,14 @@
                                     android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
                                     android:layout_height="match_parent" />
                             </LinearLayout>
-                        </FrameLayout>
 
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/colorPrimary"
                         android:paddingLeft="5dp"
                         android:orientation="vertical">
-
-                        <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_marginBottom="3dp"
-                            android:layout_marginRight="4dp"
-                            android:background="@android:color/white"
-                            android:layout_marginEnd="4dp"
-                           >
 
 
                             <LinearLayout
@@ -148,11 +114,10 @@
                                 android:layout_gravity="center"
                                 android:layout_marginRight="4dp"
                                 android:clipToPadding="false"
-                                android:elevation="5dp"
                                 android:gravity="center"
                                 android:orientation="horizontal"
-                                android:outlineProvider="bounds"
                                 android:layout_marginEnd="4dp"
+                                android:layout_marginStart="4dp"
                                 >
 
 
@@ -162,16 +127,13 @@
                                     android:layout_height="match_parent"
                                     android:layout_gravity="center"
                                     android:layout_weight="1"
-                                    android:background="@drawable/login_et_rectangle1"
-                                    android:cursorVisible="true"
                                     android:hint="To address here"
-                                    android:inputType="text|textNoSuggestions"
                                     android:padding="5dp"
+                                    android:textSize="18dp"
                                     android:singleLine="true"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"
                                     android:textColor="@android:color/black"
                                     android:textColorHint="@android:color/darker_gray"
-                                    android:windowSoftInputMode="stateHidden" />
+                                    />
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:src="@drawable/ic_mapplace"
@@ -184,9 +146,9 @@
                                     android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
                                     android:layout_height="match_parent" />
                             </LinearLayout>
-                        </FrameLayout>
 
                     </LinearLayout>
+
                 </LinearLayout>
 
             </LinearLayout>

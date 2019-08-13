@@ -1520,7 +1520,7 @@ public class Home extends AppCompatActivity
         TextView driver_contect=findViewById(R.id.txt_mobile);
         TextView driver_veh_no=findViewById(R.id.txt_veh_no);
         TextView driver_amount=findViewById(R.id.txt_amount);
-
+        get_Selected_Driver_Id=driver_id;
         DecimalFormat df2=new DecimalFormat("#.##");
         if (amount!=null)
         {
@@ -1565,9 +1565,6 @@ public class Home extends AppCompatActivity
         try{
             Picasso.with(Home.this).load(photo).error(R.drawable.ic_user).into(driver_image);
         }catch (Exception e){e.printStackTrace();}
-
-
-
 
         btn_finish_ride_user.setOnClickListener(new View.OnClickListener() {
             @Override

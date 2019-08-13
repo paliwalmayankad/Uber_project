@@ -175,7 +175,13 @@ public class From_Location extends AppCompatActivity implements LocationListener
         setContentView(R.layout.activity_from__location);
 
         galleryview=(Gallery)findViewById(R.id.gallery);
-
+        ImageView btnback=findViewById(R.id.back_btn);
+        btnback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         btn_order_layout=findViewById(R.id.layout_btn_order);
         rb_time=findViewById(R.id.choice_grid_picker);
         rb_date=findViewById(R.id.choice_date_picker);
@@ -195,7 +201,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         String datenew=App_Utils.getCurrentdate();
                         Show_Dialog_booking(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
 
-                   //     get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+                      //get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
                     }else{
                         Toast.makeText(From_Location.this, "Already ride pending", Toast.LENGTH_SHORT).show();
                 }
@@ -296,7 +302,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             }
         });
 
-        setToolbar();
+
             btn_done =(TextView)findViewById(R.id.txt_done);
             btn_done.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -617,7 +623,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     private void Call_Select_Vihicle_Api(String vehicle_id, final String vehicle_price) {
         progressDialog=new ProgressDialog(this);
-        progressDialog.setCancelable(false);
+        progressDialog.setCancelable(true);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
 
@@ -743,6 +749,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
             Adapter_Vehicle_gallery adapter_past=new Adapter_Vehicle_gallery(From_Location.this,get_vehicle_type_list);
             galleryview.setAdapter(adapter_past);
+            galleryview.setSpacing(22);
+            galleryview.setUnselectedAlpha(55);
             galleryview.setHorizontalScrollBarEnabled(true);
                         galleryview.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override

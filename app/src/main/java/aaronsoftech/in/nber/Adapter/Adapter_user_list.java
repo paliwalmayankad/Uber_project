@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -81,7 +82,10 @@ public class Adapter_user_list extends RecyclerView.Adapter<Adapter_user_list.My
            final BottomSheetDialog dialog = new BottomSheetDialog((Activity)mcon);
            LayoutInflater inflater = ((Activity) mcon).getLayoutInflater();
            View v = inflater.inflate(R.layout.layout_trip_details, null);
-           dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+
+           dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation_bottom;
+           dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+           ((Activity)con).getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
            CircleImageView cust_img=v.findViewById(R.id.cust_img);
            TextView txt_amount=v.findViewById(R.id.txt_amount);
