@@ -1474,6 +1474,15 @@ public class Home extends AppCompatActivity
             }
         });
 
+        driver_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:"+contactno));
+                startActivity(intent);
+            }
+        });
+
         try{
             Picasso.with(Home.this).load(veh_img).error(R.drawable.ic_user).into(driver_vehicle);
         }catch (Exception e){e.printStackTrace();}
@@ -1481,6 +1490,9 @@ public class Home extends AppCompatActivity
         try{
             Picasso.with(Home.this).load(photo).error(R.drawable.ic_user).into(driver_image);
         }catch (Exception e){e.printStackTrace();}
+
+
+
 
         btn_finish_ride_user.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -51,31 +51,32 @@ public class Adapter_Vehicle_gallery extends BaseAdapter {
     public View getView(final int position, View v, ViewGroup viewGroup) {
 
         v=inflater.inflate(R.layout.layout_vehicle_type,null);
+        try{
+            LinearLayout llayout=v.findViewById(R.id.layout);
+            ImageView img=v.findViewById(R.id.vehicle_type_img);
+            TextView txt_name=v.findViewById(R.id.txt_veh_name);
+            TextView txt_seating=v.findViewById(R.id.txt_seating);
 
-       LinearLayout llayout=v.findViewById(R.id.layout);
-       ImageView img=v.findViewById(R.id.vehicle_type_img);
-       TextView txt_name=v.findViewById(R.id.txt_veh_name);
-       TextView txt_seating=v.findViewById(R.id.txt_seating);
+            txt_name.setText(get_list.get(position).getVehicle_type());
+            if (get_list.get(position).getSeating_capacity()==null)
+            {
+                txt_seating.setText("Seating : 1");
 
-        txt_name.setText(get_list.get(position).getVehicle_type());
-        if (get_list.get(position).getSeating_capacity()==null)
-        {
-            txt_seating.setText("Seating : 1");
-
-        }else{
-            txt_seating.setText("Seating :"+get_list.get(position).getSeating_capacity());
-        }
-        String img_url=get_list.get(position).getVehicle_icon();
-        Picasso.with(con).load(img_url).fit()
-                .placeholder(R.drawable.ic_user)
-                .error(R.drawable.ic_user)
-                .into(img);
-        llayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                click_adapter_item_listner.OnClick_item(get_list.get(position));
+            }else{
+                txt_seating.setText("Seating :"+get_list.get(position).getSeating_capacity());
             }
-        });
+            String img_url=get_list.get(position).getVehicle_icon();
+            Picasso.with(con).load(img_url).fit()
+                    .placeholder(R.drawable.ic_user)
+                    .error(R.drawable.ic_user)
+                    .into(img);
+            llayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    click_adapter_item_listner.OnClick_item(get_list.get(position));
+                }
+            });
+        }catch (Exception e){e.printStackTrace();}
 
         return v;
     }

@@ -55,7 +55,6 @@ public class Adapter_Vehicle extends RecyclerView.Adapter<Adapter_Vehicle.MyView
 
         }
 
-
         holder.txt_no.setText("No :"+String.valueOf(get_list.get(position).getVehicle_number().toString()));
         String img_url=String.valueOf(get_list.get(position).getVehicle_photo().toString());
         Picasso.with(con).load(img_url).fit().centerCrop()

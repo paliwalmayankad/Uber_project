@@ -604,7 +604,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         galleryview.setSpacing(11);
                         galleryview.setFocusableInTouchMode(true);
                         galleryview.setUnselectedAlpha(0.80f);
-                        galleryview.setNestedScrollingEnabled(true);
+                        galleryview.setHorizontalScrollBarEnabled(false);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                             galleryview.setScreenReaderFocusable(true);
                         }
