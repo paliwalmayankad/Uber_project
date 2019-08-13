@@ -3,6 +3,7 @@ package aaronsoftech.in.nber.Utils;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -21,6 +22,7 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
+import android.view.Window;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
@@ -76,6 +78,25 @@ public class App_Utils {
             return null;
         }
         return  Uri.fromFile(mediaFile);
+    }
+
+    public static Dialog createDialog(Context context, boolean single)
+    {
+        final Dialog dialog = new Dialog(context, R.style.ThemeDialogCustom);
+
+        dialog.getWindow().getAttributes().windowAnimations=R.style.dialog_animation;
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        if(single)
+            dialog.setContentView(R.layout.custom_dialog_one);
+        else
+            dialog.setContentView(R.layout.custom_dialog_two);
+
+        dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        dialog.show();
+
+        return dialog;
     }
 
     public static void saveAppVersionAndDeviceId(String gcm_deviceId)

@@ -273,6 +273,73 @@ public class Home extends AppCompatActivity
         });
     }
 
+    private void creatrdialogbox_for_logout()
+    {
+        final Dialog dialog = App_Utils.createDialog(Home.this, false);
+        dialog.setCancelable(false);
+       /* TextView title = (TextView) dialog.findViewById(R.id.txt_DialogHeadingTitle);
+        title.setText("Driver Profile");*/
+        TextView txt_DialogTitle = (TextView) dialog.findViewById(R.id.txt_DialogTitle);
+        txt_DialogTitle.setText("Are you sure you want to logout ?");
+        TextView txt_submit = (TextView) dialog.findViewById(R.id.txt_submit);
+        txt_submit.setText("Yes");
+        txt_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    //    mGoogleSignInClient.signOut();
+                    App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                    App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+                    App_Conteroller.editor.clear();
+                    App_Conteroller.editor.commit();
+                    startActivity(new Intent(Home.this,login_mobile.class).
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                    finish();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        TextView txt_cancel = (TextView) dialog.findViewById(R.id.txt_cancel);
+        txt_cancel.setText("No");
+        txt_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+
+    }
+
+    private void creatrdialogbox_for_exit()
+    {
+        final Dialog dialog = App_Utils.createDialog(Home.this, false);
+        dialog.setCancelable(false);
+       /* TextView title = (TextView) dialog.findViewById(R.id.txt_DialogHeadingTitle);
+        title.setText("Driver Profile");*/
+        TextView txt_DialogTitle = (TextView) dialog.findViewById(R.id.txt_DialogTitle);
+        txt_DialogTitle.setText("Are you sure you want to Exit ?");
+
+        TextView txt_submit = (TextView) dialog.findViewById(R.id.txt_submit);
+        txt_submit.setText("Yes");
+        txt_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        TextView txt_cancel = (TextView) dialog.findViewById(R.id.txt_cancel);
+        txt_cancel.setText("NO");
+        txt_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
     private void ShowBottomSheet(final List<Response_Booking_List.User_List> list, final String bookid) {
         layout_user_profile_list.setVisibility(View.VISIBLE);
         user_list_recycle=findViewById(R.id.user_list_view);
@@ -1137,7 +1204,7 @@ public class Home extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            creatrdialogbox_for_exit();
         }
     }
 
@@ -1461,10 +1528,18 @@ public class Home extends AppCompatActivity
         }else{
             driver_amount.setText(getResources().getString(R.string.rupee_sign)+ " 0.00");
         }
-
-        driver_veh_no.setText("Vehicle no :"+ veh_no);
-        driver_name.setText("Driver name :"+ name);
-        driver_contect.setText("Driver mobile no. :"+ contactno);
+        TextView btn_call=findViewById(R.id.driver_veh2);
+        btn_call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:"+contactno));
+                startActivity(intent);
+            }
+        });
+        driver_veh_no.setText("Vehicle no:"+ veh_no);
+        driver_name.setText("Name:"+ name);
+        driver_contect.setText("Mobile no. :"+ contactno);
         driver_contect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1588,19 +1663,7 @@ public class Home extends AppCompatActivity
         } else if (id == R.id.nav_your_trips) {
             startActivity(new Intent(Home.this,Trip.class));
         }else if (id == R.id.nav_logout) {
-             try{
-             //    mGoogleSignInClient.signOut();
-                 App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
-                 App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
-                 App_Conteroller.editor.clear();
-                 App_Conteroller.editor.commit();
-                 startActivity(new Intent(Home.this,login_mobile.class).
-                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
-                 finish();
-             }catch (Exception e){
-                 e.printStackTrace();
-             }
-
+             creatrdialogbox_for_logout();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

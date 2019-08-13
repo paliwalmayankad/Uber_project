@@ -22,12 +22,11 @@ public class Adapter_Vehicle_gallery extends BaseAdapter {
     LayoutInflater inflater;
     Context con;
     List<Response_Vehicle_type.Data_List> get_list=new ArrayList<>();
-    Adapter_Vehicle_gallery.Click_Adapter_Item_listner click_adapter_item_listner;
 
-    public Adapter_Vehicle_gallery(Context con, List<Response_Vehicle_type.Data_List> get_list, Adapter_Vehicle_gallery.Click_Adapter_Item_listner click_adapter_item_listner) {
+
+    public Adapter_Vehicle_gallery(Context con, List<Response_Vehicle_type.Data_List> get_list) {
         this.con = con;
         this.get_list = get_list;
-        this.click_adapter_item_listner=click_adapter_item_listner;
         inflater = (LayoutInflater.from(con));
 
     }
@@ -56,34 +55,25 @@ public class Adapter_Vehicle_gallery extends BaseAdapter {
             ImageView img=v.findViewById(R.id.vehicle_type_img);
             TextView txt_name=v.findViewById(R.id.txt_veh_name);
             TextView txt_seating=v.findViewById(R.id.txt_seating);
-
+            TextView txt_price=v.findViewById(R.id.txt_km);
             txt_name.setText(get_list.get(position).getVehicle_type());
             if (get_list.get(position).getSeating_capacity()==null)
             {
-                txt_seating.setText("Seating : 1");
+                txt_seating.setText("1");
 
             }else{
-                txt_seating.setText("Seating :"+get_list.get(position).getSeating_capacity());
+                txt_seating.setText(get_list.get(position).getSeating_capacity());
             }
+            txt_price.setText("\u20B9"+get_list.get(position).getKm_price());
             String img_url=get_list.get(position).getVehicle_icon();
             Picasso.with(con).load(img_url).fit()
                     .placeholder(R.drawable.ic_user)
                     .error(R.drawable.ic_user)
                     .into(img);
-            llayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    click_adapter_item_listner.OnClick_item(get_list.get(position));
-                }
-            });
+
         }catch (Exception e){e.printStackTrace();}
 
         return v;
-    }
-
-    public interface Click_Adapter_Item_listner {
-
-        void OnClick_item(Response_Vehicle_type.Data_List getData);
     }
 
 }

@@ -319,7 +319,7 @@ public class Social_Login extends AppCompatActivity implements
         findViewById(R.id.disconnect_button).setOnClickListener(this);
 
         try {
-            PackageInfo info = getPackageManager().getPackageInfo("aaronsoftech.in.unber", PackageManager.GET_SIGNATURES);
+            PackageInfo info = getPackageManager().getPackageInfo("aaronsoftech.in.nber", PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());

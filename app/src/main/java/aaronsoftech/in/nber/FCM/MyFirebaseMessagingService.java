@@ -122,7 +122,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 if(getCurrentPackage().equals(this.getPackageName().toString()))
                 {
 
-                    if(getCurrentPackageCurrentActivity().equals("aaronsoftech.in.unber.Activity.Home"))
+                    if(getCurrentPackageCurrentActivity().equals("aaronsoftech.in.nber.Activity.Home"))
                     {
                         Log.v(TAG, "onMessage Current package is app package");
                         moveIntent = new Intent();

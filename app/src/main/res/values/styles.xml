@@ -16,6 +16,24 @@
         <item name="android:windowEnterAnimation">@anim/slide_out</item>
         <item name="android:windowExitAnimation">@anim/slide_in</item>
     </style>
+    <style name="ThemeDialogCustom" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+    </style>
+
+    <!-- for dialog animation -->
+    <style name="dialog_animation">
+        <item name="android:windowEnterAnimation">@anim/anim_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_out</item>
+    </style>
     <!-- Animation for dialog box -->
     <style name="DialogSlideAnim" parent="@android:style/Theme.Dialog">
         <item name="android:windowAnimationStyle">@style/DialogAnimation_bottom</item>

@@ -34,9 +34,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -111,7 +113,7 @@ import retrofit2.Response;
 import static aaronsoftech.in.nber.Utils.App_Utils.isNetworkAvailable;
 
 public class From_Location extends AppCompatActivity implements LocationListener,GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,Adapter_Vehicle_gallery.Click_Adapter_Item_listner,Adapter_Vehicle.Vehicle_Item_listner,
+        GoogleApiClient.OnConnectionFailedListener,Adapter_Vehicle.Vehicle_Item_listner,
         BottomSheetTimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
     String TAG="From_Location";
     LinearLayout coordinatorLayout;
@@ -353,6 +355,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
         StaggeredGridLayoutManager staggeredGridLayoutManager2 = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
         recy_vehicle_list.setLayoutManager(staggeredGridLayoutManager2); // set LayoutManager to RecyclerView
 
+        Call_Vihicle_Api();
+
         Set_location_on_map();
 
     }
@@ -560,11 +564,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     }
 
     private void Call_Vihicle_Api() {
-        progressDialog=new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Loading...");
-        progressDialog.show();
-        get_vehicle_type_list.clear();
+
    //     recyclerView_vehicle_type.setVisibility(View.VISIBLE);
         HashMap map= new HashMap<>();
 
@@ -576,7 +576,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 @RequiresApi(api = Build.VERSION_CODES.P)
                 @Override
                 public void onResponse(Call<Response_Vehicle_type> call, Response<Response_Vehicle_type> response) {
-                    progressDialog.dismiss();
+
                     String status=response.body().getApi_status();
                     String msg=response.body().getApi_message();
                     String gender_value=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_GENDER,"");
@@ -593,30 +593,19 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             }else{
                                 get_vehicle_type_list.add(response.body().getData().get(i));
                             }
-
                         }
 
                       //  final Adapter_Vehicle_gallery galleryImageAdapter= new Adapter_Vehicle_gallery(this);
 
-                        Adapter_Vehicle_gallery adapter_past=new Adapter_Vehicle_gallery(From_Location.this,get_vehicle_type_list,From_Location.this);
-                        galleryview.setAdapter(adapter_past);
-                        galleryview.setRotationY(0.2f);
-                        galleryview.setSpacing(11);
-                        galleryview.setFocusableInTouchMode(true);
-                        galleryview.setUnselectedAlpha(0.80f);
-                        galleryview.setHorizontalScrollBarEnabled(false);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                            galleryview.setScreenReaderFocusable(true);
-                        }
                     }else{
-                        progressDialog.dismiss();
+
                         Toast.makeText(From_Location.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Response_Vehicle_type> call, Throwable t) {
-                    progressDialog.dismiss();
+
                     Toast.makeText(From_Location.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
@@ -751,8 +740,29 @@ public class From_Location extends AppCompatActivity implements LocationListener
             set_line_on_map(FROM_latLng,TO_latlng);
 
             btn_done.setText("Distance in km: "+String.valueOf(distance(Double.valueOf(FROM_LAT),Double.valueOf(FROM_LNG),Double.valueOf(TO_LAT),Double.valueOf(TO_LNG))));
-            Call_Vihicle_Api();
 
+            Adapter_Vehicle_gallery adapter_past=new Adapter_Vehicle_gallery(From_Location.this,get_vehicle_type_list);
+            galleryview.setAdapter(adapter_past);
+            galleryview.setHorizontalScrollBarEnabled(true);
+                        galleryview.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                        if (get_vehicle_type_list.get(i).getKm_price()==null)
+                        {
+                            Call_Select_Vihicle_Api(get_vehicle_type_list.get(i).getId(),"1");
+                        }else{
+                            Call_Select_Vihicle_Api(get_vehicle_type_list.get(i).getId(),get_vehicle_type_list.get(i).getKm_price());
+                        }
+                        get_vehicle_type=get_vehicle_type_list.get(i).getVehicle_type();
+                        get_Vehicle_icon=get_vehicle_type_list.get(i).getVehicle_icon();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
         }
         else {
             Toast.makeText(this, "Please select Start point and end point", Toast.LENGTH_SHORT).show();
@@ -1360,7 +1370,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         });
     }
 
-    @Override
+    /*@Override
     public void OnClick_item(Response_Vehicle_type.Data_List vehicle_type) {
         if (vehicle_type.getKm_price()==null)
         {
@@ -1371,8 +1381,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         get_vehicle_type=vehicle_type.getVehicle_type();
         get_Vehicle_icon=vehicle_type.getVehicle_icon();
 
-
-    }
+    }*/
 
     @Override
     public void onTimeSet(ViewGroup viewGroup, int hourOfDay, int minute) {
