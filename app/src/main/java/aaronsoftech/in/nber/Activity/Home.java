@@ -187,12 +187,18 @@ public class Home extends AppCompatActivity
                             || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
                     {
                         startActivity(new Intent(Home.this,From_Location.class));
+                        btn_from_address.setText("Where to ?");
                     }else{
                         startActivity(new Intent(Home.this,Vehicle_reg.class));
+                        btn_from_address.setText("Show your Vehicle");
                     }
 
                 }
             });
+
+
+
+
 
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -971,9 +977,7 @@ public class Home extends AppCompatActivity
 
                             get_loaction.setVisibility(View.VISIBLE);
                             layout_user_info.setVisibility(View.GONE);
-                            btn_from_address.setText("Where go ?");
                             get_loaction.setClickable(true);
-
                             layout_user_info.setVisibility(View.GONE);
                             get_loaction.setVisibility(View.VISIBLE);
                         }
@@ -1187,6 +1191,10 @@ public class Home extends AppCompatActivity
         Check_User_Id_on_firebase();
         super.onResume();
     }
+
+
+
+
 
     private void Give_Permission() {
         Handler handler  = new Handler();

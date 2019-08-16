@@ -1,172 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context="aaronsoftech.in.nber.Activity.Driver_document">
     <LinearLayout
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_marginBottom="11dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
         <ImageView
             android:layout_width="wrap_content"
             android:padding="11dp"
             android:id="@+id/btn_ic_back"
             android:src="@drawable/ic_arrow_back"
             android:layout_height="wrap_content" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="11dp"
-            android:layout_marginTop="11dp"
-            android:text="Please upload your documents"
-            android:textColor="@android:color/black"
-            android:textSize="23dp" />
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/light_gray"
-            android:layout_height="1dp"></View>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="11dp"
-            android:textSize="16dp"
-            android:id="@+id/txt_licence"
-            android:textColor="@android:color/black"
-            android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="Driver's License first side" />
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/light_gray"
-            android:layout_height="1dp"></View>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="11dp"
-            android:textSize="16dp"
-            android:id="@+id/txt_licence2"
-            android:textColor="@android:color/black"
-            android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="Driver's License Second side" />
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/light_gray"
-            android:layout_height="1dp"></View>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="11dp"
-            android:textSize="16dp"
-            android:id="@+id/txt_pancard"
-            android:textColor="@android:color/black"
-            android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="PAN card" />
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/light_gray"
-            android:layout_height="1dp"></View>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="11dp"
-            android:textSize="16dp"
-            android:id="@+id/txt_permit_a"
-            android:textColor="@android:color/black"
-            android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="Permit Part A" />
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/light_gray"
-            android:layout_height="1dp"></View>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="11dp"
-            android:textSize="16dp"
-            android:id="@+id/txt_register_certificate"
-            android:textColor="@android:color/black"
-            android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="Registration Certificte" />
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/light_gray"
-            android:layout_height="1dp"></View>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="11dp"
-            android:textSize="16dp"
-            android:id="@+id/txt_permit_b"
-            android:textColor="@android:color/black"
-            android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="Permit Part B" />
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/light_gray"
-            android:layout_height="1dp"></View>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="11dp"
-            android:textSize="16dp"
-            android:id="@+id/txt_insurence"
-            android:textColor="@android:color/black"
-            android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="Insurance" />
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/light_gray"
-            android:layout_height="1dp"></View>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="11dp"
-            android:textSize="16dp"
-            android:id="@+id/txt_aadhar"
-            android:textColor="@android:color/black"
-            android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="Aadhar card First side" />
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/light_gray"
-            android:layout_height="1dp"></View>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="11dp"
-            android:textSize="16dp"
-            android:id="@+id/txt_aadhar2"
-            android:textColor="@android:color/black"
-            android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="Aadhar card Second side" />
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/light_gray"
-            android:layout_height="1dp"></View>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="11dp"
-            android:textSize="16dp"
-            android:id="@+id/txt_verify"
-            android:textColor="@android:color/black"
-            android:drawableRight="@drawable/ic_arrow_back2"
-            android:text="Police verification file" />
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/light_gray"
-            android:layout_height="1dp"></View>
-        <ImageView
-            android:layout_width="match_parent"
-            android:id="@+id/pic"
-            android:layout_height="wrap_content" />
     </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="11dp"
+                android:layout_marginTop="11dp"
+                android:text="Please upload your documents"
+                android:textColor="@android:color/black"
+                android:textSize="23dp" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_gray"
+                android:layout_height="1dp"></View>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="11dp"
+                android:textSize="16dp"
+                android:id="@+id/txt_licence"
+                android:textColor="@android:color/black"
+                android:drawableRight="@drawable/ic_arrow_back2"
+                android:text="Driver's License first side" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_gray"
+                android:layout_height="1dp"></View>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="11dp"
+                android:textSize="16dp"
+                android:id="@+id/txt_licence2"
+                android:textColor="@android:color/black"
+                android:drawableRight="@drawable/ic_arrow_back2"
+                android:text="Driver's License Second side" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_gray"
+                android:layout_height="1dp"></View>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="11dp"
+                android:textSize="16dp"
+                android:id="@+id/txt_pancard"
+                android:textColor="@android:color/black"
+                android:drawableRight="@drawable/ic_arrow_back2"
+                android:text="PAN card" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_gray"
+                android:layout_height="1dp"></View>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="11dp"
+                android:textSize="16dp"
+                android:id="@+id/txt_permit_a"
+                android:textColor="@android:color/black"
+                android:drawableRight="@drawable/ic_arrow_back2"
+                android:text="Permit Part A" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_gray"
+                android:layout_height="1dp"></View>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="11dp"
+                android:textSize="16dp"
+                android:id="@+id/txt_register_certificate"
+                android:textColor="@android:color/black"
+                android:drawableRight="@drawable/ic_arrow_back2"
+                android:text="Registration Certificte" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_gray"
+                android:layout_height="1dp"></View>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="11dp"
+                android:textSize="16dp"
+                android:id="@+id/txt_permit_b"
+                android:textColor="@android:color/black"
+                android:drawableRight="@drawable/ic_arrow_back2"
+                android:text="Permit Part B" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_gray"
+                android:layout_height="1dp"></View>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="11dp"
+                android:textSize="16dp"
+                android:id="@+id/txt_insurence"
+                android:textColor="@android:color/black"
+                android:drawableRight="@drawable/ic_arrow_back2"
+                android:text="Insurance" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_gray"
+                android:layout_height="1dp"></View>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="11dp"
+                android:textSize="16dp"
+                android:id="@+id/txt_aadhar"
+                android:textColor="@android:color/black"
+                android:drawableRight="@drawable/ic_arrow_back2"
+                android:text="Aadhar card First side" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_gray"
+                android:layout_height="1dp"></View>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="11dp"
+                android:textSize="16dp"
+                android:id="@+id/txt_aadhar2"
+                android:textColor="@android:color/black"
+                android:drawableRight="@drawable/ic_arrow_back2"
+                android:text="Aadhar card Second side" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_gray"
+                android:layout_height="1dp"></View>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="11dp"
+                android:textSize="16dp"
+                android:id="@+id/txt_verify"
+                android:textColor="@android:color/black"
+                android:drawableRight="@drawable/ic_arrow_back2"
+                android:text="Police verification file" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_gray"
+                android:layout_height="1dp"></View>
+            <ImageView
+                android:layout_width="match_parent"
+                android:id="@+id/pic"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ScrollView>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:background="@color/grey_20"
@@ -186,4 +200,4 @@
             android:textColor="@android:color/white"
             android:layout_height="wrap_content" />
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

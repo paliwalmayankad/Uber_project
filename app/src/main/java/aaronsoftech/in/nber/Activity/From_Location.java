@@ -168,6 +168,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     boolean Check_booking_status=true;
     Gallery galleryview;
     String get_vehicle_type,get_Vehicle_icon;
+    boolean check_get_location=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,6 +222,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         Book_status="Later";
                         rb_time.setChecked(true);
                         Show_calander();
+                        check_get_location=false;
                     }else{
                         Toast.makeText(From_Location.this, "Already ride pending", Toast.LENGTH_SHORT).show();
                     }
@@ -307,7 +309,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             btn_done.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                      check_get_location=false;
                       Show_polyline_map();
 
                 }
@@ -319,30 +321,36 @@ public class From_Location extends AppCompatActivity implements LocationListener
             et_location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    try{
-                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                    }catch (Exception e){e.printStackTrace();}
+                    if (check_get_location)
+                    {
+                        try{
+                            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                        }catch (Exception e){e.printStackTrace();}
 
-                    focus_type="FROM";
+                        focus_type="FROM";
+                        check_get_location=true;
+                        et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
+                        et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
+                    }
 
-                    et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
-                    et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
                 }
             });
             et_location2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (check_get_location)
+                    {
+                        try{
+                            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                        }catch (Exception e){e.printStackTrace();}
 
-                    try{
-                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                    }catch (Exception e){e.printStackTrace();}
+                        focus_type="TO";
+                        et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
+                        et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
+                    }
 
-                    focus_type="TO";
-
-                    et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
-                    et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
                 }
             });
 
@@ -752,7 +760,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             galleryview.setSpacing(22);
             galleryview.setUnselectedAlpha(55);
             galleryview.setHorizontalScrollBarEnabled(true);
-                        galleryview.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    galleryview.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
@@ -947,33 +955,35 @@ public class From_Location extends AppCompatActivity implements LocationListener
             {
                 public void run()
                 {
-                    if (focus_type.equalsIgnoreCase("FROM"))
+                    if(check_get_location)
                     {
-                        FROM_latLng=latLng;
-                        et_location.setTag(KEY_LATLNG,latLng);
-                        et_location.setTag(KEY_ADDRESS,mAddress);
-                        et_location.setTag(KEY_LACALITY,subLocality);
-                        et_location.setTag(KEY_CITY,city);
-                        et_location.setTag(KEY_STATE,state);
-                        et_location.setTag(KEY_COUNTRY,country);
-                        et_location.setTag(KEY_POSTCODE,postCode);
-                        et_location.setText(""+fullAddress);
-                        FROM_LAT= String.valueOf(latLng.latitude);
-                        FROM_LNG=String.valueOf(latLng.longitude);
-                    }else{
-                        TO_latlng=latLng;
-                        et_location2.setTag(KEY_LATLNG,latLng);
-                        et_location2.setTag(KEY_ADDRESS,mAddress);
-                        et_location2.setTag(KEY_LACALITY,subLocality);
-                        et_location2.setTag(KEY_CITY,city);
-                        et_location2.setTag(KEY_STATE,state);
-                        et_location2.setTag(KEY_COUNTRY,country);
-                        et_location2.setTag(KEY_POSTCODE,postCode);
-                        et_location2.setText(""+fullAddress);
-                        TO_LAT= String.valueOf(latLng.latitude);
-                        TO_LNG=String.valueOf(latLng.longitude);
+                        if (focus_type.equalsIgnoreCase("FROM"))
+                        {
+                            FROM_latLng=latLng;
+                            et_location.setTag(KEY_LATLNG,latLng);
+                            et_location.setTag(KEY_ADDRESS,mAddress);
+                            et_location.setTag(KEY_LACALITY,subLocality);
+                            et_location.setTag(KEY_CITY,city);
+                            et_location.setTag(KEY_STATE,state);
+                            et_location.setTag(KEY_COUNTRY,country);
+                            et_location.setTag(KEY_POSTCODE,postCode);
+                            et_location.setText(""+fullAddress);
+                            FROM_LAT= String.valueOf(latLng.latitude);
+                            FROM_LNG=String.valueOf(latLng.longitude);
+                        }else{
+                            TO_latlng=latLng;
+                            et_location2.setTag(KEY_LATLNG,latLng);
+                            et_location2.setTag(KEY_ADDRESS,mAddress);
+                            et_location2.setTag(KEY_LACALITY,subLocality);
+                            et_location2.setTag(KEY_CITY,city);
+                            et_location2.setTag(KEY_STATE,state);
+                            et_location2.setTag(KEY_COUNTRY,country);
+                            et_location2.setTag(KEY_POSTCODE,postCode);
+                            et_location2.setText(""+fullAddress);
+                            TO_LAT= String.valueOf(latLng.latitude);
+                            TO_LNG=String.valueOf(latLng.longitude);
+                        }
                     }
-
                 }
             });
         }
