@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -115,6 +116,7 @@ import static aaronsoftech.in.nber.Utils.App_Utils.isNetworkAvailable;
 public class From_Location extends AppCompatActivity implements LocationListener,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,Adapter_Vehicle.Vehicle_Item_listner,
         BottomSheetTimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
+
     String TAG="From_Location";
     LinearLayout coordinatorLayout;
 
@@ -309,6 +311,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
             btn_done.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                      et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
+                      et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
                       check_get_location=false;
                       Show_polyline_map();
 
@@ -321,8 +325,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
             et_location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (check_get_location)
-                    {
+
+                        check_get_location=true;
                         try{
                             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
@@ -332,15 +336,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         check_get_location=true;
                         et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
                         et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
-                    }
+
 
                 }
             });
             et_location2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (check_get_location)
-                    {
+                      check_get_location=true;
                         try{
                             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
@@ -349,7 +352,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         focus_type="TO";
                         et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
                         et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
-                    }
 
                 }
             });
@@ -1212,7 +1214,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         map.put("to_lng",""+TO_LNG);
         map.put("stoppage_date_time",""+date);
         map.put("payment_status","cash");
-        map.put("payment_id","2342687624");
+        map.put("payment_id","00000000");
         map.put("amount",""+pricc);
         map.put("pickup",""+Book_status);
         map.put("uname",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
@@ -1255,16 +1257,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     try{
-
-
-
-
-
-
                                         String name = String.valueOf(dataSnapshot.child("name").getValue());
                                         String state = String.valueOf(dataSnapshot.child("state").getValue());
                                         MarkerOptions marker2 = null;
-
                                         if (name.toString().equalsIgnoreCase("null") || name.toString().equalsIgnoreCase(null) || name.toString().equalsIgnoreCase("") )
                                         {
 
@@ -1285,11 +1280,12 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             });
 
                         }else{
-
+                            progressDialog.dismiss();
                             Toast.makeText(From_Location.this, "status "+status+"\n"+" msg "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-  //                      Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                        Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
                 }
@@ -1302,6 +1298,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 }
             });
         }else{
+            progressDialog.dismiss();
             Toast.makeText(From_Location.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
     }
@@ -1372,11 +1369,31 @@ public class From_Location extends AppCompatActivity implements LocationListener
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
                 String token_no = String.valueOf(dataSnapshot.child("token_id").getValue());
-                if   (Call_driver_book_api)
+                String driver_status = String.valueOf(dataSnapshot.child("driver_status").getValue());
+                if (driver_status.equalsIgnoreCase("Active"))
                 {
-                     Call_driver_book_api=false;
-                     Show_Driver_Location(datetime,vehicleid,amount,driver_ID,vehicle_no,vehicle_image,token_no,vehicle_type_id);
+                    if   (Call_driver_book_api)
+                    {
+                        Call_driver_book_api=false;
+                        Show_Driver_Location(datetime,vehicleid,amount,driver_ID,vehicle_no,vehicle_image,token_no,vehicle_type_id);
+                    }
+                }else{
+                    final Dialog dialog = App_Utils.createDialog(From_Location.this, true);
+                    dialog.setCancelable(false);
+                    TextView txt_DialogTitle = (TextView) dialog.findViewById(R.id.txt_DialogTitle);
+                    txt_DialogTitle.setText("This driver is offline. please select other vehicle");
+                    TextView txt_submit = (TextView) dialog.findViewById(R.id.txt_submit);
+                    txt_submit.setText("OK");
+                    txt_submit.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                            Check_booking_status=true;
+                        }
+                    });
+                    dialog.show();
                 }
+
             }
 
             @Override

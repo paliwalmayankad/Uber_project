@@ -24,11 +24,6 @@ public class Splash extends AppCompatActivity {
         App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
-
-    }
-
-    @Override
-    protected void onResume() {
         Handler handler=new Handler();
         Runnable runnable=new Runnable() {
             @Override
@@ -38,17 +33,16 @@ public class Splash extends AppCompatActivity {
                 }catch (Exception e){e.printStackTrace();}
                 if (userid.equalsIgnoreCase("") || userid.equalsIgnoreCase(null))
                 {
-                   startActivity(new Intent(Splash.this,login_mobile.class));
+                    startActivity(new Intent(Splash.this,login_mobile.class));
 
                 }else{
                     startActivity(new Intent(Splash.this,Home.class).putExtra("book_id",book_id));
-
                 }
+                finish();
 
             }
         };
         handler.postDelayed(runnable,1000);
-
-        super.onResume();
     }
+
 }

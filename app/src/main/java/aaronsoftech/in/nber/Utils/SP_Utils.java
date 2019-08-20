@@ -30,7 +30,7 @@ public class SP_Utils {
     public static String LOGIN_TOKEN_ID="sp_token_id";
     public static String LOGIN_PASSCODE="sp_passcode";
     public static String LOGIN_USR_STATUS="sp_usr_status";
-
+    public static String LOGIN_DRIVER_STATUS="sp_if_driver_status";
     public static String LOGIN_USR_HOME_ADDRESS="sp_usr_home_add";
     public static String LOGIN_USR_HOME_LAT="sp_usr_home_lat";
     public static String LOGIN_USR_HOME_LNG="sp_usr_home_lng";

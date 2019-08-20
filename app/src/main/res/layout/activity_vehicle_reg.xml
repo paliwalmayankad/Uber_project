@@ -100,129 +100,155 @@
              <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
-                android:layout_height="wrap_content">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:background="@color/grey_5"
-                    android:layout_weight="1"
-                    android:padding="11dp"
-                    android:layout_margin="11dp"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="88dp"
-                        android:id="@+id/pic_permit"
-                        app:civ_border_overlay="true"
-                        app:civ_border_width="2dp"
-                        app:civ_border_color="@color/colorPrimaryDark"
-                        android:src="@drawable/profile_pics"
-                        android:layout_height="88dp" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:text="Permit"
-                        android:textSize="14dp"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:textColor="@android:color/black"
-                        android:layout_height="wrap_content" />
+                 android:layout_marginTop="22dp"
+                 android:layout_height="wrap_content">
 
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:padding="11dp"
-                    android:background="@color/grey_5"
-                    android:layout_margin="11dp"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
+                 <android.support.v7.widget.CardView
+                     android:layout_width="match_parent"
+                     android:layout_weight="1"
+                     app:cardCornerRadius="5dp"
+                     app:cardElevation="4dp"
+                     android:layout_margin="11dp"
+                     app:cardPreventCornerOverlap="true"
+                     android:layout_height="111dp">
+                     <RelativeLayout
+                         android:layout_width="match_parent"
+                         android:layout_gravity="center"
+                         android:gravity="center"
+                         android:orientation="vertical"
+                         android:layout_height="wrap_content">
+                         <ImageView
+                             android:layout_width="match_parent"
+                             android:id="@+id/pic_permit"
+                             android:scaleType="fitXY"
+                             android:src="@drawable/ic_driving_license"
+                             android:layout_height="match_parent" />
+                         <TextView
+                             android:layout_width="match_parent"
+                             android:text="Permit"
+                             android:textSize="14dp"
+                             android:layout_gravity="center"
+                             android:gravity="center"
+                             android:layout_alignParentBottom="true"
+                             android:layout_weight="1"
+                             android:background="@color/colorPrimaryTransparent1"
+                             android:textColor="@android:color/black"
+                             android:layout_height="wrap_content" />
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="88dp"
-                        app:civ_border_overlay="true"
-                        app:civ_border_width="2dp"
-                        android:id="@+id/pic_insurece"
-                        app:civ_border_color="@color/colorPrimaryDark"
-                        android:layout_height="88dp"
-                        android:src="@drawable/profile_pics" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:text="Vehicle Insurence ID"
-                        android:textSize="14dp"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:textColor="@android:color/black"
-                        android:layout_height="wrap_content" />
+                     </RelativeLayout>
+                 </android.support.v7.widget.CardView>
+                 <android.support.v7.widget.CardView
+                     android:layout_width="match_parent"
+                     android:layout_weight="1"
+                     app:cardCornerRadius="5dp"
+                     app:cardElevation="4dp"
+                     android:layout_margin="11dp"
+                     app:cardPreventCornerOverlap="true"
+                     android:layout_height="111dp">
+                     <RelativeLayout
+                         android:layout_width="match_parent"
+                         android:layout_gravity="center"
+                         android:gravity="center"
+                         android:orientation="vertical"
+                         android:layout_height="wrap_content">
 
-                </LinearLayout>
+                         <ImageView
+                             android:layout_width="match_parent"
+                             android:id="@+id/pic_insurece"
+                             android:scaleType="fitXY"
+                             android:layout_height="match_parent"
+                             android:src="@drawable/ic_driving_license" />
+                         <TextView
+                             android:layout_width="match_parent"
+                             android:text="Vehicle Insurence ID"
+                             android:textSize="14dp"
+                             android:layout_gravity="center"
+                             android:gravity="center"
+                             android:layout_weight="1"
+                             android:layout_alignParentBottom="true"
+                             android:background="@color/colorPrimaryTransparent1"
+                             android:textColor="@android:color/black"
+                             android:layout_height="wrap_content" />
+
+                     </RelativeLayout>
+                 </android.support.v7.widget.CardView>
+
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
+                android:layout_marginTop="22dp"
                 android:layout_height="wrap_content">
-                <LinearLayout
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:padding="11dp"
-                    android:background="@color/grey_5"
-                    android:layout_margin="11dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="88dp"
-                        app:civ_border_overlay="true"
-                        app:civ_border_width="2dp"
-                        android:id="@+id/pic_vehicle_rc"
-                        app:civ_border_color="@color/colorPrimaryDark"
-                        android:src="@drawable/profile_pics"
-                        android:layout_height="88dp" />
-                    <TextView
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="4dp"
+                    android:layout_margin="11dp"
+                    app:cardPreventCornerOverlap="true"
+                    android:layout_height="111dp">
+
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:text="Vehicle RC"
-                        android:textSize="14dp"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:layout_weight="1"
-                        android:textColor="@android:color/black"
-                        android:layout_height="wrap_content" />
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:id="@+id/pic_vehicle_rc"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_driving_license"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:text="Vehicle RC"
+                            android:textSize="14dp"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:layout_alignParentBottom="true"
+                            android:background="@color/colorPrimaryTransparent1"
+                            android:textColor="@android:color/black"
+                            android:layout_height="wrap_content" />
 
-                </LinearLayout>
-                <LinearLayout
+                    </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:padding="11dp"
-                    android:background="@color/grey_5"
-                    android:layout_margin="11dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="88dp"
-                        app:civ_border_overlay="true"
-                        app:civ_border_width="2dp"
-                        android:id="@+id/pic_other"
-                        app:civ_border_color="@color/colorPrimaryDark"
-                        android:src="@drawable/profile_pics"
-                        android:layout_height="88dp" />
-                    <TextView
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="4dp"
+                    android:layout_margin="11dp"
+                    app:cardPreventCornerOverlap="true"
+                    android:layout_height="111dp">
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:text="Vehicle other Doc"
-                        android:textSize="14dp"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:layout_weight="1"
-                        android:textColor="@android:color/black"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:id="@+id/pic_other"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_driving_license"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:text="Vehicle other Doc"
+                            android:textSize="14dp"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:layout_alignParentBottom="true"
+                            android:background="@color/colorPrimaryTransparent1"
+                            android:textColor="@android:color/black"
+                            android:layout_height="wrap_content" />
 
-                </LinearLayout>
+                    </RelativeLayout>
+                </android.support.v7.widget.CardView>
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
@@ -233,12 +259,12 @@
         android:textSize="22dp"
         android:textStyle="bold"
         android:id="@+id/btn_submit"
-        android:background="@android:color/black"
+        android:background="@drawable/border_line_grey"
         android:layout_gravity="center"
         android:gravity="center"
         android:layout_margin="11dp"
         android:padding="11dp"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:layout_height="wrap_content" />
 
 </LinearLayout>

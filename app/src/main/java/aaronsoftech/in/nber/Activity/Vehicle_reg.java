@@ -48,7 +48,8 @@ public class Vehicle_reg extends AppCompatActivity {
     TextView btn_ok;
     ArrayList vehicle_list=new ArrayList();
     public static String PATH_PERMIT="",PATH_VEHICLE="",PATH_RC="",PATH_INSURENSE="",PATH_OTHER_DOC="";
-    CircleImageView btn_permit,btn_vehicle,btn_vehicle_rc,btn_insurence_id,btn_other_doc;
+    CircleImageView btn_vehicle;
+    ImageView btn_permit,btn_vehicle_rc,btn_insurence_id,btn_other_doc;
     EditText ed_no;
     ProgressDialog progressDialog;
     String TAG="Vehicle_reg";
@@ -367,11 +368,11 @@ public class Vehicle_reg extends AppCompatActivity {
 
     private void Set_docu_pic() {
 
-        if (PATH_PERMIT!=""){    App_Utils.loadProfileImage(Vehicle_reg.this,PATH_PERMIT,btn_permit);                }
+        if (PATH_PERMIT!=""){    App_Utils.loadProfileImage_c(Vehicle_reg.this,PATH_PERMIT,btn_permit);                }
         if (PATH_VEHICLE!=""){   App_Utils.loadProfileImage(Vehicle_reg.this,PATH_VEHICLE,btn_vehicle);              }
-        if (PATH_RC!=""){        App_Utils.loadProfileImage(Vehicle_reg.this,PATH_RC,btn_vehicle_rc);                }
-        if (PATH_INSURENSE!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_INSURENSE,btn_insurence_id);       }
-        if (PATH_OTHER_DOC!=""){ App_Utils.loadProfileImage(Vehicle_reg.this,PATH_OTHER_DOC,btn_other_doc);          }
+        if (PATH_RC!=""){        App_Utils.loadProfileImage_c(Vehicle_reg.this,PATH_RC,btn_vehicle_rc);                }
+        if (PATH_INSURENSE!=""){ App_Utils.loadProfileImage_c(Vehicle_reg.this,PATH_INSURENSE,btn_insurence_id);       }
+        if (PATH_OTHER_DOC!=""){ App_Utils.loadProfileImage_c(Vehicle_reg.this,PATH_OTHER_DOC,btn_other_doc);          }
 
     }
 

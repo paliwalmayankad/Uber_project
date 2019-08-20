@@ -275,11 +275,10 @@ public class Acc_edit extends AppCompatActivity  {
                             App_Conteroller. editor.putString(SP_Utils.LOGIN_COUNTER,""+ed_country.getText().toString().trim());
 
                             App_Conteroller. editor.putString(SP_Utils.LOGIN_ZIP_CODE,""+ed_zipcode.getText().toString().trim());
+
                             App_Conteroller. editor.commit();
 
                             Call_Image_Api(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
-
-                            Toast.makeText(getApplicationContext(), "Profile saved", Toast.LENGTH_LONG).show();
 
                         }else{
                             progressDialog.dismiss();
@@ -287,7 +286,7 @@ public class Acc_edit extends AppCompatActivity  {
                         }
                     }catch (Exception e){
                         Update_info();
-                        Toast.makeText(Acc_edit.this, "try again...!", Toast.LENGTH_SHORT).show();
+                //        Toast.makeText(Acc_edit.this, "try again...!", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
                 }
 
@@ -298,6 +297,7 @@ public class Acc_edit extends AppCompatActivity  {
                 }
             });
         }else{
+            progressDialog.dismiss();
             Toast.makeText(Acc_edit.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
 
@@ -311,11 +311,12 @@ public class Acc_edit extends AppCompatActivity  {
         call.enqueue(new Callback<Response_Login>() {
             @Override
             public void onResponse(Call<Response_Login> call, Response<Response_Login> response) {
-
+                progressDialog.dismiss();
                 App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
                 App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
                 App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).photo);
                 App_Conteroller. editor.commit();
+                Toast.makeText(getApplicationContext(), "Profile saved", Toast.LENGTH_LONG).show();
                 finish();
             }
 

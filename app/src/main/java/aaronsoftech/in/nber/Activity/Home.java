@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -78,6 +79,7 @@ import com.razorpay.PaymentResultListener;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -88,6 +90,7 @@ import java.util.Map;
 import aaronsoftech.in.nber.Adapter.Adapter_user_list;
 import aaronsoftech.in.nber.Adapter.CustomInfoWindowAdapter;
 import aaronsoftech.in.nber.App_Conteroller;
+import aaronsoftech.in.nber.BuildConfig;
 import aaronsoftech.in.nber.Model.FB_Driver_res;
 import aaronsoftech.in.nber.POJO.Customwindow_const;
 import aaronsoftech.in.nber.POJO.Response_Booking;
@@ -143,7 +146,7 @@ public class Home extends AppCompatActivity
     TextView btn_finish_ride_driver,btn_finish_ride_user,btn_from_address;
     String get_Selected_Driver_Id;
     String get_BookID_Status,get_vehicle_id_status,get_book_id_2;
-  //  private GoogleSignInClient mGoogleSignInClient;
+    TextView btn_driver_status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,15 +191,15 @@ public class Home extends AppCompatActivity
                     {
                         startActivity(new Intent(Home.this,From_Location.class));
                         btn_from_address.setText("Where to ?");
+
                     }else{
                         startActivity(new Intent(Home.this,Vehicle_reg.class));
                         btn_from_address.setText("Show your Vehicle");
+
                     }
 
                 }
             });
-
-
 
 
 
@@ -250,10 +253,31 @@ public class Home extends AppCompatActivity
             mapFragment.getMapAsync(this);
             Give_Permission();
 
+            btn_driver_status.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (btn_driver_status.getText().toString().equalsIgnoreCase("Active"))
+                    {
+                        btn_driver_status.setText("Deactive");
+                        btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
+                    }
+                    else
+                        {
+                            btn_driver_status.setText("Active");
+                            btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
+                        }
+
+                    Save_Token_on_firebase(btn_driver_status.getText().toString().trim());
+                    App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                    App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+                    App_Conteroller. editor.putString(SP_Utils.LOGIN_DRIVER_STATUS,""+btn_driver_status.getText().toString().trim());
+                    App_Conteroller. editor.commit();
+                }
+            });
+
         }catch (Exception e){
             e.printStackTrace();
             Crashlytics.logException(e);}
-
     }
 
 
@@ -261,7 +285,7 @@ public class Home extends AppCompatActivity
     public void Init()
     {
         btn_from_address=findViewById(R.id.set_loaction);
-
+        btn_driver_status=findViewById(R.id.set_driver_status);
         btn_finish_ride_driver =findViewById(R.id.txt_finish_ride);
         btn_finish_ride_user=findViewById(R.id.txt_finish_ride2);
         layout_user_profile_list=findViewById(R.id.layout_bottomsheet_list);
@@ -277,6 +301,22 @@ public class Home extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+
+        try{
+            GetVersionCode versionCode=new GetVersionCode();
+            versionCode.execute();
+           }catch (Exception e){e.printStackTrace();}
+
+        if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_STATUS,"").equalsIgnoreCase("Active"))
+        {
+            btn_driver_status.setText("Active");
+            btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
+
+        }else{
+            btn_driver_status.setText("Deactive");
+            btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
+        }
+
     }
 
     private void creatrdialogbox_for_logout()
@@ -318,6 +358,69 @@ public class Home extends AppCompatActivity
 
     }
 
+
+    private class GetVersionCode extends AsyncTask<Void, String, String> {
+
+        @Override
+
+        protected String doInBackground(Void... voids) {
+
+            String newVersion = null;
+
+            try {
+
+                newVersion = Jsoup.connect("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID + "&hl=it").timeout(30000)
+                        .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                        .referrer("http://www.google.com")
+                        .get()
+                        .select("div[itemprop=softwareVersion]")
+                        .first()
+                        .ownText();
+
+                return newVersion;
+
+            } catch (Exception e) {
+
+                return newVersion;
+
+            }
+
+        }
+
+
+        @Override
+
+        protected void onPostExecute(String onlineVersion) {
+
+            super.onPostExecute(onlineVersion);
+
+            if (onlineVersion != null && !onlineVersion.isEmpty()) {
+
+                if (!String.valueOf(BuildConfig.VERSION_NAME).equalsIgnoreCase(String.valueOf(onlineVersion))) {
+
+                    final Dialog dialog = App_Utils.createDialog(Home.this, false);
+                    dialog.setCancelable(false);
+                    TextView txt_DialogTitle = (TextView) dialog.findViewById(R.id.txt_DialogTitle);
+                    txt_DialogTitle.setText("Please update this app on playstore");
+
+                    TextView txt_submit = (TextView) dialog.findViewById(R.id.txt_submit);
+                    txt_submit.setText("UPDATE NOW");
+                    txt_submit.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID)));
+                        }
+                    });
+                    dialog.show();
+
+                }
+
+            }
+
+        }
+    }
+
     private void creatrdialogbox_for_exit()
     {
         final Dialog dialog = App_Utils.createDialog(Home.this, false);
@@ -346,7 +449,7 @@ public class Home extends AppCompatActivity
         dialog.show();
     }
 
-    private void ShowBottomSheet(final List<Response_Booking_List.User_List> list, final String bookid) {
+    private void ShowBottomSheet(final List<Response_Booking_List.User_List> list, final String bookid, final String driverid) {
         layout_user_profile_list.setVisibility(View.VISIBLE);
         user_list_recycle=findViewById(R.id.user_list_view);
         StaggeredGridLayoutManager staggeredGridLayoutManager2 = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
@@ -356,47 +459,73 @@ public class Home extends AppCompatActivity
         btn_finish_ride_driver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-              //  add_payment_gatway(list);
-                Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
-                mDatabase = FirebaseDatabase.getInstance().getReference();
-                mDatabase.child("Driver_ID").child(list.get(0).getDriver_id()).child("status").child("Deactive");
-                mDatabase.addValueEventListener(new ValueEventListener() {
+                final Dialog dialog = App_Utils.createDialog(Home.this, false);
+                dialog.setCancelable(false);
+       /* TextView title = (TextView) dialog.findViewById(R.id.txt_DialogHeadingTitle);
+        title.setText("Driver Profile");*/
+                TextView txt_DialogTitle = (TextView) dialog.findViewById(R.id.txt_DialogTitle);
+                txt_DialogTitle.setText("Are you sure customer give cash on delivery");
+                TextView txt_submit = (TextView) dialog.findViewById(R.id.txt_submit);
+                txt_submit.setText("Yes");
+                txt_submit.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    public void onClick(View v) {
+                        try{
+                            //add_payment_gatway(list);
+                            Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
+                            mDatabase = FirebaseDatabase.getInstance().getReference();
+                            mDatabase.child("Driver_ID").child(driverid).child("status").child("Deactive");
+                            mDatabase.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                                }
+                            });
+                            progressDialog=new ProgressDialog(Home.this);
+                            progressDialog.setCancelable(false);
+                            progressDialog.setMessage("Loading...");
+                            progressDialog.show();
+                            get_Booking_List.clear();
+
+                            Change_ride_status(get_BookID_Status,get_vehicle_id_status,"COD");
+
+                            mDatabase = FirebaseDatabase.getInstance().getReference();
+                            mDatabase.child("Driver_ID").child(driverid).removeValue();
+
+                            try {
+                                Toast.makeText(Home.this, "Payment Successful: ", Toast.LENGTH_SHORT).show();
+                                btn_finish_ride_user.setVisibility(View.GONE);
+                                btn_finish_ride_driver.setVisibility(View.GONE);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Exception in onPaymentSuccess", e);
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                 });
+                TextView txt_cancel = (TextView) dialog.findViewById(R.id.txt_cancel);
+                txt_cancel.setText("No");
+                txt_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
 
-                progressDialog=new ProgressDialog(Home.this);
-                progressDialog.setCancelable(false);
-                progressDialog.setMessage("Loading...");
-                progressDialog.show();
-                get_Booking_List.clear();
 
-                Change_ride_status(get_BookID_Status,get_vehicle_id_status,"COD");
-
-                mDatabase = FirebaseDatabase.getInstance().getReference();
-                mDatabase.child("Driver_ID").removeValue();
-
-                try {
-                    Toast.makeText(Home.this, "Payment Successful: ", Toast.LENGTH_SHORT).show();
-                    btn_finish_ride_user.setVisibility(View.GONE);
-                    btn_finish_ride_driver.setVisibility(View.GONE);
-                } catch (Exception e) {
-                    Log.e(TAG, "Exception in onPaymentSuccess", e);
-                }
             }
         });
         user_list_recycle.setAdapter(aa);
 
     }
 
-    private void add_payment_gatway(List<Response_Booking_List.User_List> list) {
+    /*private void add_payment_gatway(List<Response_Booking_List.User_List> list) {
         final Activity activity = this;
         final Checkout co = new Checkout();
         try {
@@ -431,7 +560,7 @@ public class Home extends AppCompatActivity
 
         }
     }
-
+*/
     /**
      * The name of the function has to be
      * onPaymentSuccess
@@ -441,7 +570,6 @@ public class Home extends AppCompatActivity
     @Override
     public void onPaymentSuccess(String razorpayPaymentID) {
         Log.e(TAG, "Home ||  in onPaymentSuccess------- "+razorpayPaymentID);
-
 
         progressDialog=new ProgressDialog(Home.this);
         progressDialog.setCancelable(false);
@@ -456,7 +584,7 @@ public class Home extends AppCompatActivity
 
 
         try {
-            Toast.makeText(this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
+            Toast.makeText(Home.this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
             btn_finish_ride_user.setVisibility(View.GONE);
             btn_finish_ride_driver.setVisibility(View.GONE);
         } catch (Exception e) {
@@ -473,7 +601,7 @@ public class Home extends AppCompatActivity
     @SuppressWarnings("unused")
     @Override
     public void onPaymentError(int code, String response) {
-        Toast.makeText(this, "Error: "+response, Toast.LENGTH_SHORT).show();
+        Toast.makeText(Home.this, "Error: "+response, Toast.LENGTH_SHORT).show();
         Log.e(TAG, "Home ||  in onPaymentError------- "+response);
 
     }
@@ -584,17 +712,19 @@ public class Home extends AppCompatActivity
         }
     }
 
-    private void Save_Token_on_firebase() {
+    private void Save_Token_on_firebase(String status) {
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         if (refreshedToken.equals(null) || refreshedToken=="")
         {
-            Save_Token_on_firebase();
+            Save_Token_on_firebase(status);
         }else{
             String id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
             mDatabase = FirebaseDatabase.getInstance().getReference();
             Map<String,String> map=new HashMap<>();
             map.put("token_id",refreshedToken);
             map.put("driver_id",id);
+            map.put("driver_status",status);
+
             mDatabase.child("Driver_Token_ID").child(id).setValue(map);
             mDatabase.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -631,7 +761,14 @@ public class Home extends AppCompatActivity
     }
 
     private void Check_driver_booking(final Location location) {
-        Save_Token_on_firebase();
+        if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_STATUS,"").equalsIgnoreCase("Active"))
+        {
+            Save_Token_on_firebase("Active");
+
+        }else{
+            Save_Token_on_firebase("Deactive");
+        }
+
        final List<Integer> get_User_ID=new ArrayList<>();
         get_User_ID.clear();
         get_Booking_list.clear();
@@ -721,6 +858,9 @@ public class Home extends AppCompatActivity
                                 return false;
                             }
                         });
+                         btn_driver_status.setClickable(false);
+                    }else{
+                        btn_driver_status.setClickable(true);
                     }
                 }
             }
@@ -739,7 +879,7 @@ public class Home extends AppCompatActivity
         lat=location.getLatitude();
         lng=location.getLongitude();
         double speed=location.getSpeed();
-        Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
+  //      Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
         String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
         HashMap<String,String> mapw=new HashMap<>();
         mapw.put("driver_ID",""+driver_id);
@@ -792,7 +932,7 @@ public class Home extends AppCompatActivity
         }
     }
 
-    private void Call_driver_book_Api(String driver_ID, final String contact, final String img, final String name, final String bookid) {
+    private void Call_driver_book_Api(final String driver_ID, final String contact, final String img, final String name, final String bookid) {
         progressDialog=new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
@@ -823,7 +963,7 @@ public class Home extends AppCompatActivity
                                 }
                             }
 
-                            ShowBottomSheet(get_list,bookid);
+                            ShowBottomSheet(get_list,bookid,driver_ID);
                             get_Booking_List=get_list;
 
                         }else{
@@ -859,6 +999,7 @@ public class Home extends AppCompatActivity
                     Accept_this_booking=0;
                 }
             });
+
             dialog.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -869,17 +1010,9 @@ public class Home extends AppCompatActivity
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
                     Save_data_on_firebase(mDatabase);
-
                     String driverid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
                     Call_driver_book_Api(driverid,contact,img,name,book_id);
-
-                /*Map<String,String> map=new HashMap<>();
-                //  map.put("token_id",refreshedToken);
-                map.put("driver_id",location.get);
-                mDatabase = FirebaseDatabase.getInstance().getReference();
-                Query myTopPostsQuery = mDatabase.child("Driver_Token_ID");*/
 
                     lat=location.getLatitude();
                     lng=location.getLongitude();
@@ -959,7 +1092,9 @@ public class Home extends AppCompatActivity
                     String UserID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
                     // Get the data as Message objects
                     Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
+
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
+
                         // Extract a Message object from the DataSnapshot
                         Response_Booking message = child.getValue(Response_Booking.class);
 
@@ -973,6 +1108,7 @@ public class Home extends AppCompatActivity
                             Show_Driver_Location(driver_id,message);
                             get_loaction.setVisibility(View.GONE);
                             get_loaction.setClickable(false);
+
                         }else{
 
                             get_loaction.setVisibility(View.VISIBLE);
@@ -1309,8 +1445,10 @@ public class Home extends AppCompatActivity
                             || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
                             || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
                     {
-
+                        btn_driver_status.setVisibility(View.GONE);
                     }else{
+
+                        btn_driver_status.setVisibility(View.VISIBLE);
                         Check_driver_booking(location);
                     }
                 }catch (Exception e){e.printStackTrace();}
@@ -1363,7 +1501,7 @@ public class Home extends AppCompatActivity
                     String veh_img =  String.valueOf(message.getVehicle_image());
                     String vehicle_id=String.valueOf(message.getVehicle_id());
                     String book_id=String.valueOf(message.getBook_id());
-
+                    get_Selected_Driver_Id=driver_ID;
                     if (!name.equalsIgnoreCase("null"))
                     {
                         String state = String.valueOf(dataSnapshot.child("state").getValue());
@@ -1371,7 +1509,7 @@ public class Home extends AppCompatActivity
 
                         show_driver_profile(message,contactno,driver_ID,name,photo,address,city,email,veh_type_id,veh_no,amount,veh_img,vehicle_id,book_id);
 
-                        Toast.makeText(Home.this, "name "+name+"\n"+"get_driverid "+driver_ID, Toast.LENGTH_SHORT).show();
+          //              Toast.makeText(Home.this, "name "+name+"\n"+"get_driverid "+driver_ID, Toast.LENGTH_SHORT).show();
 
                         double get_lat= Double.valueOf(d_lat);
                         double get_lng=Double.valueOf(d_lng);

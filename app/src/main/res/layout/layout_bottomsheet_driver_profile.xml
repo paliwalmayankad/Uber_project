@@ -75,15 +75,16 @@
                         style="?android:attr/ratingBarStyleSmall"
                         android:numStars="5"
                         android:stepSize="0.1"
-                        android:layout_marginRight="55dp"
+
                         android:layout_gravity="center"
                         android:isIndicator="true" />
                     <TextView
                         android:layout_width="match_parent"
                         android:hint="Amount"
-                        android:layout_gravity="center"
-                        android:gravity="right"
+                        android:layout_weight="1"
                         android:textStyle="bold"
+                        android:layout_gravity="right"
+                        android:gravity="right"
                         android:id="@+id/txt_amount"
                         android:textColor="@color/grey_600"
                         android:layout_height="match_parent" />

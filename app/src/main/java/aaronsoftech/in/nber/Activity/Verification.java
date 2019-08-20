@@ -381,7 +381,7 @@ public class Verification extends AppCompatActivity {
                     if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                     {
                         String id=response.body().getId();
-                        Toast.makeText(Verification.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+  //                      Toast.makeText(Verification.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
                         get_login_with_Id(id);
                     }else{
                         progressDialog.dismiss();
@@ -396,6 +396,7 @@ public class Verification extends AppCompatActivity {
                 }
             });
         }else{
+            progressDialog.dismiss();
             Toast.makeText(Verification.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
 
@@ -505,6 +506,7 @@ public class Verification extends AppCompatActivity {
                             finish();
                         }
                     }else{
+                        progressDialog.dismiss();
                         Toast.makeText(Verification.this, "msg "+msg+"\n"+"status "+status, Toast.LENGTH_SHORT).show();
                     }
 
@@ -512,10 +514,12 @@ public class Verification extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<Response_Login> call, Throwable t) {
+                    progressDialog.dismiss();
                     Toast.makeText(Verification.this, "Error "+t.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }else{
+            progressDialog.dismiss();
             Toast.makeText(Verification.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
     }

@@ -23,6 +23,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
@@ -129,6 +130,31 @@ public class App_Utils {
             isM=false;
         }
         return isM;
+    }
+
+
+    public static void loadProfileImage_c(Context conn, String imageURL, ImageView imageView)
+    {
+        try
+        {
+            if(imageURL.equals("")  &&  imageURL.isEmpty())
+            {
+                Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +"://" + conn.getResources().getDrawable(R.drawable.ic_user));
+                Glide.with(conn)
+                        .load(imageUri)
+                        .into(imageView);
+            }
+            else
+            {
+                Glide.with(conn)
+                        .load(imageURL)
+                        .into(imageView);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public static void loadProfileImage(Context conn, String imageURL, CircleImageView imageView)

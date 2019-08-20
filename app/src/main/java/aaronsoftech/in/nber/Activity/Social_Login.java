@@ -143,7 +143,7 @@ public class Social_Login extends AppCompatActivity implements
                     if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                     {
                         String id=response.body().getId();
-                        Toast.makeText(Social_Login.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
+        //                Toast.makeText(Social_Login.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
                         get_login_with_Id(id);
                     }else{
                         progressDialog.dismiss();
@@ -158,6 +158,7 @@ public class Social_Login extends AppCompatActivity implements
                 }
             });
         }else{
+            progressDialog.dismiss();
             Toast.makeText(con, "No Internet", Toast.LENGTH_SHORT).show();
         }
 
@@ -637,6 +638,7 @@ public class Social_Login extends AppCompatActivity implements
                 }
             });
         }else{
+            progressDialog.dismiss();
             Toast.makeText(con, "No Internet", Toast.LENGTH_SHORT).show();
         }
 

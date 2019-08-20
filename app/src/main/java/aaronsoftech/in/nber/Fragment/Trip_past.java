@@ -119,7 +119,7 @@ public class Trip_past extends Fragment{
                              }
 
                         }else{
-                            Toast.makeText(getContext(), "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+       //                     Toast.makeText(getContext(), "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                         }
                     }catch (Exception e){
                         e.printStackTrace();}
