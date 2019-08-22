@@ -63,6 +63,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.IndoorBuilding;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -171,12 +173,15 @@ public class From_Location extends AppCompatActivity implements LocationListener
     Gallery galleryview;
     String get_vehicle_type,get_Vehicle_icon;
     boolean check_get_location=true;
+    LinearLayout layout_loc_one;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_from__location);
 
+        layout_loc_one=findViewById(R.id.layout_one);
         galleryview=(Gallery)findViewById(R.id.gallery);
         ImageView btnback=findViewById(R.id.back_btn);
         btnback.setOnClickListener(new View.OnClickListener() {
@@ -255,6 +260,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.LAT_LNG, Place.Field.NAME));
+
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -277,7 +283,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment2);
         // Specify the types of place data to return.
         autocompleteFragment2.setPlaceFields(Arrays.asList(Place.Field.LAT_LNG, Place.Field.NAME));
-        // Set up a PlaceSelectionListener to handle the response.
+
         autocompleteFragment2.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -653,6 +659,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                     String msg=response.body().getApi_message();
                     if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                     {
+                        googleMap.clear();
                         get_vehicle_select_list.clear();
                         Log.i(TAG,"Log driver price :"+vehicle_price);
                         double price_pkm= Double.valueOf(vehicle_price);
@@ -672,8 +679,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         {
                                 double price=Total_distanse*price_pkm;
                                 get_vehicle_select_list.get(i).setVehicle_price(String.valueOf(price));
+                                get_driver_location(get_vehicle_select_list.get(i).getDriver_id(),i);
                         }
-
                         Adapter_Vehicle adapter_past=new Adapter_Vehicle(From_Location.this,get_vehicle_select_list,From_Location.this);
                         recy_vehicle_list.setAdapter(adapter_past);
 
@@ -693,6 +700,39 @@ public class From_Location extends AppCompatActivity implements LocationListener
             Toast.makeText(From_Location.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void get_driver_location(String driver_id, final int position) {
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Query myTopPostsQuery = mDatabase.child("Driver_Current_latlng_ID").child(driver_id);
+
+        // My top posts by number of stars
+        myTopPostsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
+                String token_no = String.valueOf(dataSnapshot.child("token_no").getValue());
+                String driver_id = String.valueOf(dataSnapshot.child("driver_id").getValue());
+                String driver_lat = String.valueOf(dataSnapshot.child("driver_lat").getValue());
+                String driver_lng = String.valueOf(dataSnapshot.child("driver_lng").getValue());
+                String driver_vehicle_type = String.valueOf(dataSnapshot.child("driver_vehicle_type").getValue());
+                String driver_status = String.valueOf(dataSnapshot.child("driver_status").getValue());
+
+                if (driver_status.equalsIgnoreCase("Active"))
+                {
+                    LatLng latlng=new LatLng(Double.valueOf(driver_lat),Double.valueOf(driver_lng));
+                    show_vehicle_location_list(latlng,driver_id,driver_vehicle_type,position);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        });
     }
 
     private void Set_location_on_map() {
@@ -762,9 +802,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
             galleryview.setSpacing(22);
             galleryview.setUnselectedAlpha(55);
             galleryview.setHorizontalScrollBarEnabled(true);
-                    galleryview.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                galleryview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                         if (get_vehicle_type_list.get(i).getKm_price()==null)
                         {
@@ -774,13 +814,10 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         }
                         get_vehicle_type=get_vehicle_type_list.get(i).getVehicle_type();
                         get_Vehicle_icon=get_vehicle_type_list.get(i).getVehicle_icon();
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
 
                     }
                 });
+
         }
         else {
             Toast.makeText(this, "Please select Start point and end point", Toast.LENGTH_SHORT).show();
@@ -1076,6 +1113,56 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         });
                     }
                 });
+
+
+
+                googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                    @Override
+                    public void onMarkerDragStart(Marker marker) {
+                        layout_loc_one.setVisibility(View.GONE);
+                        recy_vehicle_list.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onMarkerDrag(Marker marker) {
+
+                    }
+
+                    @Override
+                    public void onMarkerDragEnd(Marker marker) {
+                        layout_loc_one.setVisibility(View.VISIBLE);
+                        recy_vehicle_list.setVisibility(View.VISIBLE);
+                    }
+                });
+
+                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+
+                        String Snippet =  marker.getSnippet();
+                        int position=Integer.valueOf(Snippet);
+
+                        book_vehicleid=get_vehicle_select_list.get(position).getId();
+                        book_amount=get_vehicle_select_list.get(position).getVehicle_price();
+                        book_Driver_ID=get_vehicle_select_list.get(position).getDriver_id();
+                        book_vehicle_no=get_vehicle_select_list.get(position).getVehicle_number();
+                        book_vehicle_image=get_vehicle_select_list.get(position).getVehicle_photo();
+                        book_refreshtoken=get_vehicle_select_list.get(position).getToken_no();
+                        book_vehicle_type_id=get_vehicle_select_list.get(position).getVehicle_type_id();
+                        btn_order_layout.setVisibility(View.VISIBLE);
+
+                        /*if (get_vehicle_type_list.get(position).getKm_price()==null)
+                        {
+                            Call_Select_Vihicle_Api(get_vehicle_type_list.get(position).getId(),"1");
+                        }else{
+                            Call_Select_Vihicle_Api(get_vehicle_type_list.get(position).getId(),get_vehicle_type_list.get(position).getKm_price());
+                        }
+                        get_vehicle_type=get_vehicle_type_list.get(position).getVehicle_type();
+                        get_Vehicle_icon=get_vehicle_type_list.get(position).getVehicle_icon();
+*/
+                        return true;
+                    }
+                });
             }
             else
             {
@@ -1098,15 +1185,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        /*mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }*/
 
     }
 
@@ -1145,8 +1223,45 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
     }
 
-    private void set_location_list(final LatLng location) {
+    private void show_vehicle_location_list(final LatLng location,String driver_id,String veh_type_id,int position) {
+        int update_marker2=0;
+        try{
+            double Add_lat= location.latitude;
+            double Add_long= location.longitude;
 
+            FROM_LAT=String.valueOf(Add_lat);
+            FROM_LNG=String.valueOf(Add_long);
+            LatLng latLng = new LatLng(Add_lat, Add_long);
+            MarkerOptions marker3 = null;
+
+            if (update_marker2==0){
+                marker3 = new MarkerOptions().position(location);
+                if (veh_type_id.toString().equalsIgnoreCase("8"))
+                {
+                    marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
+                }else if (veh_type_id.toString().equalsIgnoreCase("7"))
+                {
+                    marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
+                }else if (veh_type_id.toString().equalsIgnoreCase("6"))
+                {
+                    marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
+                }else if (veh_type_id.toString().equalsIgnoreCase("5"))
+                {
+                    marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
+                }else if (veh_type_id.toString().equalsIgnoreCase("4"))
+                {
+                    marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
+                }
+                marker3.snippet(String.valueOf(position));
+                googleMap.addMarker(marker3);
+
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();}
+    }
+
+    private void set_location_list(final LatLng location) {
 
             try{
                 double Add_lat= location.latitude;
@@ -1178,8 +1293,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }catch (Exception e){
                 e.printStackTrace();}
-
-
     }
 
     @Override
@@ -1192,7 +1305,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
          book_vehicle_image=vehicle_id.getVehicle_photo();
          book_refreshtoken=vehicle_id.getToken_no();
          book_vehicle_type_id=vehicle_id.getVehicle_type_id();
-
          btn_order_layout.setVisibility(View.VISIBLE);
 
     }
@@ -1326,15 +1438,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
             call.enqueue(new Callback<Response_register>() {
                 @Override
                 public void onResponse(Call<Response_register> call, Response<Response_register> response) {
-                    progressDialog.dismiss();
+
                     try{
                         String status=response.body().getApi_status();
                         String msg=response.body().getApi_message();
 
                         if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                         {
-                            //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
-                            Toast.makeText(From_Location.this, "status change", Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
                         }else{
 
                             Toast.makeText(From_Location.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();

@@ -35,6 +35,18 @@ public class SP_Utils {
     public static String LOGIN_USR_HOME_LAT="sp_usr_home_lat";
     public static String LOGIN_USR_HOME_LNG="sp_usr_home_lng";
 
+    public static String DRIVER_VEHICLE_TYPE_ID="vehicle_type_id";
+    public static String DRIVER_VEHICLE_NO="vehicle_number";
+    public static String DRIVER_VEHICLE_PIC_RC="vehicle_rc";
+    public static String DRIVER_VEHICLE_PIC_DOC="vehicle_other_doc";
+    public static String DRIVER_VEHICLE_PIC_INSURENCE="vehicle_insurance_id";
+    public static String DRIVER_VEHICLE_PIC_PERMIT="permit";
+    public static String DRIVER_VEHICLE_PIC="vehicle_photo";
+    public static String DRIVER_VEHICLE_STATUS="vehicle_status";
+
+
+    public static String LOGIN_USR_BOOKING_STATUS="sp_usr_booking_status";
+
     public static String LOGIN_USR_WORK_ADDRESS="sp_usr_work_add";
     public static String LOGIN_USR_WORK_LAT="sp_usr_work_lat";
     public static String LOGIN_USR_WORK_LNG="sp_usr_work_lng";

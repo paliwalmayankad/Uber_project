@@ -52,7 +52,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Rating "
-                    android:textSize="18dp"
+                    android:textSize="16dp"
                     android:textColor="@color/overlay_dark_80" />
                 <RatingBar
                     android:id="@+id/rating"
@@ -63,14 +63,15 @@
                     android:padding="5dp"
                     android:background="@drawable/edittext"
                     android:stepSize="0.1"
-                    android:layout_marginRight="55dp"
                     android:layout_gravity="center"
                     android:isIndicator="true" />
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/rupee_sign"
+                    android:layout_weight="1"
                     android:id="@+id/price"
+                    android:gravity="right"
                     android:textSize="18dp"
                     android:textColor="@color/overlay_dark_60" />
                 <TextView

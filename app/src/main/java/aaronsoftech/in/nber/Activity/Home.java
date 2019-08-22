@@ -80,7 +80,11 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,6 +99,7 @@ import aaronsoftech.in.nber.Model.FB_Driver_res;
 import aaronsoftech.in.nber.POJO.Customwindow_const;
 import aaronsoftech.in.nber.POJO.Response_Booking;
 import aaronsoftech.in.nber.POJO.Response_Booking_List;
+import aaronsoftech.in.nber.POJO.Response_Driver_vehicle;
 import aaronsoftech.in.nber.POJO.Response_register;
 import aaronsoftech.in.nber.R;
 import aaronsoftech.in.nber.Service.APIClient;
@@ -147,6 +152,7 @@ public class Home extends AppCompatActivity
     String get_Selected_Driver_Id;
     String get_BookID_Status,get_vehicle_id_status,get_book_id_2;
     TextView btn_driver_status;
+    boolean check_user_from_to_location=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,9 +178,9 @@ public class Home extends AppCompatActivity
             }catch (Exception e){e.printStackTrace();}
 
 
-            try{
+            /*try{
                 Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"")+"\n\n"+"Driver ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""), Toast.LENGTH_SHORT).show();
-            }catch (Exception e){e.printStackTrace();}
+            }catch (Exception e){e.printStackTrace();}*/
 
             get_loaction.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -239,6 +245,12 @@ public class Home extends AppCompatActivity
             image_header = (ImageView) headerView.findViewById(R.id.imageView);
             header_name = (TextView) headerView.findViewById(R.id.textView_name);
             set_Header_value();
+            headerView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(Home.this,Acc_edit.class));
+                }
+            });
             image_header.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -317,6 +329,22 @@ public class Home extends AppCompatActivity
             btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
         }
 
+
+            if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
+                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
+                    || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
+            {
+                String status=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_USR_BOOKING_STATUS,"").trim();
+               if (!(status.equalsIgnoreCase("yes")))
+               {
+                   startActivity(new Intent(Home.this,From_Location.class));
+               }
+            }else{
+                get_loaction.setVisibility(View.VISIBLE);
+                get_driver_vehicle_Api();
+
+            }
+
     }
 
     private void creatrdialogbox_for_logout()
@@ -359,6 +387,56 @@ public class Home extends AppCompatActivity
     }
 
 
+    private void get_driver_vehicle_Api() {
+
+        try{
+            HashMap map= new HashMap<>();
+            map.put("driver_id",App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""));
+            if (isNetworkAvailable(Home.this))
+            {
+                Call<Response_Driver_vehicle> call= APIClient.getWebServiceMethod().get_Driver_Vehicle(map);
+                call.enqueue(new Callback<Response_Driver_vehicle>() {
+                    @Override
+                    public void onResponse(Call<Response_Driver_vehicle> call, Response<Response_Driver_vehicle> response) {
+
+                        try{
+                            String status=response.body().getApi_status();
+                            String msg=response.body().getApi_message();
+                            if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                            {
+                                List< Response_Driver_vehicle.Vehicle_Info> getlist=new ArrayList<>();
+                                getlist=response.body().data;
+
+                                App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                                App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+                                App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_TYPE_ID,""+getlist.get(0).getVehicle_type_id());
+                                App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_NO,""+getlist.get(0).getVehicle_number());
+                                App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_PIC_RC,""+getlist.get(0).getVehicle_rc());
+                                App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_PIC_DOC,""+getlist.get(0).getVehicle_other_doc());
+                                App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_PIC_INSURENCE,""+getlist.get(0).getVehicle_insurance_id());
+                                App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_PIC_PERMIT,""+getlist.get(0).getPermit());
+                                App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_PIC,""+getlist.get(0).getVehicle_photo());
+                                App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_STATUS,""+btn_driver_status.getText().toString().trim());
+                                App_Conteroller. editor.commit();
+
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();}
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Response_Driver_vehicle> call, Throwable t) {
+
+                    }
+                });
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();}
+
+    }
+
     private class GetVersionCode extends AsyncTask<Void, String, String> {
 
         @Override
@@ -368,28 +446,30 @@ public class Home extends AppCompatActivity
             String newVersion = null;
 
             try {
-
-                newVersion = Jsoup.connect("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID + "&hl=it").timeout(30000)
+                Document document = Jsoup.connect("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID  + "&hl=en")
+                        .timeout(30000)
                         .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
                         .referrer("http://www.google.com")
-                        .get()
-                        .select("div[itemprop=softwareVersion]")
-                        .first()
-                        .ownText();
-
-                return newVersion;
-
-            } catch (Exception e) {
-
-                return newVersion;
-
+                        .get();
+                if (document != null) {
+                    Elements element = document.getElementsContainingOwnText("Current Version");
+                    for (Element ele : element) {
+                        if (ele.siblingElements() != null) {
+                            Elements sibElemets = ele.siblingElements();
+                            for (Element sibElemet : sibElemets) {
+                                newVersion = sibElemet.text();
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            return newVersion;
 
         }
 
-
         @Override
-
         protected void onPostExecute(String onlineVersion) {
 
             super.onPostExecute(onlineVersion);
@@ -398,11 +478,10 @@ public class Home extends AppCompatActivity
 
                 if (!String.valueOf(BuildConfig.VERSION_NAME).equalsIgnoreCase(String.valueOf(onlineVersion))) {
 
-                    final Dialog dialog = App_Utils.createDialog(Home.this, false);
+                    final Dialog dialog = App_Utils.createDialog(Home.this, true);
                     dialog.setCancelable(false);
                     TextView txt_DialogTitle = (TextView) dialog.findViewById(R.id.txt_DialogTitle);
                     txt_DialogTitle.setText("Please update this app on playstore");
-
                     TextView txt_submit = (TextView) dialog.findViewById(R.id.txt_submit);
                     txt_submit.setText("UPDATE NOW");
                     txt_submit.setOnClickListener(new View.OnClickListener() {
@@ -417,8 +496,8 @@ public class Home extends AppCompatActivity
                 }
 
             }
-
         }
+
     }
 
     private void creatrdialogbox_for_exit()
@@ -470,6 +549,7 @@ public class Home extends AppCompatActivity
                 txt_submit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        dialog.dismiss();
                         try{
                             //add_payment_gatway(list);
                             Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
@@ -525,42 +605,6 @@ public class Home extends AppCompatActivity
 
     }
 
-    /*private void add_payment_gatway(List<Response_Booking_List.User_List> list) {
-        final Activity activity = this;
-        final Checkout co = new Checkout();
-        try {
-            JSONObject options = new JSONObject();
-            options.put("name", list.get(0).getUname());
-            options.put("description", "Ride booking charges"+"\n"+"From :"+list.get(0).getFrom_address()+"\n"+"To :"+list.get(0).getTo_address());
-            //You can omit the image option to fetch the image from dashboard
-            options.put("image", list.get(0).getUimage());
-            options.put("currency", "INR");
-            DecimalFormat df2=new DecimalFormat("#.##");
-
-            double price= (Double.parseDouble(list.get(0).getAmount()));
-
-            String priceee=df2.format(price);
-            String   pricee = priceee.substring(0, priceee.length() - 3);
-            options.put("amount", String.valueOf(pricee+"00"));
-
-            JSONObject preFill = new JSONObject();
-            //     preFill.put("email", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
-            preFill.put("contact", list.get(0).getUcontact());
-
-            options.put("prefill", preFill);
-
-            co.open(activity, options);
-        } catch (Exception e) {
-            btn_finish_ride_user.setVisibility(View.GONE);
-            btn_finish_ride_driver.setVisibility(View.GONE);
-            Log.i(TAG, "Error in payment: " +e.getMessage());
-            Toast.makeText(activity, "Error in payment: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-
-
-        }
-    }
-*/
     /**
      * The name of the function has to be
      * onPaymentSuccess
@@ -739,6 +783,37 @@ public class Home extends AppCompatActivity
         }
     }
 
+    private void send_driver_current_latlng_on_firebase(String lat,String lng) {
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        if (refreshedToken.equals(null) || refreshedToken=="")
+        {
+            send_driver_current_latlng_on_firebase(lat,lng);
+        }else{
+            String id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+            String vehicle_type_id=App_Conteroller.sharedpreferences.getString(SP_Utils.DRIVER_VEHICLE_TYPE_ID,"");
+            mDatabase = FirebaseDatabase.getInstance().getReference();
+            Map<String,String> map=new HashMap<>();
+            map.put("token_id",refreshedToken);
+            map.put("driver_id",id);
+            map.put("driver_lat",lat);
+            map.put("driver_lng",lng);
+            map.put("driver_vehicle_type",""+vehicle_type_id);
+            map.put("driver_status",""+btn_driver_status.getText().toString().trim());
+            mDatabase.child("Driver_Current_latlng_ID").child(id).setValue(map);
+
+            mDatabase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
     private double distance(double lat1, double lng1, double lat2, double lng2)
     {
 
@@ -808,7 +883,6 @@ public class Home extends AppCompatActivity
                                 addstart_end_icontrip(message.getFrom_address(),message.getTo_address(),Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()),Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
                                 set_line_on_map(from_latlng,to_latlng);
 
-
                         }else if (message.getDriver_id().equalsIgnoreCase(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"")) && (Accept_this_booking==22))
                         {
                             lat=location.getLatitude();
@@ -858,9 +932,10 @@ public class Home extends AppCompatActivity
                                 return false;
                             }
                         });
-                         btn_driver_status.setClickable(false);
+
+
                     }else{
-                        btn_driver_status.setClickable(true);
+
                     }
                 }
             }
@@ -930,6 +1005,7 @@ public class Home extends AppCompatActivity
                     .strokeColor(Color.YELLOW)
                     .fillColor(Color.TRANSPARENT));
         }
+
     }
 
     private void Call_driver_book_Api(final String driver_ID, final String contact, final String img, final String name, final String bookid) {
@@ -1109,6 +1185,12 @@ public class Home extends AppCompatActivity
                             get_loaction.setVisibility(View.GONE);
                             get_loaction.setClickable(false);
 
+                            btn_driver_status.setClickable(false);
+                            App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                            App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_BOOKING_STATUS,"yes");
+                            App_Conteroller. editor.commit();
+
                         }else{
 
                             get_loaction.setVisibility(View.VISIBLE);
@@ -1116,6 +1198,12 @@ public class Home extends AppCompatActivity
                             get_loaction.setClickable(true);
                             layout_user_info.setVisibility(View.GONE);
                             get_loaction.setVisibility(View.VISIBLE);
+
+                            btn_driver_status.setClickable(true);
+                            App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                            App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+                            App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_BOOKING_STATUS,"no");
+                            App_Conteroller. editor.commit();
                         }
                     }
                 }catch (Exception e){e.printStackTrace();}
@@ -1450,6 +1538,7 @@ public class Home extends AppCompatActivity
 
                         btn_driver_status.setVisibility(View.VISIBLE);
                         Check_driver_booking(location);
+                        send_driver_current_latlng_on_firebase(String.valueOf(lat),String.valueOf(lng));
                     }
                 }catch (Exception e){e.printStackTrace();}
 
@@ -1467,6 +1556,7 @@ public class Home extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 layout_user_profile_list.setVisibility(View.GONE);
                 btn_from_address.setText("Where to ?");
+
             }
 
             @Override
