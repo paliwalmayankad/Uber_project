@@ -45,6 +45,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -151,7 +152,7 @@ public class Home extends AppCompatActivity
     TextView btn_finish_ride_driver,btn_finish_ride_user,btn_from_address;
     String get_Selected_Driver_Id;
     String get_BookID_Status,get_vehicle_id_status,get_book_id_2;
-    TextView btn_driver_status;
+    RadioButton btn_driver_status;
     boolean check_user_from_to_location=false;
 
     @Override
@@ -271,11 +272,13 @@ public class Home extends AppCompatActivity
                     if (btn_driver_status.getText().toString().equalsIgnoreCase("Active"))
                     {
                         btn_driver_status.setText("Deactive");
+                        btn_driver_status.setSelected(false);
                         btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
                     }
                     else
                         {
                             btn_driver_status.setText("Active");
+                            btn_driver_status.setSelected(true);
                             btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
                         }
 
@@ -322,10 +325,12 @@ public class Home extends AppCompatActivity
         if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_STATUS,"").equalsIgnoreCase("Active"))
         {
             btn_driver_status.setText("Active");
+            btn_driver_status.setSelected(true);
             btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
 
         }else{
             btn_driver_status.setText("Deactive");
+            btn_driver_status.setSelected(false);
             btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
         }
 
@@ -791,12 +796,14 @@ public class Home extends AppCompatActivity
         }else{
             String id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
             String vehicle_type_id=App_Conteroller.sharedpreferences.getString(SP_Utils.DRIVER_VEHICLE_TYPE_ID,"");
+            String vehicle_no=App_Conteroller.sharedpreferences.getString(SP_Utils.DRIVER_VEHICLE_NO,"");
             mDatabase = FirebaseDatabase.getInstance().getReference();
             Map<String,String> map=new HashMap<>();
             map.put("token_id",refreshedToken);
             map.put("driver_id",id);
             map.put("driver_lat",lat);
             map.put("driver_lng",lng);
+            map.put("driver_vehicle_no",vehicle_no);
             map.put("driver_vehicle_type",""+vehicle_type_id);
             map.put("driver_status",""+btn_driver_status.getText().toString().trim());
             mDatabase.child("Driver_Current_latlng_ID").child(id).setValue(map);
@@ -974,10 +981,10 @@ public class Home extends AppCompatActivity
         mapw.put("country", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_COUNTER,""));
         mapw.put("status","Active");
         Call_firebase_service(mapw);
-
+        mMap.clear();
         MarkerOptions marker3 = null;
 
-        if (update_marker2==0){
+
             marker3 = new MarkerOptions().position(new LatLng(lat, lng));
 
             if (veh_type_id.toString().equalsIgnoreCase("8"))
@@ -1004,7 +1011,7 @@ public class Home extends AppCompatActivity
                     .radius(500)
                     .strokeColor(Color.YELLOW)
                     .fillColor(Color.TRANSPARENT));
-        }
+
 
     }
 
@@ -1113,10 +1120,9 @@ public class Home extends AppCompatActivity
                     mapw.put("country", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_COUNTER,""));
                     mapw.put("status","Active");
                     Call_firebase_service(mapw);
-
+                    mMap.clear();
                     MarkerOptions marker3 = null;
 
-                    if (update_marker2==0){
                         marker3 = new MarkerOptions().position(new LatLng(lat, lng));
                         if (veh_type_id.toString().equalsIgnoreCase("8"))
                         {
@@ -1141,7 +1147,7 @@ public class Home extends AppCompatActivity
                                 .radius(500)
                                 .strokeColor(Color.YELLOW)
                                 .fillColor(Color.TRANSPARENT));
-                    }
+
 
                 }
             });
@@ -1240,7 +1246,7 @@ public class Home extends AppCompatActivity
                     newLoc.setLatitude(get_lat);
                     newLoc.setLongitude(get_lng);
                     float bearing = prevLoc.bearingTo(newLoc);
-                    if (update_marker == 0) {
+
                         marker2 = new MarkerOptions().position(new LatLng(get_lat, get_lng));
                         if (veh_type_id.toString().equalsIgnoreCase("8")) {
                             marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
@@ -1255,9 +1261,8 @@ public class Home extends AppCompatActivity
                         }
 
                         mMap.addMarker(marker2);
-                        update_marker2 = 1;
 
-                    }
+
                 }catch (Exception e){e.printStackTrace();}
             }
 
@@ -1600,7 +1605,7 @@ public class Home extends AppCompatActivity
                         show_driver_profile(message,contactno,driver_ID,name,photo,address,city,email,veh_type_id,veh_no,amount,veh_img,vehicle_id,book_id);
 
           //              Toast.makeText(Home.this, "name "+name+"\n"+"get_driverid "+driver_ID, Toast.LENGTH_SHORT).show();
-
+                        mMap.clear();
                         double get_lat= Double.valueOf(d_lat);
                         double get_lng=Double.valueOf(d_lng);
 
@@ -1612,8 +1617,7 @@ public class Home extends AppCompatActivity
                         newLoc.setLongitude(get_lng);
                         float bearing = prevLoc.bearingTo(newLoc);
                         marker2 = new MarkerOptions().position(new LatLng(get_lat, get_lng));
-                        if (update_marker == 0)
-                        {
+
                             if (veh_type_id.toString().equalsIgnoreCase("8"))
                             {
                                 marker2.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
@@ -1636,7 +1640,7 @@ public class Home extends AppCompatActivity
                             marker2.flat(true);
                             mMap.addMarker(marker2);
                             update_marker = 1;
-                        }
+
 
                         LatLng sydney = new LatLng(get_lat, get_lng);
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));

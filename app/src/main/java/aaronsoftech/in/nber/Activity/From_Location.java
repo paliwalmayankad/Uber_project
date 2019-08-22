@@ -716,13 +716,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 String driver_id = String.valueOf(dataSnapshot.child("driver_id").getValue());
                 String driver_lat = String.valueOf(dataSnapshot.child("driver_lat").getValue());
                 String driver_lng = String.valueOf(dataSnapshot.child("driver_lng").getValue());
+                String driver_vehicle_no = String.valueOf(dataSnapshot.child("driver_vehicle_no").getValue());
                 String driver_vehicle_type = String.valueOf(dataSnapshot.child("driver_vehicle_type").getValue());
                 String driver_status = String.valueOf(dataSnapshot.child("driver_status").getValue());
 
                 if (driver_status.equalsIgnoreCase("Active"))
                 {
                     LatLng latlng=new LatLng(Double.valueOf(driver_lat),Double.valueOf(driver_lng));
-                    show_vehicle_location_list(latlng,driver_id,driver_vehicle_type,position);
+                    show_vehicle_location_list(latlng,driver_id,driver_vehicle_type,position,driver_vehicle_no);
                 }
             }
 
@@ -1115,7 +1116,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 });
 
 
-
                 googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
                     @Override
                     public void onMarkerDragStart(Marker marker) {
@@ -1223,7 +1223,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
     }
 
-    private void show_vehicle_location_list(final LatLng location,String driver_id,String veh_type_id,int position) {
+    private void show_vehicle_location_list(final LatLng location,String driver_id,String veh_type_id,int position,String vehicle_no) {
         int update_marker2=0;
         try{
             double Add_lat= location.latitude;
@@ -1252,8 +1252,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 {
                     marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
                 }
-                marker3.snippet(String.valueOf(position));
-                googleMap.addMarker(marker3);
+                marker3. snippet(String.valueOf(position));
+
+                googleMap.addMarker(marker3).setTitle("Vehicle No :"+vehicle_no);
 
             }
 
