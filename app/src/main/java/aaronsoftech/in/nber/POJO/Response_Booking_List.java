@@ -18,7 +18,6 @@ public class Response_Booking_List {
 
     public class User_List
     {
-
         @SerializedName("id")
         @Expose
         private String id="";

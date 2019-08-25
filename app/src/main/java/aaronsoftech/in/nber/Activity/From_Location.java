@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -12,6 +11,7 @@ import android.location.Address;
 import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -21,25 +21,28 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -59,12 +62,11 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.IndoorBuilding;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -92,14 +94,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import aaronsoftech.in.nber.Adapter.Adapter_Vehicle;
 import aaronsoftech.in.nber.Adapter.Adapter_Vehicle_gallery;
-import aaronsoftech.in.nber.Adapter.Adapter_vehicle_type;
 import aaronsoftech.in.nber.App_Conteroller;
+import aaronsoftech.in.nber.Model.Near_Driver;
 import aaronsoftech.in.nber.POJO.Response_All_Vehicle;
 import aaronsoftech.in.nber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.nber.POJO.Response_register;
@@ -111,7 +116,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 import static aaronsoftech.in.nber.Utils.App_Utils.isNetworkAvailable;
 
@@ -175,6 +179,10 @@ public class From_Location extends AppCompatActivity implements LocationListener
     boolean check_get_location=true;
     LinearLayout layout_loc_one;
 
+    double current_lat= 0.0;
+    double current_lng= 0.0;
+    ArrayList<Near_Driver> Near_driver_list=new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,12 +191,13 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
         layout_loc_one=findViewById(R.id.layout_one);
         galleryview=(Gallery)findViewById(R.id.gallery);
-        ImageView btnback=findViewById(R.id.back_btn);
+        ImageView btnback=findViewById(R.id.back_btn_location);
         btnback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
-            }
+                Home home=new Home();
+                home.drawer.openDrawer(Gravity.START);}
         });
         btn_order_layout=findViewById(R.id.layout_btn_order);
         rb_time=findViewById(R.id.choice_grid_picker);
@@ -204,11 +213,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 if (App_Utils.isNetworkAvailable(From_Location.this))
                 {
                     if (Check_booking_status){
-
                         Book_status="Now";
                         String datenew=App_Utils.getCurrentdate();
                         Show_Dialog_booking(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
-
                       //get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
                     }else{
                         Toast.makeText(From_Location.this, "Already ride pending", Toast.LENGTH_SHORT).show();
@@ -216,7 +223,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 }else{
                     Toast.makeText(From_Location.this, "No internet", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
 
@@ -225,7 +231,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
             public void onClick(View view) {
             if (App_Utils.isNetworkAvailable(From_Location.this))
               {      if (Check_booking_status){
-
                         Book_status="Later";
                         rb_time.setChecked(true);
                         Show_calander();
@@ -246,12 +251,11 @@ public class From_Location extends AppCompatActivity implements LocationListener
             @Override
             public void onClick(View view) {
                 focus_type="FROM";
-
                 }
         });
 
         // Initialize Places.
-        Places.initialize(getApplicationContext(), "AIzaSyAOyyZ58Mo8y0aaMVG1PevZNiMz-i62q3c");
+        Places.initialize(getApplicationContext(), getString(R.string.google_api_key));
         // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(this);
 
@@ -276,7 +280,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 // TODO: Handle the error.
                 Log.i(TAG, "An error occurred: " + status);}
         });
-
 
         // Initialize the AutocompleteSupportFragment.
         final AutocompleteSupportFragment autocompleteFragment2 = (AutocompleteSupportFragment)
@@ -565,6 +568,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
         return dialog;
     }
+
     private void Save_data_on_firebase(DatabaseReference mDatabase) {
         // Read from the database
         mDatabase.addValueEventListener(new ValueEventListener() {
@@ -681,8 +685,11 @@ public class From_Location extends AppCompatActivity implements LocationListener
                                 get_vehicle_select_list.get(i).setVehicle_price(String.valueOf(price));
                                 get_driver_location(get_vehicle_select_list.get(i).getDriver_id(),i);
                         }
-                        Adapter_Vehicle adapter_past=new Adapter_Vehicle(From_Location.this,get_vehicle_select_list,From_Location.this);
-                        recy_vehicle_list.setAdapter(adapter_past);
+
+
+
+                       Adapter_Vehicle adapter_past=new Adapter_Vehicle(From_Location.this,get_vehicle_select_list,From_Location.this);
+                       recy_vehicle_list.setAdapter(adapter_past);
 
                     }else{
                         progressDialog.dismiss();
@@ -726,7 +733,90 @@ public class From_Location extends AppCompatActivity implements LocationListener
                     show_vehicle_location_list(latlng,driver_id,driver_vehicle_type,position,driver_vehicle_no);
                 }
             }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        });
 
+
+    }
+
+    public void send_notification()
+    {
+
+
+
+    }
+
+
+    private void get_nearst_location() {
+        Near_driver_list.clear();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Query myTopPostsQuery = mDatabase.child("Driver_Current_latlng_ID");
+
+        // My top posts by number of stars
+        myTopPostsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
+
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    // Extract a Message object from the DataSnapshot
+                    Near_Driver message = child.getValue(Near_Driver.class);
+                    String token_no = String.valueOf(dataSnapshot.child("token_no").getValue());
+                    String driver_id = String.valueOf(dataSnapshot.child("driver_id").getValue());
+                    String driver_lat = String.valueOf(dataSnapshot.child("driver_lat").getValue());
+                    String driver_lng = String.valueOf(dataSnapshot.child("driver_lng").getValue());
+                    String driver_vehicle_no = String.valueOf(dataSnapshot.child("driver_vehicle_no").getValue());
+                    String driver_vehicle_type = String.valueOf(dataSnapshot.child("driver_vehicle_type").getValue());
+                    String driver_status = String.valueOf(dataSnapshot.child("driver_status").getValue());
+
+                    double distance_driver=distance(Double.valueOf(FROM_LAT),Double.valueOf(FROM_LNG),current_lat,current_lat);
+                    message.setDriver_distance(distance_driver);
+
+                    Boolean data=true;
+                    Boolean data_second=false;
+                    if (data)
+                    {
+                        data=false;
+                        Near_driver_list.add(message);
+                    }
+                    for (int i=0;i<Near_driver_list.size();i++)
+                    {
+                        if (Near_driver_list.get(i).getDriver_id().equalsIgnoreCase(driver_id))
+                        {
+                            break;
+                        }else{
+                            data_second=true;
+                        }
+                    }
+
+
+                    if (data_second)
+                    {
+                        data_second=false;
+                        Near_driver_list.add(message);
+
+                    }
+
+
+                    /*for (int i=0;i<Near_driver_list.size();i++)
+                    {
+                        if (Near_driver_list.get(i).getDriver_id().equalsIgnoreCase(driver_id))
+                        {
+                            break;
+                        }else
+                            {
+                                Near_driver_list.add(message);
+                            }
+                    }*/
+
+                }
+
+            }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
@@ -789,6 +879,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
         setSupportActionBar(toolBar);
     }
 
+
+
     private void Show_polyline_map()
     {
         if ((FROM_LAT!="") && (FROM_LNG!="") && (TO_LAT!="") && (TO_LNG!=""))
@@ -800,12 +892,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
             Adapter_Vehicle_gallery adapter_past=new Adapter_Vehicle_gallery(From_Location.this,get_vehicle_type_list);
             galleryview.setAdapter(adapter_past);
-            galleryview.setSpacing(22);
-            galleryview.setUnselectedAlpha(55);
+            galleryview.setSpacing(33);
+            galleryview.setUnselectedAlpha(11);
             galleryview.setHorizontalScrollBarEnabled(true);
-                galleryview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            galleryview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
 
                         if (get_vehicle_type_list.get(i).getKm_price()==null)
                         {
@@ -825,6 +919,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
 
     }
+
+
 
     private void set_line_on_map(LatLng from_latLng, LatLng to_latlng) {
         GoogleDirection.withServerKey(getResources().getString(R.string.google_maps_key))
@@ -1204,7 +1300,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
-
+        current_lat=location.getLatitude();
+        current_lng=location.getLongitude();
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
@@ -1490,6 +1587,26 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         Show_Driver_Location(datetime,vehicleid,amount,driver_ID,vehicle_no,vehicle_image,token_no,vehicle_type_id);
                     }
                 }else{
+
+                    /*mDatabase = FirebaseDatabase.getInstance().getReference();
+                    Map<String,String> map=new HashMap<>();
+                    map.put("driver_id",driver_ID);
+                    map.put("driver_status","Deactive");
+
+                    mDatabase.child("Driver_Token_ID").child(driver_ID).setValue(map);
+                    mDatabase.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });*/
+
+
+
                     final Dialog dialog = App_Utils.createDialog(From_Location.this, true);
                     dialog.setCancelable(false);
                     TextView txt_DialogTitle = (TextView) dialog.findViewById(R.id.txt_DialogTitle);
@@ -1517,18 +1634,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         });
     }
 
-    /*@Override
-    public void OnClick_item(Response_Vehicle_type.Data_List vehicle_type) {
-        if (vehicle_type.getKm_price()==null)
-        {
-            Call_Select_Vihicle_Api(vehicle_type.getId(),"1");
-        }else{
-            Call_Select_Vihicle_Api(vehicle_type.getId(),vehicle_type.getKm_price());
-        }
-        get_vehicle_type=vehicle_type.getVehicle_type();
-        get_Vehicle_icon=vehicle_type.getVehicle_icon();
-
-    }*/
 
     @Override
     public void onTimeSet(ViewGroup viewGroup, int hourOfDay, int minute) {
@@ -1610,8 +1715,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
             }
         });
         dialog.show();
-
-
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -1625,5 +1728,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
         return super.onKeyDown(keyCode, event);
     }
+
 
 }

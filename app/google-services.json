@@ -8,6 +8,58 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:775563072716:android:e6d19ed771ab6797",
+        "android_client_info": {
+          "package_name": "aaronsoftech.in.nber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "775563072716-a3pgcmmpd6luul9i2l0jtb62jfo12uoh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "aaronsoftech.in.nber",
+            "certificate_hash": "7257124de0ddea7f025d67b8737fc42f35feeac4"
+          }
+        },
+        {
+          "client_id": "775563072716-mshtt3opnea62fe67ht00h87upefg73l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "aaronsoftech.in.nber",
+            "certificate_hash": "c75888adecdb484637f0d3ab68c7251f6e5dd90e"
+          }
+        },
+        {
+          "client_id": "775563072716-t11q1ip5f75h2gl3v85f7lsqmtl0c37f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "aaronsoftech.in.nber",
+            "certificate_hash": "64503abb0a53e837fa406e59b0542f3f4407e627"
+          }
+        },
+        {
+          "client_id": "775563072716-htpkni2ia6a1g9bcq8fvdki5pksruelg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "aaronsoftech.in.nber",
+            "certificate_hash": "a1a6caaaaeff9d0cde881c928a831958b728b980"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFZrLl-0KWB2aYMCOCFw2YbjJUeh2j5aU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:775563072716:android:4108a04d7d253876",
         "android_client_info": {
           "package_name": "aaronsoftech.in.unber"
@@ -25,7 +77,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCqCMwK87jtK1SN61Wi33Wf6r1Ln23L_9g"
+          "current_key": "AIzaSyCFZrLl-0KWB2aYMCOCFw2YbjJUeh2j5aU"
         }
       ],
       "services": {

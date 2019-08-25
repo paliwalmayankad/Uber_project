@@ -2,6 +2,7 @@ package aaronsoftech.in.nber.Service;
 
 import java.util.Map;
 
+import aaronsoftech.in.nber.POJO.Notification;
 import aaronsoftech.in.nber.POJO.Response_All_Vehicle;
 import aaronsoftech.in.nber.POJO.Response_Booking_List;
 import aaronsoftech.in.nber.POJO.Response_Driver_vehicle;
@@ -107,6 +108,23 @@ public interface APIInterface {
     @FormUrlEncoded
     @POST("get_driver_vehicle")
     public Call<Response_Driver_vehicle> get_Driver_Vehicle(@FieldMap Map<String, String> map);
+
+
+    @FormUrlEncoded
+    @POST("notification_get_driver")
+    public Call<Notification> notification_get_driver(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("notification_get_user")
+    public Call<Notification> notification_get_user(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("notification_send_driver")
+    public Call<Notification> notification_send_driver(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("notification_send_user")
+    public Call<Notification> notification_send_user(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
     @POST("get_all_vehicle_type")

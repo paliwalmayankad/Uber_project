@@ -92,8 +92,9 @@ public class Trip_past extends Fragment{
         {
             Call<Response_Booking_List> call= APIClient.getWebServiceMethod().get_User_Booking(map);
             call.enqueue(new Callback<Response_Booking_List>() {
-                @Override
-                public void onResponse(Call<Response_Booking_List> call, Response<Response_Booking_List> response) {
+              @Override
+                public void onResponse(Call<Response_Booking_List> call, Response<Response_Booking_List> response)
+                {
                     progressDialog.dismiss();
                     try{
                         String status=response.body().getApi_status();
