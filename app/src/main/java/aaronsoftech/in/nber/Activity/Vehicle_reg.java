@@ -275,7 +275,7 @@ public class Vehicle_reg extends AppCompatActivity {
 
             Log.i(TAG,"Token ID : call api "+refreshedToken);
 
-            DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = new Date();
             String new_date=dateFormat.format(date);
 

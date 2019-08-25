@@ -2435,7 +2435,7 @@ public class App_Utils {
 
     public static String getCurrentdate()
     {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         String getdate=dateFormat.format(date);
         //2016/11/16 12:08:43

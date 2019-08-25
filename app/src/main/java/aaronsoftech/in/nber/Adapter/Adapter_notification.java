@@ -2,6 +2,7 @@ package aaronsoftech.in.nber.Adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,11 +62,11 @@ public class Adapter_notification  extends RecyclerView.Adapter<Adapter_notifica
 
             long miliSecsDate = milliseconds(""+get_list.get(position).getTimestamp().toString());
 
-            timeAgo(miliSecsDate,timetotalday);
+            String time= timeAgo(miliSecsDate,timetotalday);
 
-            holder.txt_date.setText(timetotalday);
+            holder.txt_date.setText(time);
 
-            holder.txt_message.setText(get_list.get(position).getNotification_text());
+            holder.txt_message.setText(Html.fromHtml(get_list.get(position).getNotification_text()));
             String veh_type_id=get_list.get(position).getSent_by();
             if (veh_type_id.toString().equalsIgnoreCase("8"))
             {
@@ -106,8 +107,9 @@ public class Adapter_notification  extends RecyclerView.Adapter<Adapter_notifica
         }
     }
 
-    public  void timeAgo(long miliSecsDate, String date)
+    public String timeAgo(long miliSecsDate, String date)
     {
+        String time=null;
         try
         {
             /*current itme*/
@@ -116,14 +118,15 @@ public class Adapter_notification  extends RecyclerView.Adapter<Adapter_notifica
 
             /*diifeence in miliseconds*/
             timetotalday= toDuration(diff_in_ms);
-
-            date=timetotalday;
+            time=timetotalday;
+            return time;
         }
         catch (Exception e)
         {
             Crashlytics.logException(e);
             e.printStackTrace();
         }
+        return time;
     }
 
 
@@ -157,9 +160,9 @@ public class Adapter_notification  extends RecyclerView.Adapter<Adapter_notifica
 
     public long milliseconds(String date)
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+       // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         try
         {
             Date mDate = sdf.parse(date);

@@ -133,7 +133,6 @@ public class Home extends AppCompatActivity
     static DrawerLayout drawer;
     double current_lat= 0.0;
     double current_lng= 0.0;
-
     boolean setCurrentLocation=true;
 
     List<FB_Driver_res >get_driver_vehicle=new ArrayList<>();
@@ -155,6 +154,7 @@ public class Home extends AppCompatActivity
     String get_BookID_Status,get_vehicle_id_status,get_book_id_2;
     RadioButton btn_driver_status;
     boolean check_user_from_to_location=false;
+    HashMap payment_history_map=new HashMap();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -208,7 +208,6 @@ public class Home extends AppCompatActivity
 
                 }
             });
-
 
 
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -557,8 +556,18 @@ public class Home extends AppCompatActivity
                     public void onClick(View v) {
                         dialog.dismiss();
                         try{
+                            payment_history_map.clear();
+                            double price= (Double.parseDouble(list.get(0).getAmount()));
+                            payment_history_map.put("ride_amount",""+price);
+                            double amount_driver=0.7*price;
+                            double amount_comp=0.3*price;
+                            Log.i(TAG,"Price dirver :"+amount_driver);
+                            Log.i(TAG,"Price Comp :"+amount_comp);
+                            get_Selected_Driver_Id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+                            payment_history_map.put("driver_earning",""+amount_driver);
+                            payment_history_map.put("comp_commission",""+amount_comp);
                             //add_payment_gatway(list);
-                            Change_ride_status(list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
+                            Change_ride_status(list.get(0).getUser_id(),list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
                             mDatabase = FirebaseDatabase.getInstance().getReference();
                             mDatabase.child("Driver_ID").child(driverid).child("status").child("Deactive");
                             mDatabase.addValueEventListener(new ValueEventListener() {
@@ -577,7 +586,7 @@ public class Home extends AppCompatActivity
                             progressDialog.show();
                             get_Booking_List.clear();
 
-                            Change_ride_status(get_BookID_Status,get_vehicle_id_status,"COD");
+                            Change_ride_status(list.get(0).getUser_id(),get_BookID_Status,get_vehicle_id_status,"COD");
 
                             mDatabase = FirebaseDatabase.getInstance().getReference();
                             mDatabase.child("Driver_ID").child(driverid).removeValue();
@@ -626,12 +635,11 @@ public class Home extends AppCompatActivity
         progressDialog.setMessage("Loading...");
         progressDialog.show();
         get_Booking_List.clear();
-
-        Change_ride_status(get_BookID_Status,get_vehicle_id_status,razorpayPaymentID);
+        String Userid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
+        Change_ride_status(Userid,get_BookID_Status,get_vehicle_id_status,razorpayPaymentID);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("Driver_ID").removeValue();
-
+        mDatabase.child("Driver_ID").child(get_Selected_Driver_Id).removeValue();
 
         try {
             Toast.makeText(Home.this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
@@ -656,10 +664,27 @@ public class Home extends AppCompatActivity
 
     }
 
-    private void Change_ride_status(final String bookID, final String vehicleid, final String get_payment_id) {
+    private void Change_ride_status(final String User_id,final String bookID, final String vehicleid, final String get_payment_id) {
+
+        payment_history_map.put("user_id",""+User_id);
+        payment_history_map.put("ride_id",""+bookID);
+        if (get_payment_id.equalsIgnoreCase("COD"))
+        {
+            payment_history_map.put("payment_method","COD");
+        }else
+            {
+                payment_history_map.put("payment_method","Online");
+            }
+
+        payment_history_map.put("transcation_id",""+get_payment_id);
+        payment_history_map.put("payment_status","Complite");
+        payment_history_map.put("status","done");
+        payment_history_map.put("remark","no");
+        Save_payment_user(payment_history_map);
+
         if (isNetworkAvailable(Home.this))
         {
-            Map<String,String> map=new HashMap<>();
+          final  HashMap<String,String> map=new HashMap<>();
             map.put("id",bookID);
             map.put("status","Deactive");
             map.put("payment_id",""+get_payment_id);
@@ -686,14 +711,17 @@ public class Home extends AppCompatActivity
                             }else{
                                 btn_from_address.setText("Show your Vehicle");
                             }
+                            mMap.clear();
                             get_loaction.setClickable(true);
                         }else{
 
                             Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-                        Log.i(TAG,"Exception : || Home || Change_ride_status "+e.toString());
-                        //                  Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
+                        Log.i(TAG,"Home || Change_ride_status "+e.toString());
+                        Log.i(TAG,"Home || Change_ride_status || response "+response);
+                        Log.i(TAG,"Home || Change_ride_status || send data "+map);
+                        Toast.makeText(Home.this, "Server error Change_ride_status", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
                 }
@@ -713,7 +741,7 @@ public class Home extends AppCompatActivity
     private void Change_vehicle_status(String vehicleid, final String getbook_id) {
         if (isNetworkAvailable(Home.this))
         {
-            Map<String,String> map=new HashMap<>();
+           final  Map<String,String> map=new HashMap<>();
             map.put("id",vehicleid);
             map.put("status","Active");
             Call<Response_register> call= APIClient.getWebServiceMethod().update_change_vehicle_status(map);
@@ -736,7 +764,10 @@ public class Home extends AppCompatActivity
                             Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-                        //                     Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
+
+                        Log.i(TAG,"Home || Change_vehicle_status || response "+response);
+                        Log.i(TAG,"Home || Change_vehicle_status || send data "+map);
+                        Toast.makeText(Home.this, "Server error Change_vehicle_status", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
                     mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -1022,7 +1053,7 @@ public class Home extends AppCompatActivity
         progressDialog.setMessage("Loading...");
         progressDialog.show();
         get_Booking_List.clear();
-        HashMap map= new HashMap<>();
+        final HashMap map= new HashMap<>();
         map.put("driver_id",driver_ID);
         if (isNetworkAvailable(Home.this))
         {
@@ -1055,8 +1086,10 @@ public class Home extends AppCompatActivity
                             Toast.makeText(Home.this, "status "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
                         }
                     }catch (Exception e){
-                        Log.i(TAG,"Exception : || Home || Call_driver_book_Api "+e.toString());
-//                        Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
+                        Log.i(TAG,"Home || Call_driver_book_Api "+e.toString());
+                        Log.i(TAG,"Home || Call_driver_book_Api || response "+response);
+                        Log.i(TAG,"Home || Call_driver_book_Api || send data "+map);
+                      Toast.makeText(Home.this, "Server error Call_driver_book_Api", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
                 }
 
@@ -1126,16 +1159,18 @@ public class Home extends AppCompatActivity
 
                     String dist_value=df2.format((distance(current_lat,current_lng,Double.valueOf(lat),Double.valueOf(lng))));
 
-                    HashMap map= new HashMap<>();
+                    HashMap<String,String> map= new HashMap<>();
                     map.put("user_id",user_id);
-                    map.put("driver_id",driver_id);
+
                     map.put("timestamp",App_Utils.getCurrentdate());
                     map.put("sent_by",veh_type_id);
 
-                    map.put("notification_text",driver_name+" accept your request");
+                    map.put("notification_text","<b>"+driver_name+"<\b> accept your request");
                     send_noticication_user(map);
 
-                    map.put("notification_text","NBER "+driver_name+" booked a ride for approx "+dist_value+"km to accept check and go for ride");
+                    map.remove("user_id");
+                    map.put("driver_id",driver_id);
+                    map.put("notification_text","NBER <b>"+driver_name+"<\b> booked a ride for approx "+dist_value+"km to accept check and go for ride");
                     send_noticication_driver(map);
 
                     Call_firebase_service(mapw);
@@ -1177,7 +1212,7 @@ public class Home extends AppCompatActivity
     }
 
 
-    private void send_noticication_user(HashMap map) {
+    private void send_noticication_user(final Map map) {
 
         if (isNetworkAvailable(Home.this))
         {
@@ -1185,7 +1220,6 @@ public class Home extends AppCompatActivity
             call.enqueue(new Callback<Response_Driver_vehicle>() {
                 @Override
                 public void onResponse(Call<Response_Driver_vehicle> call, Response<Response_Driver_vehicle> response) {
-                    progressDialog.dismiss();
                     try{
                         String status=response.body().getApi_status();
                         String msg=response.body().getApi_message();
@@ -1193,7 +1227,10 @@ public class Home extends AppCompatActivity
                         Toast.makeText(Home.this, "status uu "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
 
                     }catch (Exception e){
-                        //                    Toast.makeText(Show_Vehicle.this, "Server error", Toast.LENGTH_SHORT).show();
+
+                        Log.i(TAG,"Home || send_noticication_user || response "+response);
+                        Log.i(TAG,"Home || send_noticication_user || send data "+map);
+                        Toast.makeText(Home.this, "Server error send_noticication_user", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
 
@@ -1209,7 +1246,44 @@ public class Home extends AppCompatActivity
         }
 
     }
-    private void send_noticication_driver(HashMap map) {
+
+
+    private void Save_payment_user(final HashMap map) {
+
+        if (isNetworkAvailable(Home.this))
+        {
+            Call<Response_Driver_vehicle> call= APIClient.getWebServiceMethod().payment_save(map);
+            call.enqueue(new Callback<Response_Driver_vehicle>() {
+                @Override
+                public void onResponse(Call<Response_Driver_vehicle> call, Response<Response_Driver_vehicle> response) {
+                    try{
+                        String status=response.body().getApi_status().toString();
+                        String msg=response.body().getApi_message().toString();
+
+                        Toast.makeText(Home.this, "status uu "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
+
+                    }catch (Exception e){
+                        Log.i(TAG,"Home || Save_payment_user || response "+response);
+                        Log.i(TAG,"Home || Save_payment_user || send data "+map);
+                       Toast.makeText(Home.this, "Server error Save_payment_user", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();}
+
+
+                }
+
+                @Override
+                public void onFailure(Call<Response_Driver_vehicle> call, Throwable t) {
+                    Toast.makeText(Home.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(Home.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+
+    private void send_noticication_driver(final HashMap map) {
 
         if (isNetworkAvailable(Home.this))
         {
@@ -1217,17 +1291,15 @@ public class Home extends AppCompatActivity
             call.enqueue(new Callback<Response_Driver_vehicle>() {
                 @Override
                 public void onResponse(Call<Response_Driver_vehicle> call, Response<Response_Driver_vehicle> response) {
-                    progressDialog.dismiss();
                     try{
-                        String status=response.body().getApi_status();
-                        String msg=response.body().getApi_message();
+                        String status=response.body().getApi_status().toString();
+                        String msg=response.body().getApi_message().toString();
                         Toast.makeText(Home.this, "status dd "+status+"\n"+"msg "+msg, Toast.LENGTH_SHORT).show();
-
                     }catch (Exception e){
-                        //                    Toast.makeText(Show_Vehicle.this, "Server error", Toast.LENGTH_SHORT).show();
+                        Log.i(TAG,"Home || send_noticication_driver || response "+response);
+                        Log.i(TAG,"Home || send_noticication_driver || send data "+map);
+       //                 Toast.makeText(Home.this, "error driver send_noticication_driver", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
-
-
                 }
 
                 @Override
@@ -1501,10 +1573,6 @@ public class Home extends AppCompatActivity
         Check_User_Id_on_firebase();
         super.onResume();
     }
-
-
-
-
 
     private void Give_Permission() {
         Handler handler  = new Handler();
@@ -1794,7 +1862,7 @@ public class Home extends AppCompatActivity
     private void Api_rating(String driver_id,String rating,String review,String remark) {
         if (isNetworkAvailable(Home.this))
         {
-            Map<String,String> map=new HashMap<>();
+            final Map<String,String> map=new HashMap<>();
             map.put("driver_id",driver_id);
             map.put("user_id",App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,""));
             map.put("rating",rating);
@@ -1826,8 +1894,10 @@ public class Home extends AppCompatActivity
                             Toast.makeText(Home.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-                        Log.i(TAG,"Home || Api_rating || "+response);
-                        Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
+                        Log.i(TAG,"Home || Api_rating || response "+response);
+                        Log.i(TAG,"Home || Api_rating || send data "+map);
+                        Toast.makeText(Home.this, "error  Api_rating", Toast.LENGTH_SHORT).show();
+                //        Toast.makeText(Home.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
                 }
 
@@ -1855,6 +1925,7 @@ public class Home extends AppCompatActivity
         TextView driver_veh_no=findViewById(R.id.txt_veh_no);
         TextView driver_amount=findViewById(R.id.txt_amount);
         get_Selected_Driver_Id=driver_id;
+        payment_history_map.clear();
         DecimalFormat df2=new DecimalFormat("#.##");
         if (amount!=null)
         {
@@ -1920,13 +1991,27 @@ public class Home extends AppCompatActivity
                 } catch (Exception e) {
                     Log.e(TAG, "Exception in onPaymentSuccess", e);
                 }*/
-                add_payment_gatway_user(message);
+
+
+               add_payment_gatway_user(message);
 
             }
         });
     }
 
     private void add_payment_gatway_user(Response_Booking get_booking) {
+
+        double price= (Double.parseDouble(get_booking.getAmount()));
+        payment_history_map.put("ride_amount",""+price);
+        double amount_driver=0.7*price;
+        double amount_comp=0.3*price;
+        Log.i(TAG,"Price dirver :"+amount_driver);
+        Log.i(TAG,"Price Comp :"+amount_comp);
+
+        payment_history_map.put("driver_earning",""+amount_driver);
+        payment_history_map.put("comp_commission",""+amount_comp);
+        get_Selected_Driver_Id=get_booking.getDriver_id();
+
         final Activity activity = this;
         final Checkout co = new Checkout();
         try {
@@ -1938,7 +2023,6 @@ public class Home extends AppCompatActivity
             options.put("currency", "INR");
             DecimalFormat df2=new DecimalFormat("#.##");
 
-            double price= (Double.parseDouble(get_booking.getAmount()));
             String priceee=df2.format(price);
             String   pricee = priceee.substring(0, priceee.length() - 3);
             options.put("amount", String.valueOf(pricee+"00"));
@@ -1955,6 +2039,8 @@ public class Home extends AppCompatActivity
                     .show();
             e.printStackTrace();
         }
+
+
     }
 
     @Override

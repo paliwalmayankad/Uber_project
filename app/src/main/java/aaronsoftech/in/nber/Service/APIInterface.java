@@ -127,6 +127,10 @@ public interface APIInterface {
     public Call<Notification> notification_send_user(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
+    @POST("save_payment_history")
+    public Call<Notification> payment_save(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
     @POST("get_all_vehicle_type")
     public Call<Response_Vehicle_type> get_All_vehicle_type(@FieldMap Map<String, String> map);
 

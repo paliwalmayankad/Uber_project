@@ -44,7 +44,6 @@ public class SP_Utils {
     public static String DRIVER_VEHICLE_PIC="vehicle_photo";
     public static String DRIVER_VEHICLE_STATUS="vehicle_status";
 
-
     public static String LOGIN_USR_BOOKING_STATUS="sp_usr_booking_status";
 
     public static String LOGIN_USR_WORK_ADDRESS="sp_usr_work_add";
@@ -54,4 +53,7 @@ public class SP_Utils {
     public static String LOGIN_USR_PLACE_ADDRESS="sp_usr_place_add";
     public static String LOGIN_USR_PLACE_LAT="sp_usr_place_lat";
     public static String LOGIN_USR_PLACE_LNG="sp_usr_place_lng";
+
+    public static Integer EARNING_DRIVER_PER=70;
+    public static Integer EARNING_COMP_PER=30;
 }
