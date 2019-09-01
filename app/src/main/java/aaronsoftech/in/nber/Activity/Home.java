@@ -99,10 +99,12 @@ import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.BuildConfig;
 import aaronsoftech.in.nber.Model.FB_Driver_res;
 import aaronsoftech.in.nber.POJO.Customwindow_const;
+import aaronsoftech.in.nber.POJO.Resp_Common;
 import aaronsoftech.in.nber.POJO.Response_Booking;
 import aaronsoftech.in.nber.POJO.Response_Booking_List;
 import aaronsoftech.in.nber.POJO.Response_Driver_vehicle;
 import aaronsoftech.in.nber.POJO.Response_register;
+import aaronsoftech.in.nber.POJO.Wallet;
 import aaronsoftech.in.nber.R;
 import aaronsoftech.in.nber.Service.APIClient;
 import aaronsoftech.in.nber.Utils.App_Utils;
@@ -165,24 +167,15 @@ public class Home extends AppCompatActivity
         Init();
         Checkout.preload(getApplicationContext());
 
-      /*  GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);*/
-
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         try{
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
 
+
             try{
-                booked_id= String.valueOf(getIntent().getExtras().get("book_id"));
-            }catch (Exception e){e.printStackTrace();}
-
-
-            /*try{
                 Toast.makeText(this, "User ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"")+"\n\n"+"Driver ID: "+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""), Toast.LENGTH_SHORT).show();
-            }catch (Exception e){e.printStackTrace();}*/
+            }catch (Exception e){e.printStackTrace();}
 
             get_loaction.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -218,6 +211,17 @@ public class Home extends AppCompatActivity
 
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             View headerView = navigationView.getHeaderView(0);
+
+            if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
+                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
+                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
+                {
+                    navigationView.inflateMenu(R.menu.activity_home_drawer);
+                }else{
+                navigationView.inflateMenu(R.menu.activity_driver_menu);
+
+                }
+
 
             TextView btn_driver_login=headerView.findViewById(R.id.textView_driver);
 
@@ -598,6 +602,16 @@ public class Home extends AppCompatActivity
                             } catch (Exception e) {
                                 Log.e(TAG, "Exception in onPaymentSuccess", e);
                             }
+
+                            final HashMap<String,String> hashMap=new HashMap<>();
+                            hashMap.put("driver_id",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""));
+                            hashMap.put("amt_type","COD");
+                            hashMap.put("amount",""+amount_driver);
+                            hashMap.put("remark","Added to wallet");
+                            hashMap.put("timestamp",""+App_Utils.getCurrentdate());
+                            hashMap.put("status","success");
+                            wallet_save(hashMap);
+
                         }catch (Exception e){
                             e.printStackTrace();
                         }
@@ -1165,12 +1179,12 @@ public class Home extends AppCompatActivity
                     map.put("timestamp",App_Utils.getCurrentdate());
                     map.put("sent_by",veh_type_id);
 
-                    map.put("notification_text","<b>"+driver_name+"<\b> accept your request");
+                    map.put("notification_text",driver_name+" accept your request");
                     send_noticication_user(map);
 
                     map.remove("user_id");
                     map.put("driver_id",driver_id);
-                    map.put("notification_text","NBER <b>"+driver_name+"<\b> booked a ride for approx "+dist_value+"km to accept check and go for ride");
+                    map.put("notification_text","NBER "+driver_name+" booked a ride for approx "+dist_value+"km to accept check and go for ride");
                     send_noticication_driver(map);
 
                     Call_firebase_service(mapw);
@@ -1230,7 +1244,7 @@ public class Home extends AppCompatActivity
 
                         Log.i(TAG,"Home || send_noticication_user || response "+response);
                         Log.i(TAG,"Home || send_noticication_user || send data "+map);
-                        Toast.makeText(Home.this, "Server error send_noticication_user", Toast.LENGTH_SHORT).show();
+    //                    Toast.makeText(Home.this, "Server error send_noticication_user", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
 
@@ -1933,6 +1947,7 @@ public class Home extends AppCompatActivity
         }else{
             driver_amount.setText(getResources().getString(R.string.rupee_sign)+ " 0.00");
         }
+
         TextView btn_call=findViewById(R.id.driver_veh2);
         btn_call.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1942,6 +1957,7 @@ public class Home extends AppCompatActivity
                 startActivity(intent);
             }
         });
+
         driver_veh_no.setText("Vehicle no:"+ veh_no);
         driver_name.setText("Name:"+ name);
         driver_contect.setText("Mobile no. :"+ contactno);
@@ -2056,7 +2072,6 @@ public class Home extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
@@ -2081,7 +2096,10 @@ public class Home extends AppCompatActivity
             startActivity(new Intent(Home.this,Trip.class));
         }else if (id == R.id.nav_logout) {
              creatrdialogbox_for_logout();
-        }
+        }else if (id ==R.id.nav_wallet)
+         {
+             startActivity(new Intent(Home.this,Wallet_page.class));
+         }
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -2148,4 +2166,36 @@ public class Home extends AppCompatActivity
     public void onProviderDisabled(String s) {
 
     }
+
+
+    private void wallet_save(final HashMap<String, String> hashMap) {
+
+        if (isNetworkAvailable(Home.this))
+        {
+            Call<Resp_Common> call= APIClient.getWebServiceMethod().wallet_save(hashMap);
+            call.enqueue(new Callback<Resp_Common>() {
+                @Override
+                public void onResponse(Call<Resp_Common> call, Response<Resp_Common> response) {
+                    try{
+                           String status = response.body().getApi_status().toString();
+                           String msg = response.body().getApi_message().toString();
+                           Toast.makeText(Home.this, "Wallet add", Toast.LENGTH_SHORT).show();
+                         }catch (Exception e){
+                           Log.i(TAG,"Home || wallet_save || response "+response);
+                           Log.i(TAG,"Home || wallet_save || send data "+hashMap);
+                           Toast.makeText(Home.this, "error wallet_save", Toast.LENGTH_SHORT).show();
+                       e.printStackTrace();}
+                }
+
+                @Override
+                public void onFailure(Call<Resp_Common> call, Throwable t) {
+                    Toast.makeText(Home.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            Toast.makeText(Home.this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
 }

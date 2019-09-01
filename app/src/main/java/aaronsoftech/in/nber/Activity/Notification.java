@@ -162,10 +162,12 @@ public class Notification extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<aaronsoftech.in.nber.POJO.Notification> call, Throwable t) {
+                    progressDialog.dismiss();
                     Toast.makeText(Notification.this, "Error : "+t.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }else{
+            progressDialog.dismiss();
             Toast.makeText(Notification.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
 

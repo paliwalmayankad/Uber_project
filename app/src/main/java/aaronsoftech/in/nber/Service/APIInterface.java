@@ -3,6 +3,7 @@ package aaronsoftech.in.nber.Service;
 import java.util.Map;
 
 import aaronsoftech.in.nber.POJO.Notification;
+import aaronsoftech.in.nber.POJO.Resp_Common;
 import aaronsoftech.in.nber.POJO.Response_All_Vehicle;
 import aaronsoftech.in.nber.POJO.Response_Booking_List;
 import aaronsoftech.in.nber.POJO.Response_Driver_vehicle;
@@ -10,6 +11,7 @@ import aaronsoftech.in.nber.POJO.Response_Login;
 import aaronsoftech.in.nber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.nber.POJO.Response_register;
 import aaronsoftech.in.nber.POJO.Response_vehicle;
+import aaronsoftech.in.nber.POJO.Wallet;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -129,6 +131,14 @@ public interface APIInterface {
     @FormUrlEncoded
     @POST("save_payment_history")
     public Call<Notification> payment_save(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("wallet_save")
+    public Call<Resp_Common> wallet_save(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("wallet_get_data")
+    public Call<Wallet> wallet_get(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
     @POST("get_all_vehicle_type")

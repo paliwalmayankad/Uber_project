@@ -11,25 +11,29 @@
     <uses-permission android:name="android.permission.ACCESS_GPS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.GET_TASKS" />
-    <uses-feature android:name="android.hardware.camera" />
 
+    <uses-feature android:name="android.hardware.camera" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/yellow_logo"
+        android:icon="@drawable/black_logo"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/yellow_logo"
+        android:roundIcon="@drawable/black_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-
-        <activity android:name="aaronsoftech.in.nber.Activity.Show_Vehicle" android:theme="@style/AppTheme_one"></activity>
+        <activity android:name=".Activity.Wallet_page"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme_one"
+            ></activity>
+        <activity
+            android:name=".Activity.Show_Vehicle"
+            android:theme="@style/AppTheme_one" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -39,12 +43,10 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
-        </provider>
-        <!-- Add your API key here -->
+        </provider> <!-- Add your API key here -->
         <meta-data
             android:name="com.razorpay.ApiKey"
-            android:value="rzp_live_qdUReWKfy2SE4Y"
-            />
+            android:value="rzp_live_qdUReWKfy2SE4Y" />
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="false" /> <!-- start service for FCM -->
@@ -61,19 +63,19 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" /> <!-- start service for FCM -->
-        <service android:name="aaronsoftech.in.nber.FCM.MyFirebaseInstanceIDService">
+        <service android:name=".FCM.MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service android:name="aaronsoftech.in.nber.FCM.MyFirebaseMessagingService">
+        <service android:name=".FCM.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Splash"
+            android:name=".Activity.Splash"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one">
             <intent-filter>
@@ -83,77 +85,77 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="aaronsoftech.in.nber.Activity.MainActivity"
+            android:name=".Activity.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.login_mobile"
+            android:name=".Activity.login_mobile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.login_email"
+            android:name=".Activity.login_email"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Acc_setting"
+            android:name=".Activity.Acc_setting"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Acc_edit"
+            android:name=".Activity.Acc_edit"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Trip"
+            android:name=".Activity.Trip"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Select_payment"
+            android:name=".Activity.Select_payment"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Payment_add"
+            android:name=".Activity.Payment_add"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Payment_code"
+            android:name=".Activity.Payment_code"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Trip_free"
+            android:name=".Activity.Trip_free"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Password"
+            android:name=".Activity.Password"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Privacy_setting"
+            android:name=".Activity.Privacy_setting"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Contacts"
+            android:name=".Activity.Contacts"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Notification"
+            android:name=".Activity.Notification"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Help"
+            android:name=".Activity.Help"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Register_mobile"
+            android:name=".Activity.Register_mobile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Home"
+            android:name=".Activity.Home"
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme_one" >
+            android:theme="@style/AppTheme_one">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="aaronsoftech.in.nber.Activity.Home"/>
+                android:value="aaronsoftech.in.nber.Activity.Home" />
         </activity>
 
         <meta-data
@@ -190,7 +192,7 @@
              android:value="@string/google_maps_key" />
         -->
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Social_Login"
+            android:name=".Activity.Social_Login"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
         <!--
@@ -206,20 +208,28 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="aaronsoftech.in.nber.Activity.MapsActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_maps" />
-        <activity android:name="aaronsoftech.in.nber.Activity.Verification"
-            android:screenOrientation="portrait"/>
+            android:name=".Activity.MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="aaronsoftech.in.nber.Activity.From_Location"
+            android:name=".Activity.Verification"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.From_Location"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
-        <activity android:name="aaronsoftech.in.nber.Activity.Driver_document" android:screenOrientation="portrait"/>
-        <activity android:name="aaronsoftech.in.nber.Activity.Driver_photo" android:screenOrientation="portrait"/>
-        <activity android:name="aaronsoftech.in.nber.Activity.Driver_doc_Image" android:screenOrientation="portrait"/>
         <activity
-            android:name="aaronsoftech.in.nber.Activity.Vehicle_reg"   android:screenOrientation="portrait"
+            android:name=".Activity.Driver_document"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.Driver_photo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.Driver_doc_Image"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.Vehicle_reg"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one" />
     </application>
 
