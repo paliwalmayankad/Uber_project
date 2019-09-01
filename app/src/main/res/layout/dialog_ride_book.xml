@@ -15,16 +15,14 @@
         android:layout_height="wrap_content">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_margin="22dp"
+            android:layout_margin="11dp"
+            android:paddingLeft="22dp"
             android:layout_height="wrap_content">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/vehicle_type_img"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
-                app:civ_border_width="2dp"
-                app:civ_border_overlay="true"
-                app:civ_border_color="@color/colorPrimaryDark"
                 android:src="@drawable/profile_pics" />
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/vehicle_img"
@@ -43,7 +41,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_alignBottom="@+id/vehicle_type_img"
-            android:background="@drawable/common_google_signin_btn_text_light_normal_background"
             android:gravity="center"
             android:orientation="vertical"
             android:padding="11dp">
@@ -53,7 +50,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@color/grey_5"
                 android:padding="11dp">
 
                 <TextView
@@ -76,19 +72,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:layout_weight="1.8"
-                        android:padding="7dp"
+                        android:layout_weight="1.4"
                         android:singleLine="true"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:text="Amount"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                        />
                     <TextView
                         android:id="@+id/txt_amount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="18dp"
+                        android:textSize="15dp"
                         android:layout_weight="1"
                         android:padding="7dp"
                         android:singleLine="true"
@@ -105,21 +100,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:layout_weight="1.8"
-                        android:padding="7dp"
+                        android:layout_weight="1.4"
                         android:singleLine="true"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:text="Booking Type"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                         />
                     <TextView
                         android:id="@+id/txt_book_type"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="18dp"
+                        android:textSize="15dp"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
                         android:hint="Book later"
                         android:textColor="@color/overlay_dark_70"
@@ -134,19 +127,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:layout_weight="1.8"
-                        android:padding="7dp"
+                        android:layout_weight="1.4"
                         android:singleLine="true"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:text="Date"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                        />
                     <TextView
                         android:id="@+id/txt_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="18dp"
+                        android:textSize="15dp"
                         android:layout_weight="1"
                         android:padding="7dp"
                         android:singleLine="true"
@@ -163,21 +155,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:layout_weight="1.8"
-                        android:padding="7dp"
+                        android:layout_weight="1.4"
                         android:singleLine="true"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:text="Vehicle number"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                         />
                     <TextView
                         android:id="@+id/txt_vehicle_no"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="18dp"
+                        android:textSize="15dp"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
                         android:hint="Vehicle No"
                         android:textColor="@color/overlay_dark_70"
@@ -192,21 +182,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:layout_weight="1.8"
-                        android:padding="7dp"
+                        android:layout_weight="1.4"
                         android:singleLine="true"
                         android:textSize="18dp"
                         android:text="Vehicle type"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                       />
                     <TextView
                         android:id="@+id/txt_vehicle_type"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="18dp"
+                        android:textSize="15dp"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
                         android:hint="Vehicle type"
                         android:textColor="@color/overlay_dark_70"
@@ -221,22 +209,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:layout_weight="1.8"
-                        android:padding="7dp"
+                        android:layout_weight="1.4"
                         android:singleLine="true"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:text="From:"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                         />
                     <TextView
                         android:id="@+id/txt_from_add"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="17dp"
+                        android:textSize="15dp"
                         android:maxLines="2"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:hint="From Address"
                         android:textColor="@color/overlay_dark_70"
                         />
@@ -250,48 +236,46 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:layout_weight="1.8"
-                        android:padding="7dp"
-                        android:textSize="18dp"
+                        android:layout_weight="1.4"
+                        android:textSize="16dp"
                         android:text="To:"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                        />
                     <TextView
                         android:id="@+id/txt_to_add"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="17dp"
+                        android:textSize="15dp"
                         android:layout_weight="1"
                         android:maxLines="2"
-                        android:padding="7dp"
                         android:hint="To Address"
                         android:textColor="@color/overlay_dark_70"
                         />
                 </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginTop="11dp"
-                android:id="@+id/layout_btn_order"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/txt_book_done"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="1"
-                    android:background="@drawable/border_black_line"
-                    android:gravity="center"
-                    android:padding="7dp"
-                    android:singleLine="true"
-                    android:textSize="20dp"
-                    android:text="Confirm booking"
-                    android:textColor="@android:color/black"
-                    android:textStyle="bold" />
-
+                    android:orientation="horizontal"
+                    android:layout_marginTop="11dp"
+                    android:id="@+id/layout_btn_order"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/txt_book_done"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_weight="1"
+                        android:background="@drawable/edittext"
+                        android:gravity="center"
+                        android:padding="7dp"
+                        android:singleLine="true"
+                        android:textSize="20dp"
+                        android:text="Confirm booking"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
+
 
         </LinearLayout>
     </LinearLayout>

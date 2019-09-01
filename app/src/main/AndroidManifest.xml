@@ -21,9 +21,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/black_logo"
+        android:icon="@drawable/yellow_logo"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/black_logo"
+        android:roundIcon="@drawable/yellow_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">

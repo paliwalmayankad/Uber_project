@@ -57,6 +57,8 @@ import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.crashlytics.android.Crashlytics;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -79,6 +81,7 @@ import com.razorpay.Checkout;
 import com.razorpay.PaymentResultListener;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -86,6 +89,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -219,7 +223,7 @@ public class Home extends AppCompatActivity
                     navigationView.inflateMenu(R.menu.activity_home_drawer);
                 }else{
                 navigationView.inflateMenu(R.menu.activity_driver_menu);
-
+                mSocket.connect();
                 }
 
 
@@ -549,8 +553,7 @@ public class Home extends AppCompatActivity
             public void onClick(View view) {
                 final Dialog dialog = App_Utils.createDialog(Home.this, false);
                 dialog.setCancelable(false);
-       /* TextView title = (TextView) dialog.findViewById(R.id.txt_DialogHeadingTitle);
-        title.setText("Driver Profile");*/
+
                 TextView txt_DialogTitle = (TextView) dialog.findViewById(R.id.txt_DialogTitle);
                 txt_DialogTitle.setText("Are you sure customer give cash on delivery");
                 TextView txt_submit = (TextView) dialog.findViewById(R.id.txt_submit);
@@ -573,17 +576,8 @@ public class Home extends AppCompatActivity
                             //add_payment_gatway(list);
                             Change_ride_status(list.get(0).getUser_id(),list.get(0).getId(),list.get(0).getVehicle_id(),bookid);
                             mDatabase = FirebaseDatabase.getInstance().getReference();
-                            mDatabase.child("Driver_ID").child(driverid).child("status").child("Deactive");
-                            mDatabase.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            mDatabase.child("Driver_ID").child(driverid).removeValue();
 
-                                }
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
                             progressDialog=new ProgressDialog(Home.this);
                             progressDialog.setCancelable(false);
                             progressDialog.setMessage("Loading...");
@@ -755,7 +749,7 @@ public class Home extends AppCompatActivity
     private void Change_vehicle_status(String vehicleid, final String getbook_id) {
         if (isNetworkAvailable(Home.this))
         {
-           final  Map<String,String> map=new HashMap<>();
+            final  Map<String,String> map=new HashMap<>();
             map.put("id",vehicleid);
             map.put("status","Active");
             Call<Response_register> call= APIClient.getWebServiceMethod().update_change_vehicle_status(map);
@@ -769,7 +763,6 @@ public class Home extends AppCompatActivity
 
                         if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                         {
-                            //Toast.makeText(From_Location.this, "msg "+msg+"\n"+"id"+id, Toast.LENGTH_SHORT).show();
                             Toast.makeText(Home.this, "status change", Toast.LENGTH_SHORT).show();
                             String id=response.body().getId();
 
@@ -786,12 +779,11 @@ public class Home extends AppCompatActivity
 
                     mDatabase = FirebaseDatabase.getInstance().getReference();
                     try {
-                        mDatabase.child("Booking_ID").child(getbook_id).child("status").setValue("Deactive");
+                        mDatabase.child("Booking_ID").child(getbook_id).removeValue();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-                    Save_data_on_firebase(mDatabase);
+            //      Save_data_on_firebase(mDatabase);
 
                 }
 
@@ -908,15 +900,15 @@ public class Home extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-
                 Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     // Extract a Message object from the DataSnapshot
                     Response_Booking message = child.getValue(Response_Booking.class);
                     if (message.getStatus().toString().equalsIgnoreCase("Active") || message.getStatus().toString().equalsIgnoreCase("Running"))
                      {
-                      //  String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-                        if (message.getDriver_id().equalsIgnoreCase(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"")) && (Accept_this_booking==0) )
+                        String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+                         String get_Driver_ID=message.getDriver_id();
+                        if (get_Driver_ID.equalsIgnoreCase(Driver_ID) && (Accept_this_booking==0) )
                         {
                                  Accept_this_booking=11;
 
@@ -1120,6 +1112,7 @@ public class Home extends AppCompatActivity
     private void Show_dialog_box(final String user_id,final String book_id, final Location location, final String veh_img, final String veh_type_id, final String veh_no, final String amount, final String contact, final String img, final String name) {
         try{
             AlertDialog.Builder dialog=new AlertDialog.Builder(Home.this);
+       //     dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme_down_up;
             dialog.setTitle(getResources().getString(R.string.app_name));
             dialog.setMessage("Accept this booking");
             dialog.setCancelable(true);
@@ -1707,6 +1700,7 @@ public class Home extends AppCompatActivity
                         btn_driver_status.setVisibility(View.VISIBLE);
                         Check_driver_booking(location);
                         send_driver_current_latlng_on_firebase(String.valueOf(lat),String.valueOf(lng));
+                        start_soket(lat,lng);
                     }
                 }catch (Exception e){e.printStackTrace();}
 
@@ -1717,16 +1711,27 @@ public class Home extends AppCompatActivity
         });
     }
 
+    private void start_soket(double lat, double lng) {
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.putOpt("driverid", App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,""));
+            obj.putOpt("latitude", String.valueOf(lat));
+            obj.putOpt("longitude", String.valueOf(lng));
+            mSocket.emit("status added", obj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void Save_data_on_firebase(DatabaseReference mDatabase) {
         // Read from the database
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                layout_user_profile_list.setVisibility(View.GONE);
-                btn_from_address.setText("Where to ?");
+
 
             }
-
             @Override
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
@@ -1738,7 +1743,6 @@ public class Home extends AppCompatActivity
     private void Show_Driver_Location(String driver_id, final Response_Booking message) {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         Query myTopPostsQuery = mDatabase.child("Driver_ID").child(driver_id);
-
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -1842,7 +1846,7 @@ public class Home extends AppCompatActivity
         // Include dialog.xml file
         LayoutInflater inflater = this.getLayoutInflater();
         View v = inflater.inflate(R.layout.dialog_driver_rating, null);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme_down_up;
         final AppCompatRatingBar ratingBar=v.findViewById(R.id.rating_bar);
         final EditText ed_review=v.findViewById(R.id.txt_review);
         TextView btn_submit=v.findViewById(R.id.txt_submit_btn);
@@ -1865,12 +1869,28 @@ public class Home extends AppCompatActivity
                     String rating_value= String.valueOf(ratingBar.getRating());
                     String remark="no";
                     Api_rating(get_Selected_Driver_Id,rating_value,ed_review.getText().toString(),remark);
+                    dialog.dismiss();
                 }
-                dialog.dismiss();
+
             }
         });
 
         dialog.show();
+    }
+
+
+    private Socket mSocket;
+    {
+        try
+        {
+            IO.Options opts = new IO.Options();
+            opts.forceNew = true;
+            mSocket = IO.socket("http://thenber.com:4006");
+        }
+        catch (URISyntaxException e)
+        {
+
+        }
     }
 
     private void Api_rating(String driver_id,String rating,String review,String remark) {

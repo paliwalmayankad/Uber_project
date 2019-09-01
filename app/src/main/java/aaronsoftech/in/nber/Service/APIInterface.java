@@ -144,8 +144,9 @@ public interface APIInterface {
     @POST("get_all_vehicle_type")
     public Call<Response_Vehicle_type> get_All_vehicle_type(@FieldMap Map<String, String> map);
 
+  //  https://thenber.com/backend/public/api/get_vehicle
     @FormUrlEncoded
-    @POST("get_select_vehicle")
+    @POST("get_vehicle")
     public Call<Response_All_Vehicle> get_All_select_vehicle(@FieldMap Map<String, String> map);
 
     @Multipart

@@ -186,7 +186,9 @@ public class Vehicle_reg extends AppCompatActivity {
 
                                 try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_other_doc()).into(btn_other_doc);  }catch (Exception e){e.printStackTrace();}
 
-                                try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_photo()).into(btn_vehicle);  }catch (Exception e){e.printStackTrace();}
+                                try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_photo()).into(btn_vehicle);
+                                    btn_ok.setVisibility(View.GONE);
+                                }catch (Exception e){e.printStackTrace();}
 
                                 try{Picasso.with(Vehicle_reg.this).load(getlist.get(0).getVehicle_rc()).into(btn_vehicle_rc);  }catch (Exception e){e.printStackTrace();}
 

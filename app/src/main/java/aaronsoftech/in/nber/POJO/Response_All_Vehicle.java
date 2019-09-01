@@ -10,39 +10,39 @@ import java.util.List;
  */
 
 public class Response_All_Vehicle {
-    @SerializedName("api_status")
+    @SerializedName("ResponseCode")
     @Expose
-    private String api_status="";
+    private String ResponseCode="";
 
-    @SerializedName("api_message")
+    @SerializedName("ResponseMessage")
     @Expose
-    private String api_message="";
+    private String ResponseMessage="";
 
-    @SerializedName("data")
-    public List<Data_Vehicle_List> data = null;
+    @SerializedName("Result")
+    public List<Data_Vehicle_List> Result = null;
 
-    public String getApi_status() {
-        return api_status;
+    public String getResponseCode() {
+        return ResponseCode;
     }
 
-    public void setApi_status(String api_status) {
-        this.api_status = api_status;
+    public void setResponseCode(String responseCode) {
+        ResponseCode = responseCode;
     }
 
-    public String getApi_message() {
-        return api_message;
+    public String getResponseMessage() {
+        return ResponseMessage;
     }
 
-    public void setApi_message(String api_message) {
-        this.api_message = api_message;
+    public void setResponseMessage(String responseMessage) {
+        ResponseMessage = responseMessage;
     }
 
-    public List<Data_Vehicle_List> getData() {
-        return data;
+    public List<Data_Vehicle_List> getResult() {
+        return Result;
     }
 
-    public void setData(List<Data_Vehicle_List> data) {
-        this.data = data;
+    public void setResult(List<Data_Vehicle_List> result) {
+        Result = result;
     }
 
     public class Data_Vehicle_List {
@@ -74,9 +74,61 @@ public class Response_All_Vehicle {
         @Expose
         private String token_no="";
 
+        @SerializedName("lat")
+        @Expose
+        private String lat="";
+
+        @SerializedName("lng")
+        @Expose
+        private String lng="";
+
         @SerializedName("status")
         @Expose
         private String status="";
+
+        @SerializedName("distance")
+        @Expose
+        private String distance="";
+
+                 /*  "id": 31,
+                "driver_id": 5,
+                "vehicle_type_id": "6",
+                "vehicle_number": "I 20TH UDP",
+                "vehicle_rc": "uploads/0/2019-08/184f9f389f0f7f3a0910a8ab7e860ea4.jpg",
+                "vehicle_other_doc": "uploads/0/2019-08/4cb458fae1ba68595b99135a3dda9882.jpg",
+                "vehicle_insurance_id": "uploads/0/2019-08/bc6bb83c0a69254970de2f7461957b62.jpg",
+                "permit": "uploads/0/2019-08/befcb2c9909aac301d05e6e53fda86da.jpg",
+                "status": "Deactive",
+                "timestamp": "2019-08-20 22:18:07",
+                "vehicle_photo": "uploads/0/2019-08/d902149e92bac2834206baab1474092e.jpg",
+                "token_no": "fXgzu07W2K8:APA91bG4vdFl1XxZZwnrVKUWNyJ8QqbhUr9T8XHYEHcNhcWbaPZ8SRD0zsQU3yIiFcuBdOeTLqWtHEngN_loGo_QJFQV4Dg1dfurGj6HiCrsnw4aJQSsHm65tk-K-XFz4YehbOv4ds4m",
+                "lat": "0",
+                "lng": "0",
+                "distance": 551.4361347655323015715111978352069854736328125*/
+
+        public String getLat() {
+            return lat;
+        }
+
+        public void setLat(String lat) {
+            this.lat = lat;
+        }
+
+        public String getLng() {
+            return lng;
+        }
+
+        public void setLng(String lng) {
+            this.lng = lng;
+        }
+
+        public String getDistance() {
+            return distance;
+        }
+
+        public void setDistance(String distance) {
+            this.distance = distance;
+        }
 
         public String getStatus() {
             return status;

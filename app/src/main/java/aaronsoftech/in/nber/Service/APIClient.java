@@ -19,6 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIClient {
     public static final String BASE_URL = "http://thenber.com/backend/public/api/";
+    public static final String BASE_URL_VEHICLE = "https://thenber.com/backend/public/api/";
     private static Retrofit retrofit = null;
     private static APIInterface methods = null;
 
@@ -45,6 +46,42 @@ public class APIClient {
 
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
+                    .client(httpClient)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build();
+
+            methods = retrofit.create(APIInterface.class);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return methods;
+    }
+
+    public static APIInterface getWebServiceMethod_vehicle()
+    {
+        try
+        {
+            Gson gson = new GsonBuilder()
+                    .setLenient()
+                    .create();
+
+            OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(new Interceptor()
+            {
+                @Override
+                public Response intercept(Chain chain) throws IOException
+                {
+                    Request request = chain.request().newBuilder()
+                            .build();
+                    return chain.proceed(request);
+                }
+            }).connectTimeout(5, TimeUnit.MINUTES)
+                    .readTimeout(5, TimeUnit.MINUTES)
+                    .build();
+
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL_VEHICLE)
                     .client(httpClient)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();

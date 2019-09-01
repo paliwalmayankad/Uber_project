@@ -182,13 +182,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
     double current_lat= 0.0;
     double current_lng= 0.0;
     ArrayList<Near_Driver> Near_driver_list=new ArrayList<>();
-
-
+    ImageView btn_pin;
+    int Select_vehicle_position=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_from__location);
 
+        btn_pin=findViewById(R.id.pin);
         layout_loc_one=findViewById(R.id.layout_one);
         galleryview=(Gallery)findViewById(R.id.gallery);
         ImageView btnback=findViewById(R.id.back_btn_location);
@@ -334,7 +335,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             et_location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    btn_pin.setVisibility(View.VISIBLE);
                         check_get_location=true;
                         try{
                             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -352,6 +353,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
             et_location2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    btn_pin.setVisibility(View.VISIBLE);
                       check_get_location=true;
                         try{
                             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -652,6 +654,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
         recy_vehicle_list.clearFocus();
         HashMap map= new HashMap<>();
         map.put("vehicle_type_id",vehicle_id);
+        map.put("lat",String.valueOf(App_Conteroller.latitute));
+        map.put("lng",String.valueOf(App_Conteroller.longitude));
+
         if (isNetworkAvailable(From_Location.this))
         {
             Call<Response_All_Vehicle> call= APIClient.getWebServiceMethod().get_All_select_vehicle(map);
@@ -659,18 +664,17 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 @Override
                 public void onResponse(Call<Response_All_Vehicle> call, Response<Response_All_Vehicle> response) {
                     progressDialog.dismiss();
-                    String status=response.body().getApi_status();
-                    String msg=response.body().getApi_message();
-                    if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
+                    String status=response.body().getResponseCode();
+                    String msg=response.body().getResponseMessage();
+                    if (status.equalsIgnoreCase("200") )
                     {
-                        googleMap.clear();
                         get_vehicle_select_list.clear();
                         Log.i(TAG,"Log driver price :"+vehicle_price);
                         double price_pkm= Double.valueOf(vehicle_price);
 
                         List<Response_All_Vehicle.Data_Vehicle_List> get_select_list=new ArrayList<>();
 
-                        get_select_list=response.body().getData();
+                        get_select_list=response.body().getResult();
                         for (int m=0;m<get_select_list.size();m++)
                         {
                             if (get_select_list.get(m).getStatus().toString().equalsIgnoreCase("Active"))
@@ -685,11 +689,16 @@ public class From_Location extends AppCompatActivity implements LocationListener
                                 get_vehicle_select_list.get(i).setVehicle_price(String.valueOf(price));
                                 get_driver_location(get_vehicle_select_list.get(i).getDriver_id(),i);
                         }
+                        if (get_vehicle_select_list.size()==0)
+                        {
+                            Toast.makeText(From_Location.this, "No available any vehicle.Please select other vehicle", Toast.LENGTH_SHORT).show();
+                        }else{
+                            get_select_vehicle_api(Select_vehicle_position);
 
-
+                        }
 
                        Adapter_Vehicle adapter_past=new Adapter_Vehicle(From_Location.this,get_vehicle_select_list,From_Location.this);
-                       recy_vehicle_list.setAdapter(adapter_past);
+          //           recy_vehicle_list.setAdapter(adapter_past);
 
                     }else{
                         progressDialog.dismiss();
@@ -706,6 +715,19 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }else{
             Toast.makeText(From_Location.this, "No Internet", Toast.LENGTH_SHORT).show();
         }
+
+    }
+
+    private void get_select_vehicle_api(int vehicle_position) {
+
+        book_vehicleid=get_vehicle_select_list.get(vehicle_position).getId();
+        book_amount=get_vehicle_select_list.get(vehicle_position).getVehicle_price();
+        book_Driver_ID=get_vehicle_select_list.get(vehicle_position).getDriver_id();
+        book_vehicle_no=get_vehicle_select_list.get(vehicle_position).getVehicle_number();
+        book_vehicle_image=get_vehicle_select_list.get(vehicle_position).getVehicle_photo();
+        book_refreshtoken=get_vehicle_select_list.get(vehicle_position).getToken_no();
+        book_vehicle_type_id=get_vehicle_select_list.get(vehicle_position).getVehicle_type_id();
+        btn_order_layout.setVisibility(View.VISIBLE);
 
     }
 
@@ -744,87 +766,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     }
 
-    public void send_notification()
-    {
-
-
-
-    }
-
-
-    private void get_nearst_location() {
-        Near_driver_list.clear();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        Query myTopPostsQuery = mDatabase.child("Driver_Current_latlng_ID");
-
-        // My top posts by number of stars
-        myTopPostsQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
-
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    // Extract a Message object from the DataSnapshot
-                    Near_Driver message = child.getValue(Near_Driver.class);
-                    String token_no = String.valueOf(dataSnapshot.child("token_no").getValue());
-                    String driver_id = String.valueOf(dataSnapshot.child("driver_id").getValue());
-                    String driver_lat = String.valueOf(dataSnapshot.child("driver_lat").getValue());
-                    String driver_lng = String.valueOf(dataSnapshot.child("driver_lng").getValue());
-                    String driver_vehicle_no = String.valueOf(dataSnapshot.child("driver_vehicle_no").getValue());
-                    String driver_vehicle_type = String.valueOf(dataSnapshot.child("driver_vehicle_type").getValue());
-                    String driver_status = String.valueOf(dataSnapshot.child("driver_status").getValue());
-
-                    double distance_driver=distance(Double.valueOf(FROM_LAT),Double.valueOf(FROM_LNG),current_lat,current_lat);
-                    message.setDriver_distance(distance_driver);
-
-                    Boolean data=true;
-                    Boolean data_second=false;
-                    if (data)
-                    {
-                        data=false;
-                        Near_driver_list.add(message);
-                    }
-                    for (int i=0;i<Near_driver_list.size();i++)
-                    {
-                        if (Near_driver_list.get(i).getDriver_id().equalsIgnoreCase(driver_id))
-                        {
-                            break;
-                        }else{
-                            data_second=true;
-                        }
-                    }
-
-
-                    if (data_second)
-                    {
-                        data_second=false;
-                        Near_driver_list.add(message);
-
-                    }
-
-
-                    /*for (int i=0;i<Near_driver_list.size();i++)
-                    {
-                        if (Near_driver_list.get(i).getDriver_id().equalsIgnoreCase(driver_id))
-                        {
-                            break;
-                        }else
-                            {
-                                Near_driver_list.add(message);
-                            }
-                    }*/
-
-                }
-
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
-            }
-        });
-    }
 
     private void Set_location_on_map() {
         if (App_Utils.isNetworkAvailable(From_Location.this))
@@ -899,8 +840,10 @@ public class From_Location extends AppCompatActivity implements LocationListener
             galleryview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-
+                        int select_item=galleryview.getSelectedItemPosition();
+                        btn_pin.setVisibility(View.GONE);
+                        googleMap.clear();
+                        Show_polyline_map();
                         if (get_vehicle_type_list.get(i).getKm_price()==null)
                         {
                             Call_Select_Vihicle_Api(get_vehicle_type_list.get(i).getId(),"1");
@@ -909,10 +852,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         }
                         get_vehicle_type=get_vehicle_type_list.get(i).getVehicle_type();
                         get_Vehicle_icon=get_vehicle_type_list.get(i).getVehicle_icon();
-
+                        galleryview.setSelection(select_item,true);
                     }
                 });
-
         }
         else {
             Toast.makeText(this, "Please select Start point and end point", Toast.LENGTH_SHORT).show();
@@ -1300,6 +1242,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
+
         current_lat=location.getLatitude();
         current_lng=location.getLongitude();
         //Place current location marker
@@ -1409,7 +1352,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     public void Call_Api_book_ride(String date,final String vehicleid, String pricc, final String driver_ID, final String vehicle_no, final String vehicle_image, String refreshtoken,final String vehicla_type_id){
 
-
         final HashMap<String,String> map=new HashMap<>();
         String userid=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
 
@@ -1423,7 +1365,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         map.put("to_lat",""+TO_LAT);
         map.put("to_lng",""+TO_LNG);
         map.put("stoppage_date_time",""+date);
-        map.put("payment_status","cash");
+        map.put("payment_status","pending");
         map.put("payment_id","00000000");
         map.put("amount",""+pricc);
         map.put("pickup",""+Book_status);
@@ -1457,6 +1399,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             map.put("user_image",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_PHOTO,""));
                             map.put("user_contact",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
                             map.put("vehicle_no",vehicle_no);
+                            map.put("Driver_id",driver_ID);
                             map.put("vehicle_type_id",vehicla_type_id);
                             map.put("vehicle_image",vehicle_image);
                             mDatabase.child("Booking_ID").child(id).setValue(map);
@@ -1470,10 +1413,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
                                         String name = String.valueOf(dataSnapshot.child("name").getValue());
                                         String state = String.valueOf(dataSnapshot.child("state").getValue());
                                         MarkerOptions marker2 = null;
-                                        if (name.toString().equalsIgnoreCase("null") || name.toString().equalsIgnoreCase(null) || name.toString().equalsIgnoreCase("") )
+                                        if (!(name.toString().equalsIgnoreCase("null")) || !(name.toString().equalsIgnoreCase(null)) || !(name.toString().equalsIgnoreCase("")) )
                                         {
-
-                                        }else{
                                             progressDialog.dismiss();
                                             finish();
                                             Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
@@ -1566,7 +1507,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
     }
 
-    private void get_driver_token(final String datetime,final String vehicleid, final String amount, final String driver_ID, final String vehicle_no, final String vehicle_image, final String refreshtoken,final String vehicle_type_id) {
+    private void get_driver_token(final String datetime,final String vehicleid, final String amount, final String driver_ID, final String vehicle_no, final String vehicle_image, final String refreshtoken,final String vehicle_type_id,final String book_status) {
         Call_driver_book_api=true;
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -1588,6 +1529,31 @@ public class From_Location extends AppCompatActivity implements LocationListener
                     }
                 }else{
 
+                    Select_vehicle_position= Select_vehicle_position+1;
+                    if (Select_vehicle_position<get_vehicle_select_list.size())
+                    {
+                        get_select_vehicle_api(Select_vehicle_position);
+                        Book_status="Now";
+                        String datenew=App_Utils.getCurrentdate();
+                        Show_Dialog_booking(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+
+                    }else{
+                        final Dialog dialog = App_Utils.createDialog(From_Location.this, true);
+                        dialog.setCancelable(false);
+                        TextView txt_DialogTitle = (TextView) dialog.findViewById(R.id.txt_DialogTitle);
+                        txt_DialogTitle.setText("This driver is offline. please select other vehicle");
+                        TextView txt_submit = (TextView) dialog.findViewById(R.id.txt_submit);
+                        txt_submit.setText("OK");
+                        txt_submit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                                Check_booking_status=true;
+                            }
+                        });
+                        dialog.show();
+                    }
+
                     /*mDatabase = FirebaseDatabase.getInstance().getReference();
                     Map<String,String> map=new HashMap<>();
                     map.put("driver_id",driver_ID);
@@ -1604,23 +1570,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
                         }
                     });*/
-
-
-
-                    final Dialog dialog = App_Utils.createDialog(From_Location.this, true);
-                    dialog.setCancelable(false);
-                    TextView txt_DialogTitle = (TextView) dialog.findViewById(R.id.txt_DialogTitle);
-                    txt_DialogTitle.setText("This driver is offline. please select other vehicle");
-                    TextView txt_submit = (TextView) dialog.findViewById(R.id.txt_submit);
-                    txt_submit.setText("OK");
-                    txt_submit.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                            Check_booking_status=true;
-                        }
-                    });
-                    dialog.show();
                 }
 
             }
@@ -1671,8 +1620,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
         LayoutInflater inflater=this.getLayoutInflater();
         View v=inflater.inflate(R.layout.dialog_ride_book,null);
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme_down_up;
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.setCancelable(false);
+       // getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         CircleImageView vehi_typ_img=v.findViewById(R.id.vehicle_type_img);
         CircleImageView vehi_img=v.findViewById(R.id.vehicle_img);
 
@@ -1706,7 +1655,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 if (App_Utils.isNetworkAvailable(From_Location.this)){
                     Check_booking_status=false;
                     dialog.dismiss();
-                    get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id);
+                    get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id,Book_status);
 
                 }else{
                     Toast.makeText(From_Location.this, "No Internet", Toast.LENGTH_SHORT).show();

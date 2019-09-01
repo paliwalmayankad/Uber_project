@@ -81,7 +81,9 @@ public class login_mobile extends AppCompatActivity {
                 ed_mobile.setError("Invalid mobile no.");
                 ed_mobile.requestFocus();
             } else {
-                sendVerificationCode(ed_mobile.getText().toString().trim());
+       //         sendVerificationCode(ed_mobile.getText().toString().trim());
+                startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp","no"));
+
             }
         }else{
             Toast.makeText(activity_login_mobile, "No internet Connection", Toast.LENGTH_SHORT).show();
