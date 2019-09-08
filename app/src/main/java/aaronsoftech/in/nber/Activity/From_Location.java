@@ -194,6 +194,12 @@ public class From_Location extends AppCompatActivity implements LocationListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_from__location);
 
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+       // dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme_down_up;
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+
         btn_pin=findViewById(R.id.pin);
         layout_loc_one=findViewById(R.id.layout_one);
         galleryview=(Gallery)findViewById(R.id.gallery);
@@ -259,7 +265,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
         // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(this);
 
-        // Initialize the AutocompleteSupportFragment.
+       /* // Initialize the AutocompleteSupportFragment.
         final AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         // Specify the types of place data to return.
@@ -301,13 +307,13 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 // TODO: Handle the error.
                 Log.i(TAG, "An error occurred: " + status);
             }
-        });
+        });*/
 
         get_from_Address_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 focus_type="FROM";
-                autocompleteFragment2.onAttach(From_Location.this);
+
             }
         });
 
@@ -318,7 +324,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 focus_type="TO";
                 et_location2.setTextIsSelectable(true);
                 String location = et_location2.getText().toString();
-                autocompleteFragment2.isAdded();
+
             }
         });
 
@@ -336,14 +342,13 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
             et_location2 =  findViewById(R.id.et_location2);
             et_location =  findViewById(R.id.et_location);
-            et_location.performClick();
+
             et_location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
                     Intent intent = new Autocomplete.IntentBuilder(
-
-                            AutocompleteActivityMode.OVERLAY, fields)
+                            AutocompleteActivityMode.FULLSCREEN, fields)
                             .setTypeFilter(TypeFilter.CITIES)
                             .setCountry("IN")
                             .build(From_Location.this);
@@ -355,20 +360,20 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
                         }catch (Exception e){e.printStackTrace();}
-
                         focus_type="FROM";
                         check_get_location=true;
                         et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
                         et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
                 }
             });
+
             et_location2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
                     List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
                     Intent intent = new Autocomplete.IntentBuilder(
-                            AutocompleteActivityMode.OVERLAY, fields)
+                            AutocompleteActivityMode.FULLSCREEN, fields)
                             .setTypeFilter(TypeFilter.CITIES)
                             .setCountry("IN")
                             .build(From_Location.this);
@@ -880,7 +885,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     private void Show_polyline_map()
     {
-        if ((FROM_LAT!="") && (FROM_LNG!="") && (TO_LAT!="") && (TO_LNG!="") && (FROM_LAT!=null) && (FROM_LNG!=null) && (TO_LAT!=null) && (TO_LNG!=null) )
+        if ((FROM_LAT!="") && FROM_latLng!=null && TO_latlng!=null && (FROM_LNG!="") && (TO_LAT!="") && (TO_LNG!="") && (FROM_LAT!=null) && (FROM_LNG!=null) && (TO_LAT!=null) && (TO_LNG!=null) )
             {
 
             set_line_on_map(FROM_latLng,TO_latlng);
@@ -1131,11 +1136,12 @@ public class From_Location extends AppCompatActivity implements LocationListener
     {
         try
         {
+
             if(googleMap!=null && App_Conteroller.latitute!=0 && App_Conteroller.latitute!=0.0 && App_Conteroller.longitude!=0 && App_Conteroller.longitude!=0.0)
             {
 
                 googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-               LatLng lt= new LatLng(App_Conteroller.latitute,App_Conteroller.longitude);
+                LatLng lt= new LatLng(App_Conteroller.latitute,App_Conteroller.longitude);
                 startMapAnimation(lt);
 
                 setEditTextAddress(App_Conteroller.mAddress,App_Conteroller.subLocality,App_Conteroller.city,App_Conteroller.state,App_Conteroller.country,App_Conteroller.postCode,App_Conteroller.full_address,new LatLng(App_Conteroller.latitute,App_Conteroller.longitude));
@@ -1180,7 +1186,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         return false;
                     }
                 });
-
+                progressDialog.dismiss();
+                et_location2.performClick();
                 googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener()
                 {
                     @Override

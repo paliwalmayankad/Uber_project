@@ -55,7 +55,7 @@ public class Acc_edit extends AppCompatActivity  {
     public static String PATH_IMAGE="";
     EditText ed_name,ed_address,ed_city,ed_email,ed_state,ed_country,tx_mobile,ed_zipcode;
     Toolbar mToolbar22;
-    public static ImageView header_img;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,12 +173,6 @@ public class Acc_edit extends AppCompatActivity  {
                         .into(profile_img);
             }catch (Exception e){e.printStackTrace();}
 
-            try{
-                Picasso.with(Acc_edit.this)
-                        .load(PATH_IMAGE)
-                        .transform(new BlurTransformation(Acc_edit.this, 1, 1))
-                        .into(header_img);
-            }catch (Exception e){e.printStackTrace();}
 
             t_email.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_EMAIL,""));
             ed_address.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ADDRESS,""));
@@ -331,7 +325,6 @@ public class Acc_edit extends AppCompatActivity  {
 
     private void Init() {
 
-        header_img=findViewById(R.id.expandedImage);
         profile_img=findViewById(R.id.profile_image);
         t_status=findViewById(R.id.user_status);
         ed_zipcode=findViewById(R.id.e_zipcode);

@@ -2,6 +2,7 @@ package aaronsoftech.in.nber.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,7 +23,7 @@ public class Acc_setting extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     TextView t_name,t_mobile,t_email;
     CircleImageView img_profile;
-    TextView txt_place,txt_home,txt_work;
+    TextView txt_place,txt_home,txt_work,btn_tc,btn_privicy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,8 @@ public class Acc_setting extends AppCompatActivity {
     }
 
     private void Init() {
+        btn_tc=findViewById(R.id.txt_tc);
+        btn_privicy=findViewById(R.id.txt_privacy);
         img_profile=findViewById(R.id.profile);
         t_name=findViewById(R.id.txt_name);
         t_mobile=findViewById(R.id.txt_mobile);
@@ -104,6 +107,27 @@ public class Acc_setting extends AppCompatActivity {
                 startActivity(new Intent(Acc_setting.this,MapsActivity.class).putExtra("type","2"));
             }
         });
+
+
+        btn_privicy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String url = "http://www.example.com";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
+        });
+        btn_tc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String url = "http://www.example.com";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
+        });
+
     }
 
     @Override
