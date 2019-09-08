@@ -73,9 +73,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -141,7 +145,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
     Dialog dialog;
     String isFrom="";
     String focus_type="FROM";
-
+    private static final int AUTOCOMPLETE_FROM = 123;
+    private static final int AUTOCOMPLETE_TO = 765;
     String FROM_LAT="";
     String FROM_LNG="";
     String TO_LAT="";
@@ -248,12 +253,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         ImageView get_from_Address_btn=findViewById(R.id.find_location);
         ImageView get_to_Address_btn=findViewById(R.id.find_location2);
-        get_from_Address_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                focus_type="FROM";
-                }
-        });
 
         // Initialize Places.
         Places.initialize(getApplicationContext(), getString(R.string.google_api_key));
@@ -270,7 +269,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-
                     et_location.setText(place.getName());
                     LatLng get_latlong=place.getLatLng();
                     set_location_list(get_latlong);
@@ -291,7 +289,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         autocompleteFragment2.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-              // et_location2.selectAll();
 
                 et_location2.setText(place.getName());
                 LatLng get_latlong=place.getLatLng();
@@ -306,6 +303,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
             }
         });
 
+        get_from_Address_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                focus_type="FROM";
+                autocompleteFragment2.onAttach(From_Location.this);
+            }
+        });
+
 
         get_to_Address_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -313,9 +318,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 focus_type="TO";
                 et_location2.setTextIsSelectable(true);
                 String location = et_location2.getText().toString();
+                autocompleteFragment2.isAdded();
             }
         });
-
 
             btn_done =(TextView)findViewById(R.id.txt_done);
             btn_done.setOnClickListener(new View.OnClickListener() {
@@ -331,10 +336,19 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
             et_location2 =  findViewById(R.id.et_location2);
             et_location =  findViewById(R.id.et_location);
-
+            et_location.performClick();
             et_location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
+                    Intent intent = new Autocomplete.IntentBuilder(
+
+                            AutocompleteActivityMode.OVERLAY, fields)
+                            .setTypeFilter(TypeFilter.CITIES)
+                            .setCountry("IN")
+                            .build(From_Location.this);
+                    startActivityForResult(intent, AUTOCOMPLETE_FROM);
+                   // autocompleteFragment2.setAllowReturnTransitionOverlap(false);
                     btn_pin.setVisibility(View.VISIBLE);
                         check_get_location=true;
                         try{
@@ -346,13 +360,20 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         check_get_location=true;
                         et_location.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle2));
                         et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
-
-
                 }
             });
             et_location2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
+                    Intent intent = new Autocomplete.IntentBuilder(
+                            AutocompleteActivityMode.OVERLAY, fields)
+                            .setTypeFilter(TypeFilter.CITIES)
+                            .setCountry("IN")
+                            .build(From_Location.this);
+                    startActivityForResult(intent, AUTOCOMPLETE_TO);
+
                     btn_pin.setVisibility(View.VISIBLE);
                       check_get_location=true;
                         try{
@@ -367,17 +388,11 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 }
             });
 
-            if(getIntent().getExtras()!=null)
-            {
-                isFrom=getIntent().getExtras().getString("isFrom");
-            }
+        if(getIntent().getExtras()!=null)
+        {
+              isFrom=getIntent().getExtras().getString("isFrom");
+        }
 
-
-
-       /* recyclerView_vehicle_type = (RecyclerView)findViewById(R.id.recycle_vehicle_type);
-        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL);
-        recyclerView_vehicle_type.setLayoutManager(staggeredGridLayoutManager); // set LayoutManager to RecyclerView
-*/
         recy_vehicle_list = (RecyclerView)findViewById(R.id.recycle_vehicle_Select_list);
         StaggeredGridLayoutManager staggeredGridLayoutManager2 = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
         recy_vehicle_list.setLayoutManager(staggeredGridLayoutManager2); // set LayoutManager to RecyclerView
@@ -488,6 +503,47 @@ public class From_Location extends AppCompatActivity implements LocationListener
         return builder.build();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AUTOCOMPLETE_FROM) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i("tag", "Place: " + place.getName() + ", " + place.getLatLng());
+         //       tvLocationName.setText(place.getName());
+         //       tvPlaceId.setText(place.getId());
+          //      tvLatLon.setText(String.valueOf(place.getLatLng()));
+
+                et_location.setText(place.getName());
+                LatLng get_latlong=place.getLatLng();
+                startMapAnimation(get_latlong);
+                set_location_list(get_latlong);
+
+
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("tag", status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }else if (requestCode == AUTOCOMPLETE_TO) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i("tag", "Place: " + place.getName() + ", " + place.getLatLng());
+                et_location2.setText(place.getName());
+                LatLng get_latlong=place.getLatLng();
+                startMapAnimation(get_latlong);
+                set_location_list(get_latlong);
+
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("tag", status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }
     private DialogFragment createDialogWithSetters(int checkedId) {
         BottomSheetPickerDialog dialog = null;
         boolean custom = false;
@@ -824,12 +880,12 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     private void Show_polyline_map()
     {
-        if ((FROM_LAT!="") && (FROM_LNG!="") && (TO_LAT!="") && (TO_LNG!=""))
+        if ((FROM_LAT!="") && (FROM_LNG!="") && (TO_LAT!="") && (TO_LNG!="") && (FROM_LAT!=null) && (FROM_LNG!=null) && (TO_LAT!=null) && (TO_LNG!=null) )
             {
 
             set_line_on_map(FROM_latLng,TO_latlng);
-
-            btn_done.setText("Distance in km: "+String.valueOf(distance(Double.valueOf(FROM_LAT),Double.valueOf(FROM_LNG),Double.valueOf(TO_LAT),Double.valueOf(TO_LNG))));
+            DecimalFormat df2=new DecimalFormat("#.##");
+            btn_done.setText("Distance in km: "+String.valueOf(df2.format(distance(Double.valueOf(FROM_LAT),Double.valueOf(FROM_LNG),Double.valueOf(TO_LAT),Double.valueOf(TO_LNG)))));
 
             Adapter_Vehicle_gallery adapter_past=new Adapter_Vehicle_gallery(From_Location.this,get_vehicle_type_list);
             galleryview.setAdapter(adapter_past);
@@ -1313,13 +1369,13 @@ public class From_Location extends AppCompatActivity implements LocationListener
                     FROM_LAT=String.valueOf(Add_lat);
                     FROM_LNG=String.valueOf(Add_long);
                     LatLng latLng = new LatLng(Add_lat, Add_long);
-                    googleMap.addMarker(new MarkerOptions().position(latLng));
+             //       googleMap.addMarker(new MarkerOptions().position(latLng));
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 }else{
                     TO_LAT=String.valueOf(Add_lat);
                     TO_LNG=String.valueOf(Add_long);
                     LatLng latLng = new LatLng(Add_lat, Add_long);
-                    googleMap.addMarker(new MarkerOptions().position(latLng));
+                //    googleMap.addMarker(new MarkerOptions().position(latLng));
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 }
 
@@ -1413,8 +1469,10 @@ public class From_Location extends AppCompatActivity implements LocationListener
                                         String name = String.valueOf(dataSnapshot.child("name").getValue());
                                         String state = String.valueOf(dataSnapshot.child("state").getValue());
                                         MarkerOptions marker2 = null;
-                                        if (!(name.toString().equalsIgnoreCase("null")) || !(name.toString().equalsIgnoreCase(null)) || !(name.toString().equalsIgnoreCase("")) )
+                                        if (name.toString().equalsIgnoreCase("null") || (name.toString().equalsIgnoreCase(null) || name.toString().equalsIgnoreCase("")) )
                                         {
+
+                                        }else{
                                             progressDialog.dismiss();
                                             finish();
                                             Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
@@ -1435,7 +1493,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             Toast.makeText(From_Location.this, "status "+status+"\n"+" msg "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-                        progressDialog.dismiss();
+
                         Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
@@ -1594,7 +1652,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         time=dateFormat.format(cal.getTime());
         btn_done.setText("Time set: " + dateFormat.format(cal.getTime()));
         Show_calander();
-
     }
 
     @Override

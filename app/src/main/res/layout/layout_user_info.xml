@@ -75,12 +75,16 @@
                 android:layout_width="wrap_content"
                 android:text="Cash"
                 android:textSize="16dp"
+                android:visibility="gone"
                 android:textColor="@color/background_splash"
                 android:layout_height="match_parent" />
             <TextView
                 android:layout_width="wrap_content"
-                android:text="   Success"
+                android:text="Pending"
                 android:textSize="16dp"
+                android:id="@+id/status"
+                android:visibility="gone"
+                android:layout_marginLeft="11dp"
                 android:layout_height="match_parent" />
             <LinearLayout
                 android:layout_width="match_parent"

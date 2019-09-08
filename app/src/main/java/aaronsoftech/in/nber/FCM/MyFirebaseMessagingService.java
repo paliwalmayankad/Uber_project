@@ -16,6 +16,8 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONObject;
+
 import aaronsoftech.in.nber.Activity.Home;
 import aaronsoftech.in.nber.Activity.Splash;
 import aaronsoftech.in.nber.R;
@@ -38,12 +40,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0)
         {
 
-
-          //  Log.e(TAG, "Data Payload: " + remoteMessage.getData().toString());
+            Log.e(TAG, "Data Payload: " + remoteMessage.getData().toString());
             try
             {
-               // JSONObject json = new JSONObject(remoteMessage.getData().toString());
-                sendPushNotification();
+                JSONObject json = new JSONObject(remoteMessage.getData().toString());
+                sendPushNotification(json);
             }
             catch (Exception e)
             {
@@ -52,7 +53,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }else{
             sendNotification(from,title);
 
-       }
+        }
     }
 
     private void sendNotification(String from, String title) {
@@ -72,7 +73,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     .setContentTitle(getResources().getString(R.string.app_name))
                     .setContentText(from)
                     .setAutoCancel(true)
-                    .setSound(defaultSoundUri).setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.nber_logo))
+                    .setSound(defaultSoundUri).setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.yellow_logo))
                     .setContentIntent(pendingIntent);
 
             NotificationManager notificationManager =
@@ -86,19 +87,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     //this method will display the notification
     //We are passing the JSONObject that is received from
     //firebase cloud messaging
-    private void sendPushNotification()
+    private void sendPushNotification(JSONObject json)
     {
         //optionally we can display the json into log
-       // Log.e(TAG, "Notification JSON " + json.toString());
+        Log.e(TAG, "Notification JSON " + json.toString());
         try
         {
             //getting the json data
-         //   JSONObject data = json.getJSONObject("data");
+            JSONObject data = json.getJSONObject("data");
 
             //parsing json data
-            String title = "You have new booking";
-            String message = "Accept this booking";
-
+            String title = data.getString("title");
+            String message = data.getString("message");
+            String imageUrl = data.getString("image");
 
             if(title!=null && !title.equalsIgnoreCase("null") && title.equals("Logout"))
             {
@@ -112,6 +113,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     Intent intent = new Intent(getApplicationContext(), Splash.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     ((Activity) getApplicationContext()).startActivity(intent);
+                    ((Activity) getApplicationContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                     ((Activity) getApplicationContext()).finish();
                 }
             }
@@ -119,31 +121,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             {
                 //creating MyNotificationManager object
                 MyNotificationManager mNotificationManager = new MyNotificationManager(getApplicationContext());
-                if(getCurrentPackage().equals(this.getPackageName().toString()))
+                Log.v(TAG, "onMessage Current package is not app package");
+                moveIntent = new Intent(getApplicationContext(),Splash.class);
+                moveIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                //if there is no image
+                if(imageUrl.equals("null"))
                 {
-
-                    if(getCurrentPackageCurrentActivity().equals("aaronsoftech.in.nber.Activity.Home"))
-                    {
-                        Log.v(TAG, "onMessage Current package is app package");
-                        moveIntent = new Intent();
-                    }
-                    else
-                    {
-                        Log.v(TAG, "onMessage Current package NotificationsActivity called...");
-                        moveIntent = new Intent(getApplicationContext(),Home.class);
-                   //     moveIntent = new Intent(getApplication().getApplicationContext(),d_notification_new_fragment.class);
-                    }
-
+                    //displaying small notification
+                    mNotificationManager.showSmallNotification(title, message, moveIntent);
                 }
                 else
                 {
-                    Log.v(TAG, "onMessage Current package is not app package");
-                    moveIntent = new Intent(getApplicationContext(),Splash.class);
-                    moveIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                    //if there is an image
+                    //displaying a big notification
+                    mNotificationManager.showBigImageNotification(title, message, imageUrl, moveIntent);
                 }
-
-                    mNotificationManager.showSmallNotification(title, message, moveIntent);
-
             }
         }
         catch (Exception e)
@@ -168,21 +161,4 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         return packageName;
     }
 
-    private String getCurrentPackageCurrentActivity()
-    {
-        String packageActivityName="";
-        try
-        {
-            ActivityManager am = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
-            packageActivityName = am.getRunningTasks(1).get(0).topActivity.getClassName();
-
-            Log.d("MyFMS", "CURRENT Activity ::" + am.getRunningTasks(1).get(0).topActivity.getClassName()+"   Package Name :  "+am.getRunningTasks(1).get(0).topActivity.getPackageName());
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return packageActivityName;
-    }
 }

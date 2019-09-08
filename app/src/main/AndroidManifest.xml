@@ -150,7 +150,7 @@
             android:theme="@style/AppTheme_one" />
         <activity
             android:name=".Activity.Home"
-            android:label="@string/title_activity_home"
+            android:label=""
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme_one">
             <meta-data

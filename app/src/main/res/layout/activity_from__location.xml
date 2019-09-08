@@ -12,16 +12,38 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical">
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="3dp"
+            android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:paddingLeft="11dp"
+            android:id="@+id/back_btn_location"
+            android:src="@drawable/ic_menu_button_of_three_horizontal_lines"
+            android:layout_height="50dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginRight="44dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="    For me"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textSize="20dp"
+                    android:paddingLeft="11dp"
+                    android:drawableLeft="@drawable/ic_user_black"
+                    android:layout_height="40dp" />
+            </LinearLayout>
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="5dp"
-                android:background="@color/grey_20"></View>
 
             <fragment
                 android:id="@+id/googleMap"
@@ -29,34 +51,6 @@
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="3dp"
-                    android:layout_height="wrap_content">
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:paddingLeft="11dp"
-                        android:id="@+id/back_btn_location"
-                        android:src="@drawable/ic_menu_button_of_three_horizontal_lines"
-                        android:layout_height="50dp" />
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:layout_marginRight="44dp"
-                        android:layout_gravity="center"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:text="   For me"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:textSize="20dp"
-                            android:paddingLeft="11dp"
-                            android:drawableLeft="@drawable/ic_user_black"
-                            android:layout_height="40dp" />
-                    </LinearLayout>
-                </LinearLayout>
                 <ImageView
                     android:id="@+id/pin"
                     android:layout_width="wrap_content"
@@ -85,7 +79,9 @@
                         android:paddingLeft="5dp"
                         android:orientation="horizontal">
 
-                        <LinearLayout
+
+
+                        <RelativeLayout
                             android:layout_width="fill_parent"
                             android:layout_height="40dp"
                             android:layout_gravity="center"
@@ -95,6 +91,16 @@
                             android:orientation="horizontal"
                             android:layout_marginEnd="4dp"
                             android:layout_marginStart="4dp">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:visibility="invisible"
+                                android:layout_height="match_parent">
+                                <fragment
+                                    android:id="@+id/place_autocomplete_fragment"
+                                    android:layout_width="match_parent"
+                                    android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                                    android:layout_height="match_parent" />
+                            </LinearLayout>
 
                             <TextView
                                 android:id="@+id/et_location"
@@ -115,12 +121,9 @@
                                 android:id="@+id/find_location"
                                 android:visibility="gone"
                                 android:layout_height="30dp" />
-                            <fragment
-                                android:id="@+id/place_autocomplete_fragment"
-                                android:layout_width="40dp"
-                                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                                android:layout_height="match_parent" />
-                        </LinearLayout>
+
+
+                        </RelativeLayout>
 
                     </LinearLayout>
 
@@ -131,7 +134,7 @@
                         android:orientation="vertical">
 
 
-                        <LinearLayout
+                        <RelativeLayout
                             android:layout_width="fill_parent"
                             android:layout_height="40dp"
                             android:layout_gravity="center"
@@ -142,8 +145,16 @@
                             android:layout_marginEnd="4dp"
                             android:layout_marginStart="4dp"
                             >
-
-
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:visibility="invisible"
+                                android:layout_height="match_parent">
+                                <fragment
+                                    android:id="@+id/place_autocomplete_fragment2"
+                                    android:layout_width="match_parent"
+                                    android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                                    android:layout_height="match_parent" />
+                            </LinearLayout>
                             <TextView
                                 android:id="@+id/et_location2"
                                 android:layout_width="match_parent"
@@ -163,12 +174,9 @@
                                 android:visibility="gone"
                                 android:id="@+id/find_location2"
                                 android:layout_height="30dp" />
-                            <fragment
-                                android:id="@+id/place_autocomplete_fragment2"
-                                android:layout_width="40dp"
-                                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                                android:layout_height="match_parent" />
-                        </LinearLayout>
+
+
+                        </RelativeLayout>
                     </LinearLayout>
                 </LinearLayout>
                 <View

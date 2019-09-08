@@ -78,11 +78,10 @@
                 android:textSize="22dp"
                 android:id="@+id/txt_finish_ride"
                 android:textStyle="bold"
-                android:layout_margin="11dp"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:padding="11dp"
-                android:background="@drawable/border_line_grey"
+                android:background="@drawable/edittext"
                 android:textColor="@android:color/black"
                 android:layout_height="wrap_content" />
         </LinearLayout>
@@ -106,11 +105,10 @@
                 android:textSize="22dp"
                 android:id="@+id/txt_finish_ride2"
                 android:textStyle="bold"
-                android:layout_margin="11dp"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:padding="11dp"
-                android:background="@drawable/border_line_grey"
+                android:background="@drawable/textview"
                 android:textColor="@android:color/black"
                 android:layout_height="wrap_content" />
         </LinearLayout>

@@ -74,17 +74,17 @@ public class login_mobile extends AppCompatActivity {
             refreshedToken = FirebaseInstanceId.getInstance().getToken();
             Log.i(TAG, "Token ID :  " + refreshedToken);
 
-            if (ed_mobile.getText().toString().isEmpty()) {
+            /*if (ed_mobile.getText().toString().isEmpty()) {
                 ed_mobile.setError("Enter mobile no.");
                 ed_mobile.requestFocus();
             } else if (ed_mobile.getText().toString().length() != 10) {
                 ed_mobile.setError("Invalid mobile no.");
                 ed_mobile.requestFocus();
             } else {
-       //         sendVerificationCode(ed_mobile.getText().toString().trim());
+                sendVerificationCode(ed_mobile.getText().toString().trim());*/
                 startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp","no"));
 
-            }
+        //    }
         }else{
             Toast.makeText(activity_login_mobile, "No internet Connection", Toast.LENGTH_SHORT).show();
         }

@@ -33,7 +33,7 @@
             android:background="@drawable/common_google_signin_btn_text_light_normal_background"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="11dp">
+           >
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="11dp">
+                >
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:orientation="horizontal"
@@ -59,20 +59,18 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:text="Name"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                        />
                     <TextView
                         android:id="@+id/txt_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="18dp"
+                        android:textSize="15dp"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
                         android:hint="Name"
                         android:textColor="@color/overlay_dark_60"
@@ -89,20 +87,18 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:text="Amount"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                        />
                     <TextView
                         android:id="@+id/txt_amount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
                         android:hint="Amount"
                         android:textColor="@color/overlay_dark_60"
@@ -118,20 +114,18 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:text="Booking Type"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                        />
                     <TextView
                         android:id="@+id/txt_book_type"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="18dp"
+                        android:textSize="15dp"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
                         android:hint="Book later"
                         android:textColor="@color/overlay_dark_70"
@@ -147,20 +141,18 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:text="Date"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                        />
                     <TextView
                         android:id="@+id/txt_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="18dp"
+                        android:textSize="15dp"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
                         android:hint="Book Date"
                         android:textColor="@color/overlay_dark_70"
@@ -177,12 +169,11 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:singleLine="true"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:text="From:"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                         />
                     <TextView
                         android:id="@+id/txt_from_add"
                         android:layout_width="match_parent"
@@ -191,7 +182,6 @@
                         android:textSize="17dp"
                         android:maxLines="2"
                         android:layout_weight="1"
-                        android:padding="7dp"
                         android:hint="From Address"
                         android:textColor="@color/overlay_dark_70"
                         />
@@ -206,8 +196,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
                         android:layout_weight="1"
-                        android:padding="7dp"
-                        android:textSize="18dp"
+                        android:textSize="16dp"
                         android:text="To:"
                         android:textColor="@android:color/black"
                         android:textStyle="bold" />
@@ -216,10 +205,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:textSize="17dp"
+                        android:textSize="15dp"
                         android:layout_weight="1"
                         android:maxLines="2"
-                        android:padding="7dp"
                         android:hint="To Address"
                         android:textColor="@color/overlay_dark_70"
                         />

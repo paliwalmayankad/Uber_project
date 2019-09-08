@@ -53,7 +53,7 @@ public class Adapter_user_list extends RecyclerView.Adapter<Adapter_user_list.My
                 holder.txt_price.setText("0.00");
             }
 
-
+            holder.txt_status.setText(get_list.get(position).getPayment_status());
             holder.txt_add_from.setText("From :"+get_list.get(position).getFrom_address());
             holder.txt_add_to.setText("To :"+get_list.get(position).getTo_address());
             holder.txt_no.setText("Name :"+String.valueOf(get_list.get(position).getUname()));
@@ -82,10 +82,8 @@ public class Adapter_user_list extends RecyclerView.Adapter<Adapter_user_list.My
            final BottomSheetDialog dialog = new BottomSheetDialog((Activity)mcon);
            LayoutInflater inflater = ((Activity) mcon).getLayoutInflater();
            View v = inflater.inflate(R.layout.layout_trip_details, null);
-
-           dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation_bottom;
-           dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-           ((Activity)con).getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+           dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme_down_up;
+       //    ((Activity)con).getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
            CircleImageView cust_img=v.findViewById(R.id.cust_img);
            TextView txt_amount=v.findViewById(R.id.txt_amount);
@@ -124,10 +122,11 @@ public class Adapter_user_list extends RecyclerView.Adapter<Adapter_user_list.My
     public class MyViewHolder extends RecyclerView.ViewHolder {
         CircleImageView img;
         LinearLayout llayout;
-        TextView txt_no, txt_price,img_icon,txt_contact,txt_add_from,txt_add_to;
+        TextView txt_no, txt_price,img_icon,txt_contact,txt_add_from,txt_add_to,txt_status;
 
         public MyViewHolder(View itemView) {
             super(itemView);
+            txt_status=itemView.findViewById(R.id.status);
             txt_add_from=itemView.findViewById(R.id.txt_from);
             txt_add_to=itemView.findViewById(R.id.txt_to);
             txt_contact=itemView.findViewById(R.id.txt_contact);

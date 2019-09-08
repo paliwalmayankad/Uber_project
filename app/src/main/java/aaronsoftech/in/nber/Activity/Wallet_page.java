@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 
 import aaronsoftech.in.nber.Adapter.Adapter_notification;
@@ -81,7 +82,8 @@ public class Wallet_page extends AppCompatActivity {
                                count=count+price;
                            }
 
-                           txt_total.setText(String.valueOf(count));
+                           DecimalFormat df2=new DecimalFormat("#.##");
+                           txt_total.setText(String.valueOf(df2.format(count)));
 
                            Adapter_wallet aa=new Adapter_wallet(Wallet_page.this,response.body().getData());
                            recyclerView.setAdapter(aa);
