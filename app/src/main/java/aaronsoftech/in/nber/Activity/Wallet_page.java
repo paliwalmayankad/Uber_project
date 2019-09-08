@@ -2,6 +2,7 @@ package aaronsoftech.in.nber.Activity;
 
 import android.app.ProgressDialog;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatRatingBar;
@@ -80,13 +81,20 @@ public class Wallet_page extends AppCompatActivity {
             final BottomSheetDialog dialog = new BottomSheetDialog(Wallet_page.this);
             LayoutInflater inflater = this.getLayoutInflater();
             View v = inflater.inflate(R.layout.layout_add_payment, null);
+        final TextInputEditText txt_no=v.findViewById(R.id.et_number);
 
         dialog.setContentView(v);
             Button btn_continue=v.findViewById(R.id.btn_cont);
             btn_continue.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    dialog.dismiss();
+                    if (txt_no.getText().toString().isEmpty()){
+                        txt_no.setError("Enter amount");
+                        txt_no.requestFocus();
+                    }else{
+                        dialog.dismiss();
+                    }
+
                 }
             });
 

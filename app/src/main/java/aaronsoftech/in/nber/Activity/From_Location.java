@@ -295,13 +295,11 @@ public class From_Location extends AppCompatActivity implements LocationListener
         autocompleteFragment2.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-
                 et_location2.setText(place.getName());
                 LatLng get_latlong=place.getLatLng();
                 startMapAnimation(get_latlong);
                 set_location_list(get_latlong);
                 autocompleteFragment2.onDestroy();  }
-
             @Override
             public void onError(Status status) {
                 // TODO: Handle the error.
@@ -349,7 +347,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                     List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
                     Intent intent = new Autocomplete.IntentBuilder(
                             AutocompleteActivityMode.FULLSCREEN, fields)
-                            .setTypeFilter(TypeFilter.CITIES)
                             .setCountry("IN")
                             .build(From_Location.this);
                     startActivityForResult(intent, AUTOCOMPLETE_FROM);
@@ -366,7 +363,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         et_location2.setBackground(getResources().getDrawable(R.drawable.login_et_rectangle));
                 }
             });
-
             et_location2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -374,7 +370,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                     List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
                     Intent intent = new Autocomplete.IntentBuilder(
                             AutocompleteActivityMode.FULLSCREEN, fields)
-                            .setTypeFilter(TypeFilter.CITIES)
                             .setCountry("IN")
                             .build(From_Location.this);
                     startActivityForResult(intent, AUTOCOMPLETE_TO);
@@ -744,12 +739,21 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             }
                         }
 
+                        Collections.sort(get_vehicle_select_list, new Comparator<Response_All_Vehicle.Data_Vehicle_List>() {
+                            @Override
+                            public int compare(Response_All_Vehicle.Data_Vehicle_List u1, Response_All_Vehicle.Data_Vehicle_List u2) {
+                                return u1.getDistance().compareTo(u2.getDistance());
+                            }
+                        });
+
+
                         for (int i=0;i<get_vehicle_select_list.size();i++)
                         {
                                 double price=Total_distanse*price_pkm;
                                 get_vehicle_select_list.get(i).setVehicle_price(String.valueOf(price));
                                 get_driver_location(get_vehicle_select_list.get(i).getDriver_id(),i);
                         }
+
                         if (get_vehicle_select_list.size()==0)
                         {
                             Toast.makeText(From_Location.this, "No available any vehicle.Please select other vehicle", Toast.LENGTH_SHORT).show();
@@ -757,7 +761,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             get_select_vehicle_api(Select_vehicle_position);
 
                         }
-
                        Adapter_Vehicle adapter_past=new Adapter_Vehicle(From_Location.this,get_vehicle_select_list,From_Location.this);
           //           recy_vehicle_list.setAdapter(adapter_past);
 
@@ -1480,11 +1483,10 @@ public class From_Location extends AppCompatActivity implements LocationListener
                                         {
 
                                         }else{
-                                            progressDialog.dismiss();
                                             finish();
                                             Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
                                         }
-
+                                    finish();
                                     }catch (Exception e){e.printStackTrace();}
 
                                 }
@@ -1500,7 +1502,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             Toast.makeText(From_Location.this, "status "+status+"\n"+" msg "+msg, Toast.LENGTH_LONG).show();
                         }
                     }catch (Exception e){
-
+                        progressDialog.dismiss();
                         Toast.makeText(From_Location.this, "Server error", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
 
@@ -1549,7 +1551,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
                         if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                         {
-                            progressDialog.dismiss();
+
                         }else{
 
                             Toast.makeText(From_Location.this, "status vehicle "+status+"\n"+" msg vehicle "+msg, Toast.LENGTH_LONG).show();
@@ -1683,7 +1685,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
         //final Dialog dialog = new Dialog(new ContextThemeWrapper(this, R.style.DialogSlideAnim));
         LayoutInflater inflater=this.getLayoutInflater();
         View v=inflater.inflate(R.layout.dialog_ride_book,null);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme_down_up;
         dialog.setCancelable(false);
        // getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         CircleImageView vehi_typ_img=v.findViewById(R.id.vehicle_type_img);

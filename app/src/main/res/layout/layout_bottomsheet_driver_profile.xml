@@ -9,7 +9,7 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:text="28 mnt"
+            android:hint="00:00:00"
             android:textSize="22dp"
             android:id="@+id/txt_remain_time"
             android:gravity="center"

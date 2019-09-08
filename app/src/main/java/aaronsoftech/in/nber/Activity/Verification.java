@@ -222,12 +222,12 @@ public class Verification extends AppCompatActivity {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressDialog=new ProgressDialog(Verification.this);
+               /* progressDialog=new ProgressDialog(Verification.this);
                 progressDialog.setCancelable(false);
                 progressDialog.setMessage("Loading...");
                 progressDialog.show();
-                Call_Api_contact(mobileno);
-                /*String otp=txt_one.getText().toString().trim()+txt_two.getText().toString().trim()+txt_three.getText().toString().trim()+
+                Call_Api_contact(mobileno);*/
+                String otp=txt_one.getText().toString().trim()+txt_two.getText().toString().trim()+txt_three.getText().toString().trim()+
                         txt_four.getText().toString().trim()+txt_five.getText().toString().trim()+txt_six.getText().toString().trim();
                 if (otp.length()!=6)
                 {
@@ -238,10 +238,9 @@ public class Verification extends AppCompatActivity {
                     progressDialog.setMessage("Loading...");
                     progressDialog.show();
                     verifyVerificationCode(otp);
-                }*/
+                }
             }
         });
-
     }
 
 

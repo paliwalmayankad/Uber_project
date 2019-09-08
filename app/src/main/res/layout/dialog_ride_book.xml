@@ -58,7 +58,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="5dp"
         android:layout_weight="1"
         android:background="@drawable/rzp_border"
         android:gravity="center"
@@ -72,6 +71,7 @@
             android:textSize="16dp"
             android:gravity="center"
             android:text="Amount"
+            android:textStyle="bold"
             android:textColor="@android:color/black"
             />
         <TextView
@@ -90,7 +90,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="5dp"
         android:layout_weight="1"
         android:gravity="center"
         android:layout_gravity="center"
@@ -103,6 +102,7 @@
             android:singleLine="true"
             android:gravity="center"
             android:textSize="16dp"
+            android:textStyle="bold"
             android:text="Booking Type"
             android:textColor="@android:color/black"
             />
