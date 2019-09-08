@@ -17,6 +17,7 @@ import android.location.LocationListener;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -98,6 +99,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import aaronsoftech.in.nber.Adapter.Adapter_Driver_vehicle;
 import aaronsoftech.in.nber.Adapter.Adapter_user_list;
@@ -165,6 +167,7 @@ public class Home extends AppCompatActivity
     RadioButton btn_driver_status;
     boolean check_user_from_to_location=false;
     HashMap payment_history_map=new HashMap();
+    TextView txt_reamin_time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -309,6 +312,7 @@ public class Home extends AppCompatActivity
 
     public void Init()
     {
+        txt_reamin_time=findViewById(R.id.txt_remain_time);
         btn_from_address=findViewById(R.id.set_loaction);
         btn_driver_status=findViewById(R.id.set_driver_status);
         btn_finish_ride_driver =findViewById(R.id.txt_finish_ride);
@@ -343,7 +347,6 @@ public class Home extends AppCompatActivity
             btn_driver_status.setChecked(false);
             btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
         }
-
 
         Check_booking();
 
@@ -1282,6 +1285,8 @@ public class Home extends AppCompatActivity
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
 
+
+
                     mDatabase = FirebaseDatabase.getInstance().getReference();
                     try {
                         mDatabase.child("Booking_ID").child(book_id).child("status").setValue("Running");
@@ -1305,6 +1310,7 @@ public class Home extends AppCompatActivity
                     mapw.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
                     mapw.put("lat",""+lat);
                     mapw.put("lng",""+lng);
+
                     mapw.put("vehicle_no",veh_no);
                     mapw.put("vehicle_type_id",veh_type_id);
                     mapw.put("vehicle_image",veh_img);
@@ -1947,15 +1953,19 @@ public class Home extends AppCompatActivity
                     get_Selected_Driver_Id=driver_ID;
                     if (!name.equalsIgnoreCase("null"))
                     {
-                        String state = String.valueOf(dataSnapshot.child("state").getValue());
-                        MarkerOptions marker2 = null;
+                       String state = String.valueOf(dataSnapshot.child("state").getValue());
+                       MarkerOptions marker2 = null;
 
-                        show_driver_profile(message,contactno,driver_ID,name,photo,address,city,email,veh_type_id,veh_no,amount,veh_img,vehicle_id,book_id);
+
+
+                       show_driver_profile(message,contactno,driver_ID,name,photo,address,city,email,veh_type_id,veh_no,amount,veh_img,vehicle_id,book_id);
 
                        Toast.makeText(Home.this, "name "+name+"\n"+"get_driverid "+driver_ID, Toast.LENGTH_SHORT).show();
                         mMap.clear();
                         double get_lat= Double.valueOf(d_lat);
                         double get_lng=Double.valueOf(d_lng);
+
+                        set_timer_cust(get_lat,get_lng);
 
                         Location prevLoc = new Location("service Provider");
                         prevLoc.setLatitude(oldlat);
@@ -2021,12 +2031,34 @@ public class Home extends AppCompatActivity
         });
     }
 
+    private void set_timer_cust(double get_lat, double get_lng) {
+
+        double get_driver_dist = distance(get_lat,get_lng,current_lat,current_lng);
+        int get_time= (int) get_driver_dist;
+        startTimer(get_time);
+
+    }
+    private void startTimer(int noOfMinutes) {
+        CountDownTimer countDownTimer = new CountDownTimer(noOfMinutes, 1000) {
+            public void onTick(long millisUntilFinished) {
+                long millis = millisUntilFinished;
+                //Convert milliseconds into hour,minute and seconds
+                String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+                txt_reamin_time.setText(hms);//set text
+            }
+            public void onFinish() {
+                txt_reamin_time.setText("TIME'S UP!!"); //On finish change timer text
+            }
+        }.start();
+
+    }
+
+
     public void Show_driver_rating_box(){
 
         final BottomSheetDialog dialog = new BottomSheetDialog(Home.this);
         LayoutInflater inflater = this.getLayoutInflater();
         View v = inflater.inflate(R.layout.dialog_driver_rating, null);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme_down_up;
         final AppCompatRatingBar ratingBar=v.findViewById(R.id.rating_bar);
         final EditText ed_review=v.findViewById(R.id.txt_review);
         TextView btn_submit=v.findViewById(R.id.txt_submit_btn);
@@ -2157,6 +2189,7 @@ public class Home extends AppCompatActivity
         }else{
             driver_amount.setText(getResources().getString(R.string.rupee_sign)+ " 0.00");
         }
+
 
         TextView btn_call=findViewById(R.id.driver_veh2);
         btn_call.setOnClickListener(new View.OnClickListener() {

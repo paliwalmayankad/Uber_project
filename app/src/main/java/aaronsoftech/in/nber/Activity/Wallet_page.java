@@ -1,13 +1,18 @@
 package aaronsoftech.in.nber.Activity;
 
 import android.app.ProgressDialog;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,12 +56,61 @@ public class Wallet_page extends AppCompatActivity {
             }
         });
 
+        TextView btn_withdraw=findViewById(R.id.txt_withdraw);
+        TextView btn_addmoney=findViewById(R.id.txt_add_money);
+        btn_withdraw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Show_driver_withdraw_box();
+            }
+        });
         recyclerView = (RecyclerView)findViewById(R.id.recycle_wallet);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(staggeredGridLayoutManager); // set LayoutManager to RecyclerView
-
+        btn_addmoney.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                show_dialog_add_money();
+            }
+        });
         wallet_get_data();
     }
+
+    private void show_dialog_add_money() {
+            final BottomSheetDialog dialog = new BottomSheetDialog(Wallet_page.this);
+            LayoutInflater inflater = this.getLayoutInflater();
+            View v = inflater.inflate(R.layout.layout_add_payment, null);
+
+        dialog.setContentView(v);
+            Button btn_continue=v.findViewById(R.id.btn_cont);
+            btn_continue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+
+            dialog.show();
+    }
+
+    public void Show_driver_withdraw_box(){
+
+        final BottomSheetDialog dialog = new BottomSheetDialog(Wallet_page.this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View v = inflater.inflate(R.layout.layout_payment_add, null);
+        dialog.setContentView(v);
+        Button btn_continue=v.findViewById(R.id.btn_cont);
+        btn_continue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+
 
     private void wallet_get_data() {
         progressDialog=new ProgressDialog(Wallet_page.this);

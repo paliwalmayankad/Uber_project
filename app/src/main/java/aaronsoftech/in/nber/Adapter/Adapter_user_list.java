@@ -82,9 +82,6 @@ public class Adapter_user_list extends RecyclerView.Adapter<Adapter_user_list.My
            final BottomSheetDialog dialog = new BottomSheetDialog((Activity)mcon);
            LayoutInflater inflater = ((Activity) mcon).getLayoutInflater();
            View v = inflater.inflate(R.layout.layout_trip_details, null);
-           dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme_down_up;
-       //    ((Activity)con).getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
            CircleImageView cust_img=v.findViewById(R.id.cust_img);
            TextView txt_amount=v.findViewById(R.id.txt_amount);
            TextView txt_book_type=v.findViewById(R.id.txt_book_type);
