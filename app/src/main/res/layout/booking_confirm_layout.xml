@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="match_parent"
+        android:text="New Booking..."
+        android:textSize="22dp"
+        android:background="@color/colorPrimary"
+        android:padding="11dp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="match_parent"
+        android:padding="22dp"
+        android:id="@+id/txt_msg"
+        android:text="NBER  booked a ride to accept check and go for ride"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_weight="2"
+            android:text="Cancel"
+            android:id="@+id/txt_cancel"
+            android:padding="11dp"
+            android:background="@drawable/border_line_grey"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:text="Accept booking"
+            android:padding="11dp"
+            android:id="@+id/txt_accept"
+            android:background="@drawable/border_line_grey"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>

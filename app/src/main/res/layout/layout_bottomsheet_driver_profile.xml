@@ -3,7 +3,7 @@
         android:layout_width="match_parent"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/textview"
+        android:background="@drawable/textview"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_height="wrap_content">
 
@@ -30,13 +30,9 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView
+                <ImageView
                     android:layout_width="80dp"
                     android:id="@+id/driver_veh"
-                    app:civ_border_overlay="true"
-                    app:civ_border_width="1dp"
-                    app:civ_circle_background_color="@color/colorPrimaryDark"
-                    app:civ_border_color="@color/colorPrimaryDark"
                     android:src="@drawable/default_user_profile_img"
                     android:layout_height="80dp" />
 

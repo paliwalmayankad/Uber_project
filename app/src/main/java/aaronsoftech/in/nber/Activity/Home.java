@@ -24,6 +24,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
@@ -43,6 +44,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -149,6 +151,7 @@ public class Home extends AppCompatActivity
 
     List<FB_Driver_res >get_driver_vehicle=new ArrayList<>();
     String booked_id="";
+
     RelativeLayout coordinatorLayout;
     double oldlat,oldlong;
     int Accept_this_booking=0;
@@ -168,7 +171,7 @@ public class Home extends AppCompatActivity
     boolean check_user_from_to_location=false;
     HashMap payment_history_map=new HashMap();
     TextView txt_reamin_time;
-
+    boolean chk_reamin_time=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -373,7 +376,6 @@ public class Home extends AppCompatActivity
                 }else{
                     get_loaction.setVisibility(View.VISIBLE);
                     get_driver_vehicle_Api();
-
                 }
 
     }
@@ -912,7 +914,7 @@ public class Home extends AppCompatActivity
         return dist; // output distance, in km
     }
 
-    private void Check_driver_booking(final Location location) {
+    private void Check_driver_booking(final Location location,String driverid) {
         if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_STATUS,"").equalsIgnoreCase("Active"))
         {
             Save_Token_on_firebase("Active");
@@ -936,11 +938,11 @@ public class Home extends AppCompatActivity
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     // Extract a Message object from the DataSnapshot
                     Response_Booking message = child.getValue(Response_Booking.class);
-
+                    try{
                     if (message.getStatus().toString().equalsIgnoreCase("Active") || message.getStatus().toString().equalsIgnoreCase("Running"))
                      {
                         String Driver_ID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-                        String get_Driver_ID=message.getDriver_id();
+                        String get_Driver_ID=message.getDriver_id().toString();
                         if (get_Driver_ID.equalsIgnoreCase(Driver_ID) && (Accept_this_booking==0) )
                         {
                                 Accept_this_booking=11;
@@ -955,7 +957,6 @@ public class Home extends AppCompatActivity
                                             message.getVehicle_no(),message.getAmount(),message.getUser_contact(),message.getUser_image(),message.getUser_name());
                                     addNotification();
                                 }
-
 
                                 LatLng from_latlng=new LatLng(Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()));
                                 LatLng to_latlng=new LatLng(Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
@@ -999,11 +1000,8 @@ public class Home extends AppCompatActivity
                                 return false;
                             }
                         });
-
-
-                    }else{
-
                     }
+                    }catch (Exception e){e.printStackTrace();}
                 }
             }
 
@@ -1261,25 +1259,36 @@ public class Home extends AppCompatActivity
 
     private void Show_dialog_box(final String user_id,final String book_id, final Location location, final String veh_img, final String veh_type_id, final String veh_no, final String amount, final String contact, final String img, final String name) {
         try{
-            AlertDialog.Builder dialog=new AlertDialog.Builder(Home.this);
-       //     dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme_down_up;
-            dialog.setTitle(getResources().getString(R.string.app_name));
-            dialog.setMessage("Accept this booking");
-            dialog.setCancelable(true);
+            String msg="NBER "+name+" booked a ride to accept check and go for ride";
+          //  String msg="NBER booked a ride to accept check and go for ride";
+            bottomSheetDialog = new BottomSheetDialog(Home.this);
+            LayoutInflater inflater = this.getLayoutInflater();
+            View v = inflater.inflate(R.layout.booking_confirm_layout, null);
 
-            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            final TextView txt_msg=v.findViewById(R.id.txt_msg);
+            final TextView txt_cancel=v.findViewById(R.id.txt_cancel);
+            final TextView txt_accept=v.findViewById(R.id.txt_accept);
+            bottomSheetDialog.setContentView(v);
+            txt_msg.setText(msg);
+
+            txt_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
+                public void onClick(View view) {
+                    bottomSheetDialog.dismiss();
                     Accept_this_booking=0;
+                    mDatabase = FirebaseDatabase.getInstance().getReference();
+                    try {
+                        mDatabase.child("Booking_ID").child(book_id).child("status").setValue("Cancel");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 }
             });
-
-            dialog.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+            txt_accept.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-
-
+                public void onClick(View view) {
+                    bottomSheetDialog.dismiss();
                     mDatabase = FirebaseDatabase.getInstance().getReference();
                     try {
                         mDatabase.child("Booking_ID").child(book_id).child("status").setValue("Running");
@@ -1303,7 +1312,6 @@ public class Home extends AppCompatActivity
                     mapw.put("contact_number", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_CONTACT_NUMBER,""));
                     mapw.put("lat",""+lat);
                     mapw.put("lng",""+lng);
-
                     mapw.put("vehicle_no",veh_no);
                     mapw.put("vehicle_type_id",veh_type_id);
                     mapw.put("vehicle_image",veh_img);
@@ -1393,11 +1401,13 @@ public class Home extends AppCompatActivity
 
                     oldlat = newlat;
                     oldlong = newlong;
-
-
                 }
             });
-            dialog.show();
+
+            bottomSheetDialog.show();
+
+
+
         }catch (Exception e){
             Log.i(TAG,"Exception : || Home || Show_dialog_box "+e.toString());
             e.printStackTrace();}
@@ -1518,44 +1528,49 @@ public class Home extends AppCompatActivity
                 try{
                     String UserID=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_ID,"");
                     // Get the data as Message objects
-                    Log.d(TAG, "Number of messages: " + dataSnapshot.getChildrenCount());
+                  //  Log.d(TAG, "Number of booking: " + dataSnapshot.getChildrenCount());
 
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
 
                         // Extract a Message object from the DataSnapshot
                         Response_Booking message = child.getValue(Response_Booking.class);
+                        try{
+                            if (message.getUser_id().toString().equalsIgnoreCase(UserID) && (!(message.getStatus().toString().equalsIgnoreCase("Deactive"))))
+                            {
+                                String driver_id=message.getDriver_id();
+                                LatLng from_latlng=new LatLng(Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()));
+                                LatLng to_latlng=new LatLng(Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
+                                addstart_end_icontrip(message.getFrom_address(),message.getTo_address(),Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()),Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
+                                set_line_on_map(from_latlng,to_latlng);
+                                Show_Driver_Location(driver_id,message);
+                                get_loaction.setVisibility(View.GONE);
+                                get_loaction.setClickable(false);
 
-                        if (message.getUser_id().equalsIgnoreCase(UserID) && (!(message.getStatus().equalsIgnoreCase("Deactive"))))
-                        {
-                            String driver_id=message.getDriver_id();
-                            LatLng from_latlng=new LatLng(Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()));
-                            LatLng to_latlng=new LatLng(Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
-                            addstart_end_icontrip(message.getFrom_address(),message.getTo_address(),Double.valueOf(message.getFrom_lat()),Double.valueOf(message.getFrom_lng()),Double.valueOf(message.getTo_lat()),Double.valueOf(message.getTo_lng()));
-                            set_line_on_map(from_latlng,to_latlng);
-                            Show_Driver_Location(driver_id,message);
-                            get_loaction.setVisibility(View.GONE);
-                            get_loaction.setClickable(false);
+                                btn_driver_status.setClickable(false);
+                                App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                                App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+                                App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_BOOKING_STATUS,"yes");
+                                App_Conteroller. editor.commit();
 
-                            btn_driver_status.setClickable(false);
-                            App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
-                            App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
-                            App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_BOOKING_STATUS,"yes");
-                            App_Conteroller. editor.commit();
+                            }else{
 
-                        }else{
+                                get_loaction.setVisibility(View.VISIBLE);
+                                layout_user_info.setVisibility(View.GONE);
+                                get_loaction.setClickable(true);
+                                layout_user_info.setVisibility(View.GONE);
+                                get_loaction.setVisibility(View.VISIBLE);
 
-                            get_loaction.setVisibility(View.VISIBLE);
-                            layout_user_info.setVisibility(View.GONE);
-                            get_loaction.setClickable(true);
-                            layout_user_info.setVisibility(View.GONE);
-                            get_loaction.setVisibility(View.VISIBLE);
+                                btn_driver_status.setClickable(true);
+                                App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
+                                App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
+                                App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_BOOKING_STATUS,"no");
+                                App_Conteroller. editor.commit();
+                            }
+                        }catch (Exception e){
+                            String error=e.toString();
+                            Log.i(TAG,"Check_User_Id_on_firebase || Error : "+error);
+                            e.printStackTrace();}
 
-                            btn_driver_status.setClickable(true);
-                            App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
-                            App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
-                            App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_BOOKING_STATUS,"no");
-                            App_Conteroller. editor.commit();
-                        }
                         dialog.dismiss();
                     }
                 }catch (Exception e){e.printStackTrace();}
@@ -1740,6 +1755,7 @@ public class Home extends AppCompatActivity
     protected void onResume() {
         set_Header_value();
         update_marker = 0;
+        chk_reamin_time=true;
         Check_User_Id_on_firebase();
         super.onResume();
     }
@@ -1859,9 +1875,9 @@ public class Home extends AppCompatActivity
                     {
                         btn_driver_status.setVisibility(View.GONE);
                     }else{
-
+                        String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
                         btn_driver_status.setVisibility(View.VISIBLE);
-                        Check_driver_booking(location);
+                        Check_driver_booking(location,driver_id);
                         send_driver_current_latlng_on_firebase(String.valueOf(lat),String.valueOf(lng));
                         start_soket(lat,lng);
                     }
@@ -1952,10 +1968,8 @@ public class Home extends AppCompatActivity
                     get_Selected_Driver_Id=driver_ID;
                     if (!name.equalsIgnoreCase("null"))
                     {
-
                        String state = String.valueOf(dataSnapshot.child("state").getValue());
                        MarkerOptions marker2 = null;
-
                        show_driver_profile(message,contactno,driver_ID,name,photo,address,city,email,veh_type_id,veh_no,amount,veh_img,vehicle_id,book_id);
 
                        Toast.makeText(Home.this, "name "+name+"\n"+"get_driverid "+driver_ID, Toast.LENGTH_SHORT).show();
@@ -1964,6 +1978,13 @@ public class Home extends AppCompatActivity
 
                         double oldlat = 0.0, oldlong = 0.0;
                         double newlat = 0.0, newlong = 0.0;
+
+                        if (chk_reamin_time)
+                        {
+                            chk_reamin_time=false;
+                            set_timer_cust(get_lat,get_lng);
+                        }
+
                         newlat = lat;
                         newlong = lng;
                         Location prevLoc = new Location("service Provider");
@@ -1977,6 +1998,7 @@ public class Home extends AppCompatActivity
 
                         if (update_markerc == 0) {
            //                 marker3 = new MarkerOptions().position(new LatLng(newlat, newlong));
+
                             marker3 = new MarkerOptions().position(new LatLng(lat, lng));
                             if (veh_type_id.toString().equalsIgnoreCase("8"))
                             {
@@ -2061,6 +2083,7 @@ public class Home extends AppCompatActivity
         startTimer(get_time);
 
     }
+
     private void startTimer(int noOfMinutes) {
         CountDownTimer countDownTimer = new CountDownTimer(noOfMinutes, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -2197,7 +2220,7 @@ public class Home extends AppCompatActivity
         get_loaction.setVisibility(View.GONE);
         layout_user_info.setVisibility(View.VISIBLE);
         CircleImageView driver_image=findViewById(R.id.driver_img);
-        CircleImageView driver_vehicle=findViewById(R.id.driver_veh);
+        ImageView driver_vehicle=findViewById(R.id.driver_veh);
         TextView driver_name=findViewById(R.id.txt_name);
         TextView driver_contect=findViewById(R.id.txt_mobile);
         TextView driver_veh_no=findViewById(R.id.txt_veh_no);
@@ -2211,7 +2234,6 @@ public class Home extends AppCompatActivity
         }else{
             driver_amount.setText(getResources().getString(R.string.rupee_sign)+ " 0.00");
         }
-
 
         TextView btn_call=findViewById(R.id.driver_veh2);
         btn_call.setOnClickListener(new View.OnClickListener() {
@@ -2245,7 +2267,8 @@ public class Home extends AppCompatActivity
         });
 
         try{
-            Picasso.with(Home.this).load(veh_img).error(R.drawable.ic_user).into(driver_vehicle);
+            String veh_img2="http://thenber.com/backend/public/"+veh_img;
+            Picasso.with(Home.this).load(veh_img2).error(R.drawable.ic_user).into(driver_vehicle);
         }catch (Exception e){e.printStackTrace();}
 
         try{

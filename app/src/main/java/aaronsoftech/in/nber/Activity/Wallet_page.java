@@ -81,9 +81,9 @@ public class Wallet_page extends AppCompatActivity {
             final BottomSheetDialog dialog = new BottomSheetDialog(Wallet_page.this);
             LayoutInflater inflater = this.getLayoutInflater();
             View v = inflater.inflate(R.layout.layout_add_payment, null);
-        final TextInputEditText txt_no=v.findViewById(R.id.et_number);
+             final TextInputEditText txt_no=v.findViewById(R.id.et_number);
 
-        dialog.setContentView(v);
+            dialog.setContentView(v);
             Button btn_continue=v.findViewById(R.id.btn_cont);
             btn_continue.setOnClickListener(new View.OnClickListener() {
                 @Override

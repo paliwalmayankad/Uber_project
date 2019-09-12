@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
@@ -104,12 +105,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import aaronsoftech.in.nber.Adapter.Adapter_Vehicle;
 import aaronsoftech.in.nber.Adapter.Adapter_Vehicle_gallery;
 import aaronsoftech.in.nber.App_Conteroller;
 import aaronsoftech.in.nber.Model.Near_Driver;
 import aaronsoftech.in.nber.POJO.Response_All_Vehicle;
+import aaronsoftech.in.nber.POJO.Response_Login;
 import aaronsoftech.in.nber.POJO.Response_Vehicle_type;
 import aaronsoftech.in.nber.POJO.Response_register;
 import aaronsoftech.in.nber.R;
@@ -129,7 +132,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
     String TAG="From_Location";
     LinearLayout coordinatorLayout;
-
+    TextView show_dialog_btn_submit,txt_timer_value;
     GoogleMap googleMap=null;
     LatLng FROM_latLng,TO_latlng;
     public boolean isLocationReceiverRegistered;
@@ -183,7 +186,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
     String get_vehicle_type,get_Vehicle_icon;
     boolean check_get_location=true;
     LinearLayout layout_loc_one;
-
+    boolean chk_timer_booking=false;
     double current_lat= 0.0;
     double current_lng= 0.0;
     ArrayList<Near_Driver> Near_driver_list=new ArrayList<>();
@@ -1185,7 +1188,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                         {
                             e.printStackTrace();
                         }
-
                         return false;
                     }
                 });
@@ -1458,7 +1460,7 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
                         if (status.equalsIgnoreCase("1") && msg.equalsIgnoreCase("success") )
                         {
-                            String id=response.body().getId();
+                            final String id=response.body().getId();
                             mDatabase = FirebaseDatabase.getInstance().getReference();
                             map.put("book_id",""+id);
                             map.put("user_name",""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
@@ -1470,7 +1472,6 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             map.put("vehicle_image",vehicle_image);
                             mDatabase.child("Booking_ID").child(id).setValue(map);
                             Save_data_on_firebase(mDatabase);
-                            Change_vehicle_status(vehicleid);
                             Query myTopPostsQuery = mDatabase.child("Driver_ID").child(driver_ID);
                             myTopPostsQuery.addValueEventListener(new ValueEventListener() {
                                 @Override
@@ -1479,14 +1480,23 @@ public class From_Location extends AppCompatActivity implements LocationListener
                                         String name = String.valueOf(dataSnapshot.child("name").getValue());
                                         String state = String.valueOf(dataSnapshot.child("state").getValue());
                                         MarkerOptions marker2 = null;
+                                        progressDialog.dismiss();
                                         if (name.toString().equalsIgnoreCase("null") || (name.toString().equalsIgnoreCase(null) || name.toString().equalsIgnoreCase("")) )
                                         {
+                                            if (chk_timer_booking)
+                                            {
+                                                chk_timer_booking=false;
+                                                startTimer(1,id);
+                                            }
 
                                         }else{
+
+                                            Change_vehicle_status(vehicleid);
+
                                             finish();
                                             Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
                                         }
-                                    finish();
+
                                     }catch (Exception e){e.printStackTrace();}
 
                                 }
@@ -1521,6 +1531,37 @@ public class From_Location extends AppCompatActivity implements LocationListener
         }
     }
 
+    private void startTimer(int noOfMinutes, final String booking_id) {
+        CountDownTimer countDownTimer = new CountDownTimer(noOfMinutes, 1000) {
+            public void onTick(long millisUntilFinished) {
+                long millis = millisUntilFinished;
+                //Convert milliseconds into hour,minute and seconds
+                String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+                txt_timer_value.setText(hms);
+                progressDialog.setMessage(hms);
+            }
+            public void onFinish() {
+                HashMap<String,String>map=new HashMap<>();
+                map.put("id",booking_id);
+                Call<Response_register> call= APIClient.getWebServiceMethod().delete_Booked_ride(map);
+                call.enqueue(new Callback<Response_register>() {
+                    @Override
+                    public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+                        mDatabase.child("Booking_ID").child(booking_id).removeValue();
+                        chk_timer_booking=true;
+                        Select_vehicle_position= Select_vehicle_position+1;
+                        show_dialog_btn_submit.performClick();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Response_register> call, Throwable t) {
+
+                    }
+                });
+            }
+        }.start();
+
+    }
 
     private void Show_Driver_Location(final String datetime,final String vehicleid,final String amount, final String driver_ID, final String vehicle_no, final String vehicle_image,final String token_no,final String vehicle_type_id) {
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -1691,13 +1732,14 @@ public class From_Location extends AppCompatActivity implements LocationListener
         CircleImageView vehi_img=v.findViewById(R.id.vehicle_img);
 
         TextView txt_amount=v.findViewById(R.id.txt_amount);
+        txt_timer_value=v.findViewById(R.id.txt_timer);
         TextView txt_book_type=v.findViewById(R.id.txt_book_type);
         TextView txt_vehicle_no=v.findViewById(R.id.txt_vehicle_no);
         TextView txt_vehicle_type=v.findViewById(R.id.txt_vehicle_type);
         TextView txt_from=v.findViewById(R.id.txt_from_add);
         TextView txt_to=v.findViewById(R.id.txt_to_add);
         TextView txt_date=v.findViewById(R.id.txt_date);
-        TextView btn_submit=v.findViewById(R.id.txt_book_done);
+        show_dialog_btn_submit=v.findViewById(R.id.txt_book_done);
         txt_from.setText(et_location.getText().toString().trim());
         txt_to.setText(et_location2.getText().toString().trim());
         txt_date.setText(datenew);
@@ -1714,12 +1756,12 @@ public class From_Location extends AppCompatActivity implements LocationListener
         Picasso.with(From_Location.this).load(get_Vehicle_icon).into(vehi_typ_img);
         Picasso.with(From_Location.this).load(book_vehicle_image).into(vehi_img);
         dialog.setContentView(v);
-        btn_submit.setOnClickListener(new View.OnClickListener() {
+        show_dialog_btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (App_Utils.isNetworkAvailable(From_Location.this)){
                     Check_booking_status=false;
-                    dialog.dismiss();
+
                     get_driver_token(datenew,book_vehicleid,book_amount,book_Driver_ID,book_vehicle_no,book_vehicle_image,book_refreshtoken,book_vehicle_type_id,Book_status);
 
                 }else{
