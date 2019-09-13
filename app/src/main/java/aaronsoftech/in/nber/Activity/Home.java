@@ -1968,6 +1968,7 @@ public class Home extends AppCompatActivity
                     get_Selected_Driver_Id=driver_ID;
                     if (!name.equalsIgnoreCase("null"))
                     {
+
                        String state = String.valueOf(dataSnapshot.child("state").getValue());
                        MarkerOptions marker2 = null;
                        show_driver_profile(message,contactno,driver_ID,name,photo,address,city,email,veh_type_id,veh_no,amount,veh_img,vehicle_id,book_id);

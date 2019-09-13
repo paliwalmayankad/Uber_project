@@ -1480,13 +1480,37 @@ public class From_Location extends AppCompatActivity implements LocationListener
                                         String name = String.valueOf(dataSnapshot.child("name").getValue());
                                         String state = String.valueOf(dataSnapshot.child("state").getValue());
                                         MarkerOptions marker2 = null;
-                                        progressDialog.dismiss();
+
                                         if (name.toString().equalsIgnoreCase("null") || (name.toString().equalsIgnoreCase(null) || name.toString().equalsIgnoreCase("")) )
                                         {
                                             if (chk_timer_booking)
                                             {
                                                 chk_timer_booking=false;
-                                                startTimer(1,id);
+                                                Handler handler=new Handler();
+                                                Runnable runnable=new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        progressDialog.dismiss();
+                                                        HashMap<String,String>map=new HashMap<>();
+                                                        map.put("id",id);
+                                                        Call<Response_register> call= APIClient.getWebServiceMethod().delete_Booked_ride(map);
+                                                        call.enqueue(new Callback<Response_register>() {
+                                                            @Override
+                                                            public void onResponse(Call<Response_register> call, Response<Response_register> response) {
+                                                                mDatabase.child("Booking_ID").child(id).removeValue();
+                                                                chk_timer_booking=true;
+                                                                Select_vehicle_position= Select_vehicle_position+1;
+                                                                show_dialog_btn_submit.performClick();
+                                                            }
+
+                                                            @Override
+                                                            public void onFailure(Call<Response_register> call, Throwable t) {
+
+                                                            }
+                                                        });
+                                                    }
+                                                };
+                                                handler.postDelayed(runnable,60000);
                                             }
 
                                         }else{
@@ -1497,7 +1521,10 @@ public class From_Location extends AppCompatActivity implements LocationListener
                                             Toast.makeText(From_Location.this, "Book your ride", Toast.LENGTH_SHORT).show();
                                         }
 
-                                    }catch (Exception e){e.printStackTrace();}
+                                    }catch (Exception e){
+                                        String error=e.toString();
+                                        Log.i(TAG,"Call_Api_book_ride || error : "+error);
+                                        e.printStackTrace();}
 
                                 }
 
