@@ -103,8 +103,8 @@ public class Acc_edit extends AppCompatActivity  {
                     else {
 
 
-                    startActivity(new Intent(Acc_edit.this,Driver_photo.class));
-                } }
+                        startActivity(new Intent(Acc_edit.this,Driver_photo.class));
+                    } }
 
 
 
@@ -116,23 +116,23 @@ public class Acc_edit extends AppCompatActivity  {
         });
 
         try {
-               EasyLocationMod easyLocationMod = new EasyLocationMod(Acc_edit.this);
-               if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Acc_edit.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                  return;
-                }
-                double[] l = easyLocationMod.getLatLong();
-                Lat = String.valueOf(l[0]);
-                Longt = String.valueOf(l[1]);
-             }catch (Exception e){e.printStackTrace();}
+            EasyLocationMod easyLocationMod = new EasyLocationMod(Acc_edit.this);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Acc_edit.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            double[] l = easyLocationMod.getLatLong();
+            Lat = String.valueOf(l[0]);
+            Longt = String.valueOf(l[1]);
+        }catch (Exception e){e.printStackTrace();}
 
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                 if (PATH_IMAGE.toString().isEmpty() || PATH_IMAGE.equalsIgnoreCase(null) || PATH_IMAGE.equalsIgnoreCase(null))
+                if (PATH_IMAGE.toString().isEmpty() || PATH_IMAGE.equalsIgnoreCase(null) || PATH_IMAGE.equalsIgnoreCase(null))
                 {
                     Toast.makeText(Acc_edit.this, "Select Image", Toast.LENGTH_SHORT).show();
                 }
-                 else if (rb_btn_female.isChecked())
+                else if (rb_btn_female.isChecked())
                 {
                     gender="Female";
                 }
@@ -186,7 +186,7 @@ public class Acc_edit extends AppCompatActivity  {
             for (int i=0;i<permissions.length;i++)
             {
                 if (grantResults[i]==PackageManager.PERMISSION_GRANTED){
-                   allpermissiongranted=true;
+                    allpermissiongranted=true;
                 }
                 else {
                     allpermissiongranted=false;
@@ -342,7 +342,7 @@ public class Acc_edit extends AppCompatActivity  {
                         }
                     }catch (Exception e){
                         Update_info();
-                //        Toast.makeText(Acc_edit.this, "try again...!", Toast.LENGTH_SHORT).show();
+                        //        Toast.makeText(Acc_edit.this, "try again...!", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();}
                 }
 
@@ -370,12 +370,21 @@ public class Acc_edit extends AppCompatActivity  {
                 progressDialog.dismiss();
                 App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
                 App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
-                App_Conteroller. editor.putString(SP_Utils.LOGIN_PHOTO,""+response.body().getData().get(0).photo);
-                App_Conteroller. editor.commit();
+                App_Conteroller.editor.putString(SP_Utils.LOGIN_PHOTO, "" + response.body().getData().get(0).photo);
+                App_Conteroller.editor.commit();
                 Toast.makeText(getApplicationContext(), "Profile saved", Toast.LENGTH_LONG).show();
-                finish();
-            }
+                if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID, "").equalsIgnoreCase("null")
+                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID, "").equalsIgnoreCase(null)
+                        || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID, "").equalsIgnoreCase("")) {
+                    startActivity(new Intent(Acc_edit.this, From_Location.class));
+                    finish();
 
+                } else {
+
+
+                    finish();
+                }
+            }
             @Override
             public void onFailure(Call<Response_Login> call, Throwable t) {
 

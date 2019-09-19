@@ -1555,7 +1555,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
                             }
                             FROM_LAT= String.valueOf(latLng.latitude);
                             FROM_LNG=String.valueOf(latLng.longitude);
-                        }else{
+                        }
+                        else{
                             TO_latlng=latLng;
                             et_location2.setTag(KEY_LATLNG,latLng);
                             et_location2.setTag(KEY_ADDRESS,mAddress);
@@ -1791,16 +1792,20 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 if (veh_type_id.toString().equalsIgnoreCase("8"))
                 {
                     marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
-                }else if (veh_type_id.toString().equalsIgnoreCase("7"))
+                }
+                else if (veh_type_id.toString().equalsIgnoreCase("7"))
                 {
                     marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike));
-                }else if (veh_type_id.toString().equalsIgnoreCase("6"))
+                }
+                else if (veh_type_id.toString().equalsIgnoreCase("6"))
                 {
                     marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.ok_car_icon));
-                }else if (veh_type_id.toString().equalsIgnoreCase("5"))
+                }
+                else if (veh_type_id.toString().equalsIgnoreCase("5"))
                 {
                     marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.e_rickshaw));
-                }else if (veh_type_id.toString().equalsIgnoreCase("4"))
+                }
+                else if (veh_type_id.toString().equalsIgnoreCase("4"))
                 {
                     marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.scooty));
                 }
@@ -1810,7 +1815,9 @@ public class From_Location extends AppCompatActivity implements LocationListener
 
             }
 
-        }catch (Exception e){
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();}
     }
 
@@ -1827,7 +1834,8 @@ public class From_Location extends AppCompatActivity implements LocationListener
                 LatLng latLng = new LatLng(Add_lat, Add_long);
                 //       googleMap.addMarker(new MarkerOptions().position(latLng));
                 googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-            }else{
+            }
+            else{
                 TO_LAT=String.valueOf(Add_lat);
                 TO_LNG=String.valueOf(Add_long);
                 LatLng latLng = new LatLng(Add_lat, Add_long);

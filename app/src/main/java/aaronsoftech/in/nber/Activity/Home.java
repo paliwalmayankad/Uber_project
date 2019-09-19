@@ -46,12 +46,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -177,10 +179,15 @@ public class Home extends AppCompatActivity
     TextView txt_reamin_time;
     boolean chk_reamin_time=false;
     boolean time_value=true;
+    Switch swithc_button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        TextView btn_driver_login=headerView.findViewById(R.id.textView_driver);
+        swithc_button=headerView.findViewById(R.id.swithc_button);
         Fabric.with(this, new Crashlytics());
 
         Init();
@@ -227,8 +234,7 @@ public class Home extends AppCompatActivity
             drawer.addDrawerListener(toggle);
             toggle.syncState();
 
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-            View headerView = navigationView.getHeaderView(0);
+
 
             if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase("null")
                         || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
@@ -241,7 +247,7 @@ public class Home extends AppCompatActivity
                 }
 
 
-            TextView btn_driver_login=headerView.findViewById(R.id.textView_driver);
+
 
             btn_driver_login.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -293,23 +299,38 @@ public class Home extends AppCompatActivity
                 public void onClick(View view) {
                     if (btn_driver_status.getText().toString().equalsIgnoreCase("Active"))
                     {
-                        btn_driver_status.setText("Deactive");
-                        btn_driver_status.setChecked(false);
-                        btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
-                    }
+                          }
                     else
                         {
-                            btn_driver_status.setText("Active");
-                            btn_driver_status.setChecked(true);
-                            btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
-                        }
-                    Save_Token_on_firebase(btn_driver_status.getText().toString().trim());
+                                 }
+                           }
+            });
+
+            swithc_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked==true){
+                        swithc_button.setText("Active");
+                        swithc_button.setChecked(true);
+                       // swithc_button.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
+
+                    }
+                    else {
+                        swithc_button.setText("Deactive");
+                        swithc_button.setChecked(false);
+                       // swithc_button.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
+
+                    }
+                    Save_Token_on_firebase(swithc_button.getText().toString().trim());
                     App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
                     App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
-                    App_Conteroller. editor.putString(SP_Utils.LOGIN_DRIVER_STATUS,""+btn_driver_status.getText().toString().trim());
+                    App_Conteroller. editor.putString(SP_Utils.LOGIN_DRIVER_STATUS,""+swithc_button.getText().toString().trim());
                     App_Conteroller. editor.commit();
+
                 }
             });
+
+
 
         }catch (Exception e){
             e.printStackTrace();
@@ -325,7 +346,7 @@ public class Home extends AppCompatActivity
         btn_driver_status=findViewById(R.id.set_driver_status);
         btn_finish_ride_driver =findViewById(R.id.txt_finish_ride);
         btn_cancel_ride_driver =findViewById(R.id.txt_cancel_ride);
-
+        //swithc_button=findViewById(R.id.swithc_button);
         btn_finish_ride_user=findViewById(R.id.txt_finish_ride2);
         btn_cancel_ride_user=findViewById(R.id.txt_cancel_ride2);
 
@@ -351,11 +372,17 @@ public class Home extends AppCompatActivity
         if (App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_STATUS,"").equalsIgnoreCase("Active"))
         {
             btn_driver_status.setText("Active");
+            swithc_button.setText("Active");
+            btn_driver_status.setVisibility(View.GONE);
             btn_driver_status.setChecked(true);
+            swithc_button.setChecked(true);
             btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_yellow));
 
         }else{
             btn_driver_status.setText("Deactive");
+            swithc_button.setText("Deactive");
+            swithc_button.setChecked(false);
+            btn_driver_status.setVisibility(View.GONE);
             btn_driver_status.setChecked(false);
             btn_driver_status.setBackground(getResources().getDrawable(R.drawable.border_line_grey));
         }
@@ -457,7 +484,7 @@ public class Home extends AppCompatActivity
                                 App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_PIC_INSURENCE,""+getlist.get(0).getVehicle_insurance_id());
                                 App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_PIC_PERMIT,""+getlist.get(0).getPermit());
                                 App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_PIC,""+getlist.get(0).getVehicle_photo());
-                                App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_STATUS,""+btn_driver_status.getText().toString().trim());
+                                App_Conteroller. editor.putString(SP_Utils.DRIVER_VEHICLE_STATUS,""+swithc_button.getText().toString().trim());
                                 App_Conteroller. editor.commit();
 
                             }
@@ -980,7 +1007,7 @@ public class Home extends AppCompatActivity
             map.put("driver_lng",lng);
             map.put("driver_vehicle_no",vehicle_no);
             map.put("driver_vehicle_type",""+vehicle_type_id);
-            map.put("driver_status",""+btn_driver_status.getText().toString().trim());
+            map.put("driver_status",""+swithc_button.getText().toString().trim());
             mDatabase.child("Driver_Current_latlng_ID").child(id).setValue(map);
 
             mDatabase.addValueEventListener(new ValueEventListener() {
@@ -1128,7 +1155,7 @@ public class Home extends AppCompatActivity
         lng=location.getLongitude();
         double speed=location.getSpeed();
   //      Toast.makeText(Home.this, "lat------ "+lat, Toast.LENGTH_SHORT).show();
-        String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
+         String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
         HashMap<String,String> mapw=new HashMap<>();
         mapw.put("driver_ID",""+driver_id);
         mapw.put("name", ""+App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));
@@ -1187,7 +1214,9 @@ public class Home extends AppCompatActivity
 
             mMap.addMarker(marker3);
             update_markerc = 1;
-        } else {
+        }
+        else
+            {
             if (veh_type_id.toString().equalsIgnoreCase("8"))
             {
                 marker3.icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icon));
@@ -1695,7 +1724,7 @@ public class Home extends AppCompatActivity
                                         get_loaction.setVisibility(View.GONE);
                                         get_loaction.setClickable(false);
 
-                                        btn_driver_status.setClickable(false);
+                                        swithc_button.setClickable(false);
                                         App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
                                         App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
                                         App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_BOOKING_STATUS,"yes");
@@ -1709,7 +1738,7 @@ public class Home extends AppCompatActivity
                                         layout_user_info.setVisibility(View.GONE);
                                         get_loaction.setVisibility(View.VISIBLE);
 
-                                        btn_driver_status.setClickable(true);
+                                        swithc_button.setClickable(true);
                                         App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
                                         App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
                                         App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_BOOKING_STATUS,"no");
@@ -1731,7 +1760,7 @@ public class Home extends AppCompatActivity
                             layout_user_info.setVisibility(View.GONE);
                             get_loaction.setVisibility(View.VISIBLE);
 
-                            btn_driver_status.setClickable(true);
+                            swithc_button.setClickable(true);
                             App_Conteroller.sharedpreferences = getSharedPreferences(App_Conteroller.MyPREFERENCES, Context.MODE_PRIVATE);
                             App_Conteroller.editor = App_Conteroller.sharedpreferences.edit();
                             App_Conteroller. editor.putString(SP_Utils.LOGIN_USR_BOOKING_STATUS,"no");
@@ -1981,7 +2010,7 @@ public class Home extends AppCompatActivity
         }
         mMap.setMyLocationEnabled(true);
 
-        try
+         try
         {
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().
                 findFragmentById(R.id.map);
@@ -2011,6 +2040,10 @@ public class Home extends AppCompatActivity
                     }
                 }
             });
+
+
+
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -2043,10 +2076,10 @@ public class Home extends AppCompatActivity
                             || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(null)
                             || App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"").equalsIgnoreCase(""))
                     {
-                        btn_driver_status.setVisibility(View.GONE);
+                        swithc_button.setVisibility(View.GONE);
                     }else{
                         String driver_id=App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_DRIVER_ID,"");
-                        btn_driver_status.setVisibility(View.VISIBLE);
+                        swithc_button.setVisibility(View.VISIBLE);
                         Check_driver_booking(location,driver_id);
 
                         send_driver_current_latlng_on_firebase(String.valueOf(lat),String.valueOf(lng));
