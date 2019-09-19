@@ -1211,11 +1211,11 @@ public class Home extends AppCompatActivity
             mMap.addMarker(marker3);
         }
 
-         oldlat = newlat;
-         oldlong = newlong;
+
 
 
     }
+    //
 
     // Marker mk = null;
     public Emitter.Listener onNewMessage = new Emitter.Listener()
