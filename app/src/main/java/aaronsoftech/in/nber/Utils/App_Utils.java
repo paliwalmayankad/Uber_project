@@ -21,6 +21,7 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.view.Window;
 import android.widget.ImageView;
@@ -182,6 +183,17 @@ public class App_Utils {
     }
 
     public static void showAlertSnakeMessage(LinearLayout coordinatorLayout, String message)
+    {
+        try
+        {
+            Snackbar.make(coordinatorLayout, ""+message, Snackbar.LENGTH_SHORT).show();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public static void showAlertSnakeMessageForDrawerLAyout(DrawerLayout coordinatorLayout, String message)
     {
         try
         {

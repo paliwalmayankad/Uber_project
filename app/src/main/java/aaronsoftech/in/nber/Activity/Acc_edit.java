@@ -5,11 +5,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -56,7 +58,7 @@ public class Acc_edit extends AppCompatActivity  {
     EditText ed_name,ed_address,ed_city,ed_email,ed_state,ed_country,tx_mobile,ed_zipcode;
     Toolbar mToolbar22;
 
-
+    String[] locationPermissions = {"android.permission.READ_EXTERNAL_STORAGE","android.permission.WRITE_EXTERNAL_STORAGE","android.permission.CAMERA"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,7 +88,30 @@ public class Acc_edit extends AppCompatActivity  {
         profile_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Acc_edit.this,Driver_photo.class));
+
+                if (ActivityCompat.checkSelfPermission(Acc_edit.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Acc_edit.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(Acc_edit.this, android.Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
+                {
+                    ActivityCompat.requestPermissions(Acc_edit.this, locationPermissions, 100);
+                    return;
+                }
+                else {
+                    if ( ActivityCompat.checkSelfPermission(Acc_edit.this, android.Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(Acc_edit.this, locationPermissions, 100);
+                        return;
+                    }
+                    else {
+
+
+                    startActivity(new Intent(Acc_edit.this,Driver_photo.class));
+                } }
+
+
+
+
+
+
+
             }
         });
 
@@ -103,37 +128,44 @@ public class Acc_edit extends AppCompatActivity  {
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (rb_btn_female.isChecked())
+                 if (PATH_IMAGE.toString().isEmpty() || PATH_IMAGE.equalsIgnoreCase(null) || PATH_IMAGE.equalsIgnoreCase(null))
+                {
+                    Toast.makeText(Acc_edit.this, "Select Image", Toast.LENGTH_SHORT).show();
+                }
+                 else if (rb_btn_female.isChecked())
                 {
                     gender="Female";
-                }else{
+                }
+                else{
                     gender="Male";
                 }
 
-                if (ed_name.getText().toString().isEmpty())
+                if (TextUtils.isEmpty(ed_name.getText().toString())||ed_name.getText().toString().trim().matches("")||ed_name.getText().toString().isEmpty()||ed_name.getText().toString().trim()==null||ed_name.getText().toString().length()==0||ed_name.getText().toString().equals("")||ed_name.getText().toString().equals(" ")||ed_name.getText().toString().equals(null))
                 {
                     ed_name.setError("Enter Name");
                     ed_name.requestFocus();
-                }else if (ed_email.getText().toString().isEmpty())
+                }else if (TextUtils.isEmpty(ed_email.getText().toString())||ed_email.getText().toString().trim().matches("")||ed_email.getText().toString().isEmpty()||ed_email.getText().toString().trim()==null||ed_email.getText().toString().length()==0||ed_email.getText().toString().equals("")||ed_email.getText().toString().equals(" ")||ed_email.getText().toString().equals(null))
                 {
                     ed_email.setError("Enter Email-Id");
                     ed_email.requestFocus();
-                }else if (ed_address.getText().toString().isEmpty())
+                }
+                else if (isValidEmail(ed_email.getText().toString())==false){
+                    ed_email.setError("Enter valid Email");
+                    ed_email.requestFocus();
+                }
+                else if (TextUtils.isEmpty(ed_address.getText().toString())||ed_address.getText().toString().trim().matches("")||ed_address.getText().toString().isEmpty()||ed_address.getText().toString().trim()==null||ed_address.getText().toString().length()==0||ed_address.getText().toString().equals("")||ed_address.getText().toString().equals(" ")||ed_address.getText().toString().equals(null))
                 {
                     ed_address.setError("Enter Address");
                     ed_address.requestFocus();
-                }else if (PATH_IMAGE.toString().isEmpty() || PATH_IMAGE.equalsIgnoreCase(null) || PATH_IMAGE.equalsIgnoreCase(null))
-                {
-                    Toast.makeText(Acc_edit.this, "Select Image", Toast.LENGTH_SHORT).show();
-                }else if (ed_city.getText().toString().isEmpty())
+                }else if (TextUtils.isEmpty(ed_city.getText().toString())||ed_city.getText().toString().trim().matches("")||ed_city.getText().toString().isEmpty()||ed_city.getText().toString().trim()==null||ed_city.getText().toString().length()==0||ed_city.getText().toString().equals("")||ed_city.getText().toString().equals(" ")||ed_city.getText().toString().equals(null))
                 {
                     ed_city.setError("Enter City");
                     ed_city.requestFocus();
-                }else if (ed_state.getText().toString().isEmpty())
+                }else if (TextUtils.isEmpty(ed_state.getText().toString())||ed_state.getText().toString().trim().matches("")||ed_state.getText().toString().isEmpty()||ed_state.getText().toString().trim()==null||ed_state.getText().toString().length()==0||ed_state.getText().toString().equals("")||ed_state.getText().toString().equals(" ")||ed_state.getText().toString().equals(null))
                 {
                     ed_state.setError("Enter State");
                     ed_state.requestFocus();
-                }else if (ed_country.getText().toString().isEmpty())
+                }else if (TextUtils.isEmpty(ed_country.getText().toString())||ed_country.getText().toString().trim().matches("")||ed_country.getText().toString().isEmpty()||ed_country.getText().toString().trim()==null||ed_country.getText().toString().length()==0||ed_country.getText().toString().equals("")||ed_country.getText().toString().equals(" ")||ed_country.getText().toString().equals(null))
                 {
                     ed_country.setError("Enter Country");
                     ed_country.requestFocus();
@@ -145,6 +177,36 @@ public class Acc_edit extends AppCompatActivity  {
         });
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode==100){
+            boolean allpermissiongranted=false;
+            for (int i=0;i<permissions.length;i++)
+            {
+                if (grantResults[i]==PackageManager.PERMISSION_GRANTED){
+                   allpermissiongranted=true;
+                }
+                else {
+                    allpermissiongranted=false;
+                    break;
+                }
+            }
+            if (allpermissiongranted==true)
+            {
+                startActivity(new Intent(Acc_edit.this,Driver_photo.class));
+            }
+            else {
+                Toast.makeText(this, "Kindly grant Permission to select Image.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
+    public final static boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
     private void Set_Profile_data() {
         try{
             ed_name.setText(App_Conteroller.sharedpreferences.getString(SP_Utils.LOGIN_NAME,""));

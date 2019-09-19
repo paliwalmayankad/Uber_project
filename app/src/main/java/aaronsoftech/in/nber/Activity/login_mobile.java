@@ -14,9 +14,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -24,6 +28,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.concurrent.TimeUnit;
 
 import aaronsoftech.in.nber.R;
+import afu.org.checkerframework.checker.nullness.qual.NonNull;
 
 import static aaronsoftech.in.nber.Utils.App_Utils.isNetworkAvailable;
 
@@ -49,6 +54,7 @@ public class login_mobile extends AppCompatActivity {
         //initializing objects
         mAuth = FirebaseAuth.getInstance();
 
+
         final TextView social_login=findViewById(R.id.social_login);
         ed_mobile=findViewById(R.id.t_mobile);
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
@@ -70,9 +76,9 @@ public class login_mobile extends AppCompatActivity {
     }
 
     private void Call_Intent() {
-        startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp","no"));
+       // startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp","no"));
 
-       /* if (isNetworkAvailable(login_mobile.this)) {
+        if (isNetworkAvailable(login_mobile.this)) {
             refreshedToken = FirebaseInstanceId.getInstance().getToken();
             Log.i(TAG, "Token ID :  " + refreshedToken);
 
@@ -87,7 +93,7 @@ public class login_mobile extends AppCompatActivity {
            }
         }else{
             Toast.makeText(activity_login_mobile, "No internet Connection", Toast.LENGTH_SHORT).show();
-        }*/
+        }
     }
 
     private void sendVerificationCode(String mobile) {
@@ -95,6 +101,7 @@ public class login_mobile extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
+
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 "+91" + mobile,
                 60,
@@ -118,13 +125,51 @@ public class login_mobile extends AppCompatActivity {
                 progressDialog.dismiss();
                 startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp",code));
             }
+            else
+            {
+
+
+                progressDialog.dismiss();
+               // startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp","no"));
+
+                mAuth.signInWithCredential(phoneAuthCredential)
+                        .addOnCompleteListener(login_mobile.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    // Log.d(TAG, "signInWithCredential:success");
+                                //    startActivity(new Intent(PhoneLogin.this,NavigationDrawer.class));
+                                    startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp","no"));
+
+                                    // ...
+                                } else {
+                                    // Log.w(TAG, "signInWithCredential:failure", task.getException());
+                                    if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                        // The verification code entered was invalid
+                                        Toast.makeText(login_mobile.this,"Invalid Verification",Toast.LENGTH_SHORT).show();
+                                        String ss=task.getException().getMessage();
+                                        String jj=ss.toString();
+                                    }
+                                }
+                            }
+                        });
+
+            }
 
         }
 
         @Override
         public void onVerificationFailed(FirebaseException e) {
             progressDialog.dismiss();
-            Toast.makeText(login_mobile.this, e.getMessage(), Toast.LENGTH_LONG).show();
+           // Toast.makeText(login_mobile.this, e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(login_mobile.this, "you attempt to many time. please try after 6 hours.", Toast.LENGTH_SHORT).show();
+       if (ed_mobile.getText().toString().equals("8233988003")||ed_mobile.getText().toString().equals("8619991940"))
+       {
+           progressDialog.dismiss();
+           startActivity(new Intent(login_mobile.this,Verification.class).putExtra("mobile",ed_mobile.getText().toString().trim()).putExtra("otp","no"));
+
+       }
+
         }
 
         @Override

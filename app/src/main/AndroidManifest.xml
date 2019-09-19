@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="aaronsoftech.in.nber">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -26,6 +27,7 @@
         android:roundIcon="@drawable/yellow_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
+
         android:usesCleartextTraffic="true">
         <activity android:name=".Activity.Wallet_page"
             android:screenOrientation="portrait"

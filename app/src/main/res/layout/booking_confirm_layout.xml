@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:CircleProgressView="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_height="wrap_content">
     <TextView
@@ -14,12 +15,98 @@
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="match_parent">
+        <at.grabner.circleprogress.CircleProgressView
+            android:id="@+id/circleView"
+            android:layout_width="131dp"
+            android:layout_height="131dp"
+            android:layout_margin="22dp"
+            CircleProgressView:cpv_barColor="@color/colorPrimary"
+            CircleProgressView:cpv_barWidth="2dp"
+            CircleProgressView:cpv_innerContourSize="1dp"
+            CircleProgressView:cpv_maxValue="30"
+            CircleProgressView:cpv_outerContourSize="1dp"
+            CircleProgressView:cpv_rimColor="@color/colorPrimary"
+            CircleProgressView:cpv_rimWidth="40dp"
+            CircleProgressView:cpv_seekMode="true"
+            CircleProgressView:cpv_spinColor="@color/colorPrimaryDark"
+            CircleProgressView:cpv_textColor="@color/colorPrimaryDark"
+            app:cpv_maxValue="30"
+            app:cpv_textSize="50dp"
+            CircleProgressView:cpv_showUnit="true"
+            app:cpv_unitSize="30dp"
+            CircleProgressView:cpv_textScale="1"
+            CircleProgressView:cpv_unitColor="@color/colorPrimary"
+            CircleProgressView:cpv_unitPosition="right_top"
+            CircleProgressView:cpv_unitScale="1"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="@string/rupee_sign"
+                android:textSize="35dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_marginBottom="22dp"
+                android:gravity="center"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="00.0"
+                android:id="@+id/txt_amount"
+                android:textSize="44dp"
+                android:gravity="center"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_margin="11dp"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="PickUp: "
+            android:textSize="25dp"
+            android:gravity="center"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="00.0"
+            android:id="@+id/txt_type"
+            android:textSize="25dp"
+            android:gravity="center"
+            android:textColor="@color/colorPrimary"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
     <TextView
         android:layout_width="match_parent"
-        android:padding="22dp"
+        android:padding="11dp"
+        android:textColor="@android:color/black"
         android:id="@+id/txt_msg"
+        android:textSize="20dp"
         android:text="NBER  booked a ride to accept check and go for ride"
         android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="match_parent"
+        android:id="@+id/txt_from"
+        android:padding="11dp"
+        android:layout_height="match_parent" />
+    <TextView
+        android:layout_width="match_parent"
+        android:id="@+id/txt_to"
+        android:padding="11dp"
+        android:layout_height="match_parent" />
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="horizontal"
@@ -35,5 +122,15 @@
             android:id="@+id/txt_accept"
             android:background="@drawable/border_line_grey"
             android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:id="@+id/timer_booking"
+            android:padding="11dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/colorPrimaryDark"
+            android:background="@drawable/border_line_grey"
+            android:layout_height="wrap_content" />
     </LinearLayout>
+
 </LinearLayout>
